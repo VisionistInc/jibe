@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ghosditor Demo</title>
+
+    <!-- Viewport mobile tag for sensible mobile support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--STYLES-->
+    <link rel="stylesheet" href="../assets/styles/bootstrap.css">
+    <link rel="stylesheet" href="../assets/styles/dropzone.css">
+    <link rel="stylesheet" href="../assets/styles/editor.css">
+    <!--STYLES END-->
+  </head>
+
+  <body>
+
+<div class="container">
+<div class="editorwrap row">
+
+    <!-- Markdown Editor -->
+    <section class="entry-markdown col-md-6 col-xs-1">
+        <header class="floatingheader">
+            <small>Markdown</small>
+            <a class="markdown-help" href="#"><span class="hidden">What is Markdown?</span></a>
+        </header>
+        <section class="entry-markdown-content">
+<textarea id="entry-markdown">
+### What about Images?
+
+![A placeholder for image]
+
+Images work too! Already know the URL of the image you want to include in your article? Simply paste it in like this to make it show up:
+
+![A bowl of bananas]
+
+![The Ghost Logo](http://tryghost.org/ghost.png)
+
+Not sure which image you want to use yet? That's ok too. Leave yourself a descriptive placeholder and keep writing. Come back later and drag and drop the image in to upload:
+
+![A bowl of bananas]
+</textarea>
+        </section>
+    </section>
+    <!-- Markdown Editor END-->
+
+
+    <!-- Markdown Preview -->
+    <section class="entry-preview active col-md-6 col-xs-1">
+        <header class="floatingheader">
+            <small class="pull-left">Preview</small>
+            <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
+        </header>
+        <section class="entry-preview-content">
+            <div class="rendered-markdown"></div>
+        </section>
+    </section>
+    <!-- Markdown Preview END-->
+</div>
+</div>
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <!--SCRIPTS-->
+    <script src="../assets/js/dropzone.js"></script>
+    <script src="../assets/js/ghostdown.js"></script>
+    <!--SCRIPTS END-->
+  </body>
+</html>
