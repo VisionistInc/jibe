@@ -3,8 +3,7 @@
 // CodeMirror is the only global var we claim
 
 //Hello future me, go to line 7500 to add functionality on text edit.
-var socket = io();
-
+window.socket = io();
 window.CodeMirror = (function() {
 	"use strict";
 
@@ -7835,12 +7834,12 @@ Showdown.converter = function(a) {
 			return;
 
 		//var delay;
-		var converter = new ShowDown.converter(),
-			editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
-				mode: 'markdown',
-				tabMode: 'indent',
-				lineWrapping: true
-			});
+		var converter = new ShowDown.converter();
+		var	editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
+			mode: 'markdown',
+			tabMode: 'indent',
+			lineWrapping: true
+		});
 
 		// Really not the best way to do things as it includes Markdown formatting along with words
 		function updateWordCount() {
@@ -7910,8 +7909,11 @@ Showdown.converter = function(a) {
 			//changes.
 			editor.on("change", function() {
 				updatePreview();
-				console.log(editor.getValue());
-				socket.emit('chat', editor.getValue());
+				window.socket.emit('chat', editor.getValue());
+			});
+
+			window.socket.on('chat', function (message){
+				console.info (message);
 			});
 
 			updatePreview();
