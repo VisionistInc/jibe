@@ -3,6 +3,8 @@
 // CodeMirror is the only global var we claim
 
 //Hello future me, go to line 7500 to add functionality on text edit.
+var socket = io();
+
 window.CodeMirror = (function() {
 	"use strict";
 
@@ -7909,6 +7911,7 @@ Showdown.converter = function(a) {
 			editor.on("change", function() {
 				updatePreview();
 				console.log(editor.getValue());
+				socket.emit('chat', editor.getValue());
 			});
 
 			updatePreview();
