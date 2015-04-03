@@ -1,6 +1,9 @@
 
 window.editor = {};
 
+//TODO, let users pick their nicknames or get it from a cookie or something.
+var clientID = Math.floor((Math.random() * 10000000));
+
 (function($, ShowDown, CodeMirror) {
 	"use strict";
 
@@ -182,3 +185,37 @@ pad.whenReady (function () {
 		pad.attachCodeMirror (window.editor);
   	}
 });
+
+//Chat functionality
+function addMessage(message) {
+	var classes = "chat-message";
+	if ( message.client == clientID ) {
+		classes += " chat-message-mine";
+	}
+	chatdiv = $('<div/>').addClass(classes).text(message.message);
+	$('.chat-pane').append(chatdiv);
+}
+
+var chatSocket = new BCSocket('/chat');
+chatSocket.onopen = function() {};
+
+chatSocket.onmessage = function(message) {
+	console.log(message.data)
+	if (message.data.docid === docid) {
+		if (message.data.client != clientID) {
+			addMessage(message.data);
+		}
+	}
+};
+
+$('#chat-form').submit(function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+	message = $('#chat-message').val();
+	console.log(message);
+	$('#chat-message').val('');
+	message = {docid: docid, client: clientID, message: message};
+	chatSocket.send(message);
+	addMessage(message)
+	return false;
+})

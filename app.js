@@ -46,6 +46,13 @@ app.use (browserChannel (function (client) {
     return share.listen (stream);
 }));
 
+//Chat stuff here:
+app.use(browserChannel({base: "/chat"}, function(client) {
+  client.on('message', function(data) {
+    client.send(data);
+  })
+  console.log("Got session: ", client);
+}));
 server.listen (port, function () {
     console.info ('Server listening at port %d', port);
 });
