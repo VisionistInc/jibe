@@ -19,8 +19,8 @@ io.on('connection', function (socket) {
     });
 
     // Sends message to every user in 'chat' room
-    socket.on ('chat', function (data) {;
-        // console.info (data);
-        // io.emit ('chat', data);
+    socket.on ('markdown', function (data) {;
+        console.info (data);
+        socket.broadcast.emit ('markdown', data);
     });
 });

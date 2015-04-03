@@ -80,6 +80,8 @@ window.socket = io();
 		}
 
 		$(document).ready(function() {
+			var editInProgress = false;
+
 			$('.entry-markdown header, .entry-preview header').click(function(e) {
 				$('.entry-markdown, .entry-preview').removeClass('active');
 				$(e.target).closest('section').addClass('active');
@@ -87,13 +89,15 @@ window.socket = io();
 
 			//You're probably looking for this to add functionality when the text
 			//changes.
-			editor.on("change", function() {
+			editor.on ("change", function () {
 				updatePreview();
-				window.socket.emit('chat', editor.getValue());
+				if (editInProgress) { return false; }
+				window.socket.emit('markdown', editor.getValue());
 			});
 
-			window.socket.on('chat', function (message){
-				console.info (message);
+			window.socket.on('markdown', function (message){
+				editor.setValue (message);
+				editInProgress = true;
 			});
 
 			updatePreview();
