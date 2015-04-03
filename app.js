@@ -11,6 +11,10 @@ var backend = livedb.client (livedb.memory ());
 var share   = sharejs.server.createClient ({ backend: backend });
 var app     = express ();
 
+server.listen (port, function () {
+    console.info ('Server listening at port %d', port);
+});
+
 app.use (express.static (__dirname));
 app.use (browserChannel (function (client) {
     var stream = new Duplex ({ objectMode: true });
@@ -46,13 +50,13 @@ app.use (browserChannel (function (client) {
     return share.listen (stream);
 }));
 
-//Chat stuff here:
-app.use(browserChannel({base: "/chat"}, function(client) {
-  client.on('message', function(data) {
-    client.send(data);
-  })
-  console.log("Got session: ", client);
+
+/*
+ *  Everything chat related
+ */
+app.use (browserChannel ({ base: "/chat" }, function (client) {
+    client.on ('message', function (data) {
+        client.send (data);
+    });
+    console.log ("Got session: ", client);
 }));
-server.listen (port, function () {
-    console.info ('Server listening at port %d', port);
-});

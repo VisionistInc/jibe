@@ -133,15 +133,16 @@ var clientID = Math.floor((Math.random() * 10000000));
 }(jQuery, Showdown, CodeMirror));
 
 
+//
 // Takes care of text formatting via the use of the button toolbar located on the page
-
+//
 var Format = Format || {};
 
 Format.bold = function () {
 	Formatter.wrap ('**');
 }
 
-Format.italics = function () {
+Format.italic = function () {
 	Formatter.wrap ('*');
 }
 
@@ -164,9 +165,9 @@ Format.wrapper = function () {
 	}
 }
 
-
+//
 // Opens socket, establishes connection to pad based on url location hash
-
+//
 var pad_id = location.hash;
 if (pad_id == '') {
 	// Using default hash
@@ -186,19 +187,26 @@ pad.whenReady (function () {
   	}
 });
 
-//Chat functionality
+
+//
+// Chat functionality
+//
 function addMessage(message) {
 	var classes = "chat-message";
-	if ( message.client == clientID ) {
-		classes += " chat-message-mine";
+
+	if (message.client == clientID) {
+		classes += " bubble-mine";
+	} else {
+		classes += " bubble-other";
 	}
-	chatdiv = $('<div/>').addClass(classes).text(message.message);
+
+	chatdiv = $('<div>').addClass(classes).text(message.message);
 	$('.chat-pane').append(chatdiv);
 }
 
 var chatSocket = new BCSocket('/chat');
-chatSocket.onopen = function() {};
 
+chatSocket.onopen   = function() {};
 chatSocket.onmessage = function(message) {
 	console.log(message.data)
 	if (message.data.docid === docid) {
@@ -208,14 +216,15 @@ chatSocket.onmessage = function(message) {
 	}
 };
 
-$('#chat-form').submit(function (e) {
-	e.preventDefault();
-	e.stopPropagation();
-	message = $('#chat-message').val();
-	console.log(message);
-	$('#chat-message').val('');
-	message = {docid: docid, client: clientID, message: message};
-	chatSocket.send(message);
-	addMessage(message)
-	return false;
-})
+$('#chat-message').keypress (function (event) {
+    if (event.keyCode == 13) {
+		message = $('#chat-message').val();
+		message = {pad_id: pad_id, client: clientID, message: message};
+
+		chatSocket.send (message);
+		addMessage (message);
+
+		$('#chat-message').val ('');
+		return false;
+    }
+});

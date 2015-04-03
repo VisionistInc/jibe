@@ -16,50 +16,69 @@
 
         <div class="container">
 
-            <div class="chat-pane">
-                <div class="chat-input">
-                    <form id="chat-form">
-                        <input type="text" class="chat-input" id="chat-message">
-                    </form>
-                </div>
-            </div>
-
-            <div class="editortoolbar row">
-
-            </div>
-
             <div class="editorwrap row">
 
                 <!-- Tabs -->
-                <div role="tabpanel">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
-                        <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="markdown">
-                            <!-- Markdown Editor -->
-                            <section class="entry-markdown col-md-6 col-xs-12">
-                                <section class="entry-markdown-content">
-                                    <textarea id="entry-markdown">
-                                    </textarea>
+                <div class="column col-md-9">
+                    <div role="tabpanel">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
+                            <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="markdown">
+                                <!-- Toolbar -->
+                                <div class="editortoolbar row">
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-bold" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-italic" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-barcode" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <!-- Markdown Editor -->
+                                <section class="entry-markdown col-md-12 col-xs-12">
+                                    <header class="floatingheader">
+                                        <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
+                                    </header>
+                                    <section class="entry-markdown-content">
+                                        <textarea id="entry-markdown">
+                                        </textarea>
+                                    </section>
                                 </section>
-                            </section>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="preview">
-                            <!-- Markdown Preview -->
-                            <section class="entry-preview active col-md-6 col-xs-12">
-                                <section class="entry-preview-content">
-                                    <div class="rendered-markdown"></div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="preview">
+                                <!-- Markdown Preview -->
+                                <section class="entry-preview active col-md-12 col-xs-12">
+                                    <section class="entry-preview-content">
+                                        <div class="rendered-markdown"></div>
+                                    </section>
                                 </section>
-                            </section>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-
+                <!-- Chat -->
+                <div class="column col-md-3">
+                    <div class="chat-container">
+                        <div class="chat-pane">
+                            <div class="chat-message bubble-other">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse volutpat arcu id mattis commodo. Fusce in risus ultrices, gravida tellus a, facilisis nunc.</div>
+                        </div>
+                        <div class="chat-input form-control">
+                            <textarea class="form-control" id="chat-message" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
 
             </div>
+
         </div>
 
         <!-- Everything Javascript -->

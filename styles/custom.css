@@ -1,12 +1,142 @@
 
-.container {
-    width: 100%;
+html, body {
+    height: 100%;
+    min-height: 100% !important;
 }
 
+.container {
+    width: 100%;
+    height: 100%;
+}
+
+.container > .row {
+    height: 100%;
+}
+
+.container > .row > .column {
+    height: 100%;
+}
+
+
+
 .editortoolbar {
-    padding: 25px;
+    margin-top: 18px;
+    margin-bottom: -2.5px;
+    padding-left: 17.5px;
 }
 
 .editorwrap {
-    padding: 25px;
+    width: 100%;
+    padding-top: 25px;
+    padding-left: 10px;
+}
+
+.entry-markdown {
+    margin-top: -15px;
+}
+
+
+
+
+/*
+ *  All chat based styles
+ */
+
+div.chat-container {
+    height: 100%;
+}
+
+div.chat-pane {
+    height: 88%;
+    width: 100%;
+}
+
+div.chat-input {
+    height: 111px;
+    width: 100%;
+    border-radius: 7.5px;
+    background-color: #dfdfdf;
+}
+
+div.chat-input > textarea {
+    width: 99%;
+    resize: none;
+    margin: auto;
+    margin-top: 8px;
+    font-size: 16px;
+
+}
+
+/* Every message 'bubble' gets this */
+div.chat-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    padding: 5px 10px 7.5px 10px;
+}
+
+.bubble-mine {
+    max-width: 70%;
+    display: block;
+    position: relative;
+    background: #57b6ff;
+    min-height: 3.5%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-top: 10px;
+    float: right;
+    margin-left: 10%;
+    clear: both;
+}
+
+.bubble-mine:first-child {
+    margin-top: 0px;
+}
+
+.bubble-mine:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 10px 0 10px 10px;
+    border-color: transparent #57b6ff;
+    display: block;
+    width: 0;
+    z-index: 1;
+    margin-top: -10px;
+    right: -10px;
+    top: 50%;
+}
+
+.bubble-other {
+    max-width: 70%;
+    display: block;
+    position: relative;
+    background: #ff2d2d;
+    min-height: 3.5%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-top: 10px;
+    float: left;
+    margin-left: 10%;
+    clear: both;
+}
+
+.bubble-other:first-child {
+    margin-top: 0px;
+}
+
+.bubble-other:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 10px 10px 10px 0px;
+    border-color: transparent #ff2d2d;
+    display: block;
+    width: 0;
+    z-index: 1;
+    margin-top: -10px;
+    left: -10px;
+    top: 50%;
 }
