@@ -87,11 +87,11 @@ window.socket = io();
 				$(e.target).closest('section').addClass('active');
 			});
 
-			//You're probably looking for this to add functionality when the text
-			//changes.
+			// You're probably looking for this to add functionality when the text
+			// changes.
 			editor.on ("change", function () {
 				updatePreview();
-				if (editInProgress) { return false; }
+				if (editInProgress) { editInProgress = false; return false; }
 				window.socket.emit('markdown', editor.getValue());
 			});
 
