@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="styles/bootstrap.css">
         <link rel="stylesheet" href="styles/dropzone.css">
         <link rel="stylesheet" href="styles/editor.css">
+        <link rel="stylesheet" href="styles/custom.css">
     </head>
     <body>
 
@@ -22,36 +23,49 @@
                     </form>
                 </div>
             </div>
+
+            <div class="editortoolbar row">
+
+            </div>
+
             <div class="editorwrap row">
 
-                <!-- Markdown Editor -->
-                <section class="entry-markdown col-md-6 col-xs-6">
-                    <header class="floatingheader">
-                        <small>Markdown</small>
-                        <a class="markdown-help" href="#"><span class="hidden">What is Markdown?</span></a>
-                    </header>
-                    <section class="entry-markdown-content">
-                        <textarea id="entry-markdown">
-                        </textarea>
-                    </section>
-                </section>
+                <!-- Tabs -->
+                <div role="tabpanel">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
+                        <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="markdown">
+                            <!-- Markdown Editor -->
+                            <section class="entry-markdown col-md-6 col-xs-12">
+                                <section class="entry-markdown-content">
+                                    <textarea id="entry-markdown">
+                                    </textarea>
+                                </section>
+                            </section>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="preview">
+                            <!-- Markdown Preview -->
+                            <section class="entry-preview active col-md-6 col-xs-12">
+                                <section class="entry-preview-content">
+                                    <div class="rendered-markdown"></div>
+                                </section>
+                            </section>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Markdown Preview -->
-                <section class="entry-preview active col-md-6 col-xs-6">
-                    <header class="floatingheader">
-                        <small class="pull-left">Preview</small>
-                        <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
-                    </header>
-                    <section class="entry-preview-content">
-                        <div class="rendered-markdown"></div>
-                    </section>
-                </section>
+
 
             </div>
         </div>
 
         <!-- Everything Javascript -->
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+
         <!--<script src="/socket.io/socket.io.js"></script>-->
         <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
         <script src="js/share.uncompressed.js"></script>
