@@ -2,8 +2,6 @@
 //
 // CodeMirror is the only global var we claim
 
-//Hello future me, go to line 7500 to add functionality on text edit.
-
 //TODO implement wrap functions from http://ot-demo.timbaumann.info/
 
 var editor = {};
@@ -141,9 +139,14 @@ var editor = {};
 
 
 
+var docid = location.hash;
+if (docid == '') {
+	console.log("Using default hash");
+	docid = "default";
+}
 var s = new BCSocket(null, {reconnect: true});
 var sjs = new window.sharejs.Connection(s);
-var doc = sjs.get('users', 'sephx');
+var doc = sjs.get('users', docid);
 
 doc.subscribe();
 doc.whenReady(function () {
