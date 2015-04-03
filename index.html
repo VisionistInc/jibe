@@ -1,63 +1,57 @@
-
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Ghosditor Demo</title>
+    <head>
+        <title>Ghosditor Demo</title>
 
-    <!-- Viewport mobile tag for sensible mobile support -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <!-- Viewport mobile tag for sensible mobile support -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <!--STYLES-->
-    <link rel="stylesheet" href="styles/bootstrap.css">
-    <link rel="stylesheet" href="styles/dropzone.css">
-    <link rel="stylesheet" href="styles/editor.css">
-    <!--STYLES END-->
-  </head>
+        <!--Everything CSS-->
+        <link rel="stylesheet" href="styles/bootstrap.css">
+        <link rel="stylesheet" href="styles/dropzone.css">
+        <link rel="stylesheet" href="styles/editor.css">
+    </head>
+    <body>
 
-  <body>
+        <div class="container">
+            <div class="editorwrap row">
 
-<div class="container">
-<div class="editorwrap row">
+                <!-- Markdown Editor -->
+                <section class="entry-markdown col-md-6 col-xs-6">
+                    <header class="floatingheader">
+                        <small>Markdown</small>
+                        <a class="markdown-help" href="#"><span class="hidden">What is Markdown?</span></a>
+                    </header>
+                    <section class="entry-markdown-content">
+                        <textarea id="entry-markdown">
+                        </textarea>
+                    </section>
+                </section>
 
-    <!-- Markdown Editor -->
-    <section class="entry-markdown col-md-6 col-xs-1">
-        <header class="floatingheader">
-            <small>Markdown</small>
-            <a class="markdown-help" href="#"><span class="hidden">What is Markdown?</span></a>
-        </header>
-        <section class="entry-markdown-content">
-<textarea id="entry-markdown">
-</textarea>
-        </section>
-    </section>
-    <!-- Markdown Editor END-->
+                <!-- Markdown Preview -->
+                <section class="entry-preview active col-md-6 col-xs-6">
+                    <header class="floatingheader">
+                        <small class="pull-left">Preview</small>
+                        <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
+                    </header>
+                    <section class="entry-preview-content">
+                        <div class="rendered-markdown"></div>
+                    </section>
+                </section>
 
+            </div>
+        </div>
 
-    <!-- Markdown Preview -->
-    <section class="entry-preview active col-md-6 col-xs-1">
-        <header class="floatingheader">
-            <small class="pull-left">Preview</small>
-            <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
-        </header>
-        <section class="entry-preview-content">
-            <div class="rendered-markdown"></div>
-        </section>
-    </section>
-    <!-- Markdown Preview END-->
-</div>
-</div>
+        <!-- Everything Javascript -->
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <!--<script src="/socket.io/socket.io.js"></script>-->
+        <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
+        <script src="js/share.uncompressed.js"></script>
+        <script src="js/share-codemirror.js"></script>
+        <script src="js/dropzone.js"></script>
+        <script src="js/codemirror.js"></script>
+        <script src="js/showdown.js"></script>
+        <script src="js/ghostdown.js"></script>
 
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <!--SCRIPTS-->
-    <!--<script src="/socket.io/socket.io.js"></script>-->
-    <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
-    <script src="js/share.uncompressed.js"></script>
-    <script src="js/share-codemirror.js"></script>
-    <script src="js/dropzone.js"></script>
-    <script src="js/codemirror.js"></script>
-    <script src="js/showdown.js"></script>
-    <script src="js/ghostdown.js"></script>
-
-    <!--SCRIPTS END-->
-  </body>
+    </body>
 </html>

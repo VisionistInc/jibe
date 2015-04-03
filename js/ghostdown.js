@@ -1,10 +1,5 @@
-// CodeMirror version 3.15
-//
-// CodeMirror is the only global var we claim
 
-//TODO implement wrap functions from http://ot-demo.timbaumann.info/
-
-var editor = {};
+window.editor = {};
 
 (function($, ShowDown, CodeMirror) {
 	"use strict";
@@ -16,7 +11,7 @@ var editor = {};
 
 		//var delay;
 		var converter = new ShowDown.converter();
-		editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
+		window.editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
 			mode: 'markdown',
 			tabMode: 'indent',
 			lineWrapping: true
@@ -25,7 +20,7 @@ var editor = {};
 		// Really not the best way to do things as it includes Markdown formatting along with words
 		function updateWordCount() {
 			var wordCount = document.getElementsByClassName('entry-word-count')[0],
-				editorValue = editor.getValue();
+				editorValue = window.editor.getValue();
 
 			if (editorValue.length) {
 				wordCount.innerHTML = editorValue.match(/\S+/g).length + ' words';
@@ -56,13 +51,13 @@ var editor = {};
 								}),
 
 								// Get markdown
-								editorOrigVal = editor.getValue(),
+								editorOrigVal = window.editor.getValue(),
 								nth = 0,
 								newMarkdown = editorOrigVal.replace(/^(?:\{<(.*?)>\})?!(?:\[([^\n\]]*)\])(:\(([^\n\]]*)\))?$/gim, function (match, i, original){
 									nth++;
 									return (nth === (elemindex+1)) ? (match + "(" + response.path +")") : match;
 								});
-								editor.setValue( newMarkdown );
+								window.editor.setValue( newMarkdown );
 
 							// Set image instead of placeholder
 							holderP.removeClass("dropzone").html('<img src="'+ response.path +'"/>');
@@ -74,7 +69,7 @@ var editor = {};
 
 		function updatePreview() {
 			var preview = document.getElementsByClassName('rendered-markdown')[0];
-			preview.innerHTML = converter.makeHtml(editor.getValue());
+			preview.innerHTML = converter.makeHtml(window.editor.getValue());
 
 			updateImagePlaceholders(preview.innerHTML);
 			updateWordCount();
@@ -86,10 +81,7 @@ var editor = {};
 				$(e.target).closest('section').addClass('active');
 			});
 
-
-			// You're probably looking for this to add functionality when the text
-			// changes.
-			editor.on ("change", function () {
+			window.editor.on ("change", function () {
 				updatePreview();
 			});
 
@@ -138,20 +130,55 @@ var editor = {};
 }(jQuery, Showdown, CodeMirror));
 
 
+// Takes care of text formatting via the use of the button toolbar located on the page
 
-var docid = location.hash;
-if (docid == '') {
-	console.log("Using default hash");
-	docid = "default";
+var Format = Format || {};
+
+Format.bold = function () {
+	Formatter.wrap ('**');
 }
-var s = new BCSocket(null, {reconnect: true});
-var sjs = new window.sharejs.Connection(s);
-var doc = sjs.get('users', docid);
 
-doc.subscribe();
-doc.whenReady(function () {
-  if (!doc.type) doc.create('text');
-  if (doc.type && doc.type.name === 'text') {
-    doc.attachCodeMirror(editor);
-  }
+Format.italics = function () {
+	Formatter.wrap ('*');
+}
+
+Format.code = function () {
+	Formatter.wrap ('`');
+}
+
+Format.wrapper = function () {
+	if (window.editor.somethingSelected ()) {
+		window.editor.replaceSelections (window.editor.getSelections ().map (function (selection) {
+			if (beginsWith(selection, chars) && endsWith (selection, chars)) {
+				return selection.slice (chars.length, selection.length - chars.length);
+			}
+			return chars + selection + chars;
+		}), 'around');
+	} else {
+		var index = window.editor.indexFromPos (window.editor.getCursor ());
+		window.editor.replaceSelection (chars + chars);
+		window.editor.setCursor (window.editor.posFromIndex (index + 2));
+	}
+}
+
+
+// Opens socket, establishes connection to pad based on url location hash
+
+var pad_id = location.hash;
+if (pad_id == '') {
+	// Using default hash
+	pad_id = "The Dark Side";
+}
+
+var socket = new BCSocket (null, { reconnect: true });
+var share  = new window.sharejs.Connection (socket);
+var pad    = share.get ('users', pad_id);
+
+pad.subscribe ();
+
+pad.whenReady (function () {
+  	if (!pad.type) pad.create ('text');
+	if (pad.type && pad.type.name === 'text') {
+		pad.attachCodeMirror (window.editor);
+  	}
 });
