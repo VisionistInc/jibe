@@ -3,7 +3,10 @@
 // CodeMirror is the only global var we claim
 
 //Hello future me, go to line 7500 to add functionality on text edit.
-window.socket = io();
+
+//TODO implement wrap functions from http://ot-demo.timbaumann.info/
+
+var editor = {};
 
 (function($, ShowDown, CodeMirror) {
 	"use strict";
@@ -15,7 +18,7 @@ window.socket = io();
 
 		//var delay;
 		var converter = new ShowDown.converter();
-		var	editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
+		editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
 			mode: 'markdown',
 			tabMode: 'indent',
 			lineWrapping: true
@@ -80,24 +83,16 @@ window.socket = io();
 		}
 
 		$(document).ready(function() {
-			var editInProgress = false;
-
 			$('.entry-markdown header, .entry-preview header').click(function(e) {
 				$('.entry-markdown, .entry-preview').removeClass('active');
 				$(e.target).closest('section').addClass('active');
 			});
 
+
 			// You're probably looking for this to add functionality when the text
 			// changes.
 			editor.on ("change", function () {
 				updatePreview();
-				if (editInProgress) { editInProgress = false; return false; }
-				window.socket.emit('markdown', editor.getValue());
-			});
-
-			window.socket.on('markdown', function (message){
-				editor.setValue (message);
-				editInProgress = true;
 			});
 
 			updatePreview();
@@ -143,3 +138,17 @@ window.socket = io();
 		});
 	});
 }(jQuery, Showdown, CodeMirror));
+
+
+
+var s = new BCSocket(null, {reconnect: true});
+var sjs = new window.sharejs.Connection(s);
+var doc = sjs.get('users', 'sephx');
+
+doc.subscribe();
+doc.whenReady(function () {
+  if (!doc.type) doc.create('text');
+  if (doc.type && doc.type.name === 'text') {
+    doc.attachCodeMirror(editor);
+  }
+});

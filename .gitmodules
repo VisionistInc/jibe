@@ -1,0 +1,3 @@
+[submodule "ot.js"]
+	path = ot.js
+	url = git@github.com:Operational-Transformation/ot.js.git
