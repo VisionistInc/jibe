@@ -18,9 +18,9 @@ io.on('connection', function (socket) {
         console.log('A user has disconnected');
     });
 
-    // Sends message to every user via the 'chat' wire
+    // Sends message to every user in 'chat' room
     socket.on ('chat', function (data) {;
         // console.info (data);
-        io.emit ('chat', data);
+        // io.emit ('chat', data);
     });
 });
