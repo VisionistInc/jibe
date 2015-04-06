@@ -293,19 +293,19 @@ function addMessage(message) {
 
 
 	var chatpane = document.getElementById('chat-pane');
+
+	//stash the height difference
 	var shouldScroll = Math.abs(chatpane.scrollHeight - ($(chatpane).scrollTop() + $(chatpane).height()));
-	console.log(shouldScroll);
 
 	$('.chat-pane').append(chatdiv);
 
+	//decide whether to scroll or not.
 	shouldScroll = shouldScroll < $(chatdiv).height() * 2 + 20
 
-	console.log(shouldScroll);
 	if(shouldScroll) {
     $(chatpane).scrollTop(chatpane.scrollHeight);
   }
 	else {
-	console.log(chatpane.scrollHeight - ($(chatpane).scrollTop() + $(chatpane).height()), "   ", $(chatdiv).height());
 	}
 
 
