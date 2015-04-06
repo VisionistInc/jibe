@@ -223,6 +223,7 @@ pad.whenReady (function () {
 // Chat functionality
 //
 function addMessage(message) {
+	console.log(message);
 	var classes = "chat-message";
 
 	if (message.client == clientID) {
@@ -235,24 +236,16 @@ function addMessage(message) {
 	$('.chat-pane').append(chatdiv);
 }
 
-var chatSocket = new BCSocket('/chat');
-
-chatSocket.onopen   = function() {};
-chatSocket.onmessage = function(message) {
-	console.log(message.data)
-	if (message.data.pad_id === pad_id) {
-		if (message.data.client != clientID) {
-			addMessage(message.data);
-		}
-	}
-};
+var chat = io(window.location.host + '/chat', function() { chat.emit('subscribe', pad_id)});
+chat.emit('subscribe', pad_id);
+chat.on('message', addMessage);
 
 $('#chat-message').keypress (function (event) {
     if (event.keyCode == 13) {
 		message = $('#chat-message').val();
 		message = {pad_id: pad_id, client: clientID, message: message};
 
-		chatSocket.send (message);
+		chat.emit ('message', message);
 		addMessage (message);
 
 		$('#chat-message').val ('');

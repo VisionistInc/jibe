@@ -8,7 +8,7 @@ var backend         = livedb.client (livedb.memory ());
 var share           = sharejs.server.createClient ({ backend: backend });
 var app             = express ();
 var server          = require('http').createServer(app);
-var simpleBC        = require('./simpleBC.js');
+var io              = require('socket.io').listen(server);
 
 //TODO, break this out into a config file.
 var port            = 3000;
@@ -56,10 +56,17 @@ app.use (browserChannel (function (client) {
 /*
  *  Everything chat related
  */
-app.use(simpleBC ({base: "/chat"}, function(data) {
-  this.broadcast(data);
-}));
+var chat = io.of('/chat');
+chat.on('connection', function(socket) {
+  console.log("Someone connected");
 
-app.use(simpleBC ({base: "/cursors"}, function(data) {
-this.broadcast(data);
-}));
+  socket.on('message', function(message) {
+    socket.broadcast.to(message.pad_id).emit('message', message);
+  });
+  socket.on('subscribe', function(pad) {
+    socket.join(pad);
+  });
+});
+
+
+chat.emit("hi");
