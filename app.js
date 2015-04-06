@@ -55,9 +55,20 @@ app.use (browserChannel (function (client) {
 /*
  *  Everything chat related
  */
-app.use (browserChannel ({ base: "/chat" }, function (client) {
-    client.on ('message', function (data) {
-        client.send (data);
+ chatSessions = {};
+app.use (browserChannel ({ base: "/chat" }, function (session) {
+    chatSessions[session.id] = session;
+    session.on ('message', function (data) {
+        for (var id in chatSessions) {
+          if (chatSessions.hasOwnProperty(id)) {
+            chatSessions[id].send(data);
+            console.log(chatSessions[id].send);
+          }
+        }
+        console.log(data);
     });
-    console.log ("Got session: ", client);
+    session.on('close', function(data) {
+      delete chatSessions[session.id];
+      console.log("Session " + session.id + " closing for reason: " + data);
+  });
 }));

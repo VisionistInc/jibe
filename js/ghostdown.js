@@ -209,7 +209,7 @@ var chatSocket = new BCSocket('/chat');
 chatSocket.onopen   = function() {};
 chatSocket.onmessage = function(message) {
 	console.log(message.data)
-	if (message.data.docid === docid) {
+	if (message.data.pad_id === pad_id) {
 		if (message.data.client != clientID) {
 			addMessage(message.data);
 		}
