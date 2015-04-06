@@ -63,6 +63,10 @@ chat.on('connection', function(socket) {
   socket.on('message', function(message) {
     socket.broadcast.to(message.pad_id).emit('message', message);
   });
+  socket.on('typing', function(data) {
+    socket.broadcast.to(data.pad_id).emit('typing', data);
+    console.log(data.client + " is typing on pad " + data.pad_id + ": " + data.value);
+  });
   socket.on('subscribe', function(pad) {
     socket.join(pad);
   });

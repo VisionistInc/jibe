@@ -281,7 +281,6 @@ pad.whenReady (function () {
 // Chat functionality
 //
 function addMessage(message) {
-	console.log(message);
 	var classes = "chat-message";
 
 	if (message.client == clientID) {
@@ -291,22 +290,80 @@ function addMessage(message) {
 	}
 
 	chatdiv = $('<div>').addClass(classes).text(message.message);
+
+
+	var chatpane = document.getElementById('chat-pane');
+	var shouldScroll = Math.abs(chatpane.scrollHeight - ($(chatpane).scrollTop() + $(chatpane).height()));
+	console.log(shouldScroll);
+
 	$('.chat-pane').append(chatdiv);
+
+	shouldScroll = shouldScroll < $(chatdiv).height() * 2 + 20
+
+	console.log(shouldScroll);
+	if(shouldScroll) {
+    $(chatpane).scrollTop(chatpane.scrollHeight);
+  }
+	else {
+	console.log(chatpane.scrollHeight - ($(chatpane).scrollTop() + $(chatpane).height()), "   ", $(chatdiv).height());
+	}
+
+
 }
 
 var chat = io(window.location.host + '/chat', function() { chat.emit('subscribe', pad_id)});
 chat.emit('subscribe', pad_id);
 chat.on('message', addMessage);
 
+var typing = 0;
+var timeout = {};
+
+function clearTyping() {
+	if (typing == 1) {
+		if ($('#chat-message').val() === "") {
+			typing = 0;
+		} else {
+			typing = 2;
+		}
+		sendTyping();
+	}
+}
+
+function sendTyping() {
+	chat.emit ('typing', {
+		pad_id: pad_id,
+		client: clientID,
+		value: typing
+	});
+}
+
 $('#chat-message').keypress (function (event) {
-    if (event.keyCode == 13) {
+  if (event.keyCode == 13) {
 		message = $('#chat-message').val();
-		message = {pad_id: pad_id, client: clientID, message: message};
+		if (message !== "") {
+			message = {pad_id: pad_id, client: clientID, message: message};
 
-		chat.emit ('message', message);
-		addMessage (message);
+			chat.emit ('message', message);
+			addMessage (message);
 
-		$('#chat-message').val ('');
+			typing = 0;
+			sendTyping();
+
+			$('#chat-message').val ('');
+		}
 		return false;
-    }
+	}
+});
+
+//This doesn't count pasting as typing. Not sure why.
+$('#chat-message').on('keyup change', function(event) {
+	console.log("Chat message changed");
+	if (typing != 1) {
+		typing = 1;
+		sendTyping();
+		timeout = setTimeout(clearTyping, 2000);
+	} else {
+		clearTimeout(timeout);
+		timeout = setTimeout(clearTyping, 2000);
+	}
 });
