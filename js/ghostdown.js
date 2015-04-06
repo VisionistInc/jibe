@@ -19,6 +19,11 @@ var clientID = Math.floor((Math.random() * 10000000));
 			tabMode: 'indent',
 			lineWrapping: true
 		});
+		// window.timestamps = CodeMirror.fromTextArea(document.getElementById('entry-timestamp'), {
+		// 	mode: 'markdown',
+		// 	tabMode: 'indent',
+		// 	lineWrapping: true
+		// });
 
 		// Really not the best way to do things as it includes Markdown formatting along with words
 		function updateWordCount() {
@@ -171,24 +176,11 @@ Format.code = function () {
 Format.wrapper = function (characters) {
 	if (window.editor.somethingSelected ()) {
 		var selection = window.editor.getSelection ();
-		var match	  = false;
-		var chars     = ['**', '_', '`'];
-
-		for (var i = 0; i < chars.length; i++) {
-			if (selection.startsWith (chars[i]) && selection.endsWith (chars[i])) {
-				selection = selection.slice (chars[i].length, selection.length - chars[i].length);
-				if (chars[i] == characters) {
-					match = true;
-				}
-				break;
-			}
+		if (selection.startsWith (characters) && selection.endsWith (characters)) {
+			return selection.slice (characters.length, selection.length - characters.length);
 		}
 
-		if (match) {
-			return selection;
-		} else {
-			return (characters + selection + characters);
-		}
+		return (characters + selection + characters);
 	} else {
 		var index = window.editor.indexFromPos (window.editor.getCursor ());
 		window.editor.replaceSelection (characters + characters);
