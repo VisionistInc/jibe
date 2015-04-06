@@ -1,15 +1,16 @@
-
 var express         = require('express');
 var Duplex          = require('stream').Duplex;
 var browserChannel  = require('browserchannel').server;
 var livedb          = require('livedb');
 var sharejs         = require('share');
 var shareCodeMirror = require('share-codemirror');
+var backend         = livedb.client (livedb.memory ());
+var share           = sharejs.server.createClient ({ backend: backend });
+var app             = express ();
 var server          = require('http').createServer(app);
 
-var backend = livedb.client (livedb.memory ());
-var share   = sharejs.server.createClient ({ backend: backend });
-var app     = express ();
+//TODO, break this out into a config file.
+var port            = 3000;
 
 server.listen (port, function () {
     console.info ('Server listening at port %d', port);
