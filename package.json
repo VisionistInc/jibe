@@ -19,7 +19,6 @@
     "browserchannel": "~2.0.0",
     "share": "~0.7.27",
     "istanbul": "~0.3.13",
-    "codemirror": "~5.1.0",
     "jsdom": "~4.1.0",
     "share-codemirror": "~0.1.0"
   },

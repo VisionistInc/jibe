@@ -8,6 +8,7 @@ var backend         = livedb.client (livedb.memory ());
 var share           = sharejs.server.createClient ({ backend: backend });
 var app             = express ();
 var server          = require('http').createServer(app);
+var simpleBC        = require('./simpleBC.js');
 
 //TODO, break this out into a config file.
 var port            = 3000;
@@ -55,20 +56,10 @@ app.use (browserChannel (function (client) {
 /*
  *  Everything chat related
  */
- chatSessions = {};
-app.use (browserChannel ({ base: "/chat" }, function (session) {
-    chatSessions[session.id] = session;
-    session.on ('message', function (data) {
-        for (var id in chatSessions) {
-          if (chatSessions.hasOwnProperty(id)) {
-            chatSessions[id].send(data);
-            console.log(chatSessions[id].send);
-          }
-        }
-        console.log(data);
-    });
-    session.on('close', function(data) {
-      delete chatSessions[session.id];
-      console.log("Session " + session.id + " closing for reason: " + data);
-  });
+app.use(simpleBC ({base: "/chat"}, function(data) {
+  this.broadcast(data);
+}));
+
+app.use(simpleBC ({base: "/cursors"}, function(data) {
+this.broadcast(data);
 }));
