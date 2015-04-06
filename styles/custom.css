@@ -17,8 +17,6 @@ html, body {
     height: 100%;
 }
 
-
-
 .editortoolbar {
     margin-top: 18px;
     margin-bottom: -2.5px;
@@ -36,10 +34,8 @@ html, body {
 }
 
 
-
-
 /*
- *  All chat based styles
+ *  All chat-based styles
  */
 
 div.chat-container {
@@ -49,6 +45,8 @@ div.chat-container {
 div.chat-pane {
     height: 88%;
     width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 div.chat-input {
@@ -64,13 +62,12 @@ div.chat-input > textarea {
     margin: auto;
     margin-top: 8px;
     font-size: 16px;
-
 }
 
 /* Every message 'bubble' gets this */
 div.chat-message {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 16px;
+    /*font-weight: bold;*/
     color: white;
     padding: 5px 10px 7.5px 10px;
 }
@@ -80,13 +77,13 @@ div.chat-message {
     display: block;
     position: relative;
     background: #57b6ff;
-    min-height: 3.5%;
+    min-height: 3%;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
     margin-top: 10px;
     float: right;
-    margin-left: 10%;
+    margin-right: 10px;
     clear: both;
 }
 
@@ -94,18 +91,8 @@ div.chat-message {
     margin-top: 0px;
 }
 
-.bubble-mine:after {
-    content: '';
-    position: absolute;
-    border-style: solid;
-    border-width: 10px 0 10px 10px;
-    border-color: transparent #57b6ff;
-    display: block;
-    width: 0;
-    z-index: 1;
-    margin-top: -10px;
-    right: -10px;
-    top: 50%;
+.bubble-mine:last-child {
+    margin-bottom: 15px;
 }
 
 .bubble-other {
@@ -119,24 +106,10 @@ div.chat-message {
     border-radius: 4px;
     margin-top: 10px;
     float: left;
-    margin-left: 10%;
+    margin-left: 0%;
     clear: both;
 }
 
 .bubble-other:first-child {
     margin-top: 0px;
-}
-
-.bubble-other:after {
-    content: '';
-    position: absolute;
-    border-style: solid;
-    border-width: 10px 10px 10px 0px;
-    border-color: transparent #ff2d2d;
-    display: block;
-    width: 0;
-    z-index: 1;
-    margin-top: -10px;
-    left: -10px;
-    top: 50%;
 }

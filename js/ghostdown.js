@@ -195,9 +195,9 @@ function addMessage(message) {
 	var classes = "chat-message";
 
 	if (message.client == clientID) {
-		classes += " bubble-mine";
+		classes += " bubble-mine animated bounceIn";
 	} else {
-		classes += " bubble-other";
+		classes += " bubble-other animated bounceIn";
 	}
 
 	chatdiv = $('<div>').addClass(classes).text(message.message);
