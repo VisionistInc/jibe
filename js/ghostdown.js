@@ -173,13 +173,17 @@ Format.code = function () {
 	Format.replace (Format.mlWrapper ('`', '```'));
 }
 
+/*
+ * wraps the selection in the characters specified.
+ * also handles the multi-line case, wrapping each individual line in said
+ * characters.
+ */
 Format.wrapper = function (characters) {
 	if (window.editor.somethingSelected ()) {
 		var selection = window.editor.getSelection ('\n');
 
 		//wrap lines individually.
 		if (/\n/.test(selection)) {
-			console.log(selection);
 			return selection.split("\n").map(Format.wrapText(characters)).join("\n");
 		}
 
@@ -195,6 +199,9 @@ Format.wrapper = function (characters) {
 	}
 }
 
+/*
+ * Returns a function that wraps the text in the characters specified.
+ */
 Format.wrapText = function (characters) {
 	return function (selection) {
 		if (/^\s*$/.test(selection)) {
@@ -214,7 +221,11 @@ Format.wrapText = function (characters) {
 }
 
 
-
+/*
+ * Multiline wrapper. Inserts mlCharacters on new lines at beginning and end of
+ * the selection, or just characters at the beginnign and end of the line if
+ * only one line is selected.
+ */
 Format.mlWrapper = function (characters, mlCharacters) {
 	if (window.editor.somethingSelected()) {
 		var selection = window.editor.getSelection('\n');
@@ -231,8 +242,8 @@ Format.mlWrapper = function (characters, mlCharacters) {
 		else {
 			return Format.wrapper (characters);
 		}
-	}}
-
+	}
+}
 
 /*
  * Ripped out of a stack overvlow thread
@@ -242,7 +253,6 @@ Format.mlWrapper = function (characters, mlCharacters) {
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
-
 
 //
 // Opens socket, establishes connection to pad based on url location hash
