@@ -151,14 +151,9 @@ $('#format-code').click (function () {
 //
 var Format = Format || {};
 
-Format.replace = function (replacement, position_cursor) {
+Format.replace = function (replacement) {
 	position_cursor = typeof position_cursor === "undefined" ? false : true;
-
-	if (!position_cursor) {
-		window.editor.replaceSelection (replacement);
-	} else {
-		console.info ("Sup!");
-	}
+	window.editor.replaceSelection (replacement);
 }
 
 Format.bold = function () {
@@ -196,7 +191,8 @@ Format.wrapper = function (characters) {
 		}
 	} else {
 		var index = window.editor.indexFromPos (window.editor.getCursor ());
-		return chars + chars;
+		window.editor.replaceSelection (characters + characters);
+		window.editor.setCursor (window.editor.posFromIndex (index + 2));
 	}
 }
 

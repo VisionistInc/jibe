@@ -64,44 +64,38 @@ div.chat-message {
     padding: 5px 10px 7.5px 10px;
 }
 
-.bubble-mine {
+.bubble-mine,
+.bubble-other {
     max-width: 70%;
     display: block;
     position: relative;
-    background: #57b6ff;
     min-height: 3%;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
     margin-top: 10px;
-    float: right;
+}
+
+.bubble-mine {
+    background: #57b6ff;
     margin-right: 10px;
+    float: right;
     clear: both;
-}
-
-.bubble-mine:first-child {
-    margin-top: 0px;
-}
-
-.bubble-mine:last-child {
-    margin-bottom: 15px;
 }
 
 .bubble-other {
-    max-width: 70%;
-    display: block;
-    position: relative;
     background: #ff2d2d;
-    min-height: 3.5%;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    margin-top: 10px;
+    margin-left: 10px;
     float: left;
-    margin-left: 0%;
     clear: both;
 }
 
+.bubble-mine:first-child,
 .bubble-other:first-child {
     margin-top: 0px;
+}
+
+.bubble-mine:last-child,
+.bubble-other:last-child {
+    margin-bottom: 15px;
 }
