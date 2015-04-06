@@ -281,6 +281,7 @@ pad.whenReady (function () {
 // Chat functionality
 //
 function addMessage(message) {
+	$("#typing-" + message.client).remove();
 	var classes = "chat-message";
 
 	if (message.client == clientID) {
@@ -311,9 +312,20 @@ function addMessage(message) {
 
 }
 
+function addTyping(data) {
+	$("#typing-" + data.client).remove();
+	if (data.value == 1) {
+		var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " is typing");
+		$('.typing-notify').append(typing);
+	} else if (data.value == 2) { var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " has entered text");
+		$('.typing-notify').append(typing);
+	}
+}
+
 var chat = io(window.location.host + '/chat', function() { chat.emit('subscribe', pad_id)});
 chat.emit('subscribe', pad_id);
 chat.on('message', addMessage);
+chat.on('typing', addTyping);
 
 var typing = 0;
 var timeout = {};
