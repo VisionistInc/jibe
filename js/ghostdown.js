@@ -133,35 +133,70 @@ var clientID = Math.floor((Math.random() * 10000000));
 }(jQuery, Showdown, CodeMirror));
 
 
+$('#format-bold').click (function () {
+	Format.bold ();
+});
+
+$('#format-italic').click (function () {
+	Format.italic ();
+});
+
+$('#format-code').click (function () {
+	Format.code ();
+});
+
+
 //
 // Takes care of text formatting via the use of the button toolbar located on the page
 //
 var Format = Format || {};
 
+Format.replace = function (replacement, position_cursor) {
+	position_cursor = typeof position_cursor === "undefined" ? false : true;
+
+	if (!position_cursor) {
+		window.editor.replaceSelection (replacement);
+	} else {
+		console.info ("Sup!");
+	}
+}
+
 Format.bold = function () {
-	Formatter.wrap ('**');
+	Format.replace (Format.wrapper ('**'));
 }
 
 Format.italic = function () {
-	Formatter.wrap ('*');
+	Format.replace (Format.wrapper ('*'));
 }
 
 Format.code = function () {
-	Formatter.wrap ('`');
+	Format.replace (Format.wrapper ('`'));
 }
 
-Format.wrapper = function () {
+Format.wrapper = function (characters) {
 	if (window.editor.somethingSelected ()) {
-		window.editor.replaceSelections (window.editor.getSelections ().map (function (selection) {
-			if (beginsWith(selection, chars) && endsWith (selection, chars)) {
-				return selection.slice (chars.length, selection.length - chars.length);
+		var selection = window.editor.getSelection ();
+		var match	  = false;
+		var chars     = ['**', '*', '`'];
+
+		for (var i = 0; i < chars.length; i++) {
+			if (selection.startsWith (chars[i]) && selection.endsWith (chars[i])) {
+				selection = selection.slice (chars[i].length, selection.length - chars[i].length);
+				if (chars[i] == characters) {
+					match = true;
+				}
+				break;
 			}
-			return chars + selection + chars;
-		}), 'around');
+		}
+
+		if (match) {
+			return selection;
+		} else {
+			return (characters + selection + characters);
+		}
 	} else {
 		var index = window.editor.indexFromPos (window.editor.getCursor ());
-		window.editor.replaceSelection (chars + chars);
-		window.editor.setCursor (window.editor.posFromIndex (index + 2));
+		return chars + chars;
 	}
 }
 

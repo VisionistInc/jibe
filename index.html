@@ -16,11 +16,10 @@
     <body>
 
         <div class="container">
-
             <div class="editorwrap row">
 
                 <!-- Tabs -->
-                <div class="column col-md-9">
+                <div class="column col-md-8 col-sm-7">
                     <div role="tabpanel">
                         <ul class="nav nav-tabs" role="tablist">
                             <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
@@ -31,13 +30,13 @@
                                 <!-- Toolbar -->
                                 <div class="editortoolbar row">
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button type="button" class="btn btn-default">
+                                        <button id="format-bold" type="button" class="btn btn-default">
                                             <span class="glyphicon glyphicon-bold" aria-hidden="true"></span>
                                         </button>
-                                        <button type="button" class="btn btn-default">
+                                        <button id="format-italic" type="button" class="btn btn-default">
                                             <span class="glyphicon glyphicon-italic" aria-hidden="true"></span>
                                         </button>
-                                        <button type="button" class="btn btn-default">
+                                        <button id="format-code" type="button" class="btn btn-default">
                                             <span class="glyphicon glyphicon-barcode" aria-hidden="true"></span>
                                         </button>
                                     </div>
@@ -67,7 +66,7 @@
                 </div>
 
                 <!-- Chat -->
-                <div class="column col-md-3">
+                <div class="column col-md-4 col-sm-5">
                     <div class="chat-container" data-spy="affix">
                         <div class="chat-pane">
                             <div class="chat-message bubble-other">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse volutpat arcu id mattis commodo. Fusce in risus ultrices, gravida tellus a, facilisis nunc.</div>
@@ -79,7 +78,6 @@
                 </div>
 
             </div>
-
         </div>
 
         <!-- Everything Javascript -->
