@@ -170,23 +170,79 @@ Format.italic = function () {
 }
 
 Format.code = function () {
-	Format.replace (Format.wrapper ('`'));
+	Format.replace (Format.mlWrapper ('`', '```'));
 }
 
 Format.wrapper = function (characters) {
 	if (window.editor.somethingSelected ()) {
-		var selection = window.editor.getSelection ();
-		if (selection.startsWith (characters) && selection.endsWith (characters)) {
-			return selection.slice (characters.length, selection.length - characters.length);
+		var selection = window.editor.getSelection ('\n');
+
+		//wrap lines individually.
+		if (/\n/.test(selection)) {
+			console.log(selection);
+			return selection.split("\n").map(Format.wrapText(characters)).join("\n");
 		}
 
-		return (characters + selection + characters);
-	} else {
+		//if there's not multiple lines, just deal with the one.
+		else {
+			return Format.wrapText(characters)(selection);
+		}
+	}
+	else {
 		var index = window.editor.indexFromPos (window.editor.getCursor ());
 		window.editor.replaceSelection (characters + characters);
 		window.editor.setCursor (window.editor.posFromIndex (index + 2));
 	}
 }
+
+Format.wrapText = function (characters) {
+	return function (selection) {
+		if (/^\s*$/.test(selection)) {
+			return selection;
+		}
+		else { console.log("'", selection, "'"); }
+		//Regex that picks apart the different pieces of the format.
+		var re = new RegExp("(.*)" + escapeRegExp(characters) + "(.*)" +
+				escapeRegExp(characters) + "(.*)");
+		//test if the format is already applied:
+		if (re.test(selection)) {
+			return re.exec(selection).slice(1, 4).join("");
+		} else {
+			return (characters + selection + characters);
+		}
+	}
+}
+
+
+
+Format.mlWrapper = function (characters, mlCharacters) {
+	if (window.editor.somethingSelected()) {
+		var selection = window.editor.getSelection('\n');
+		if (/\n/.test(selection)) {
+			var re = new RegExp("([\\s\\S]*)" + escapeRegExp(mlCharacters) + "\\n([\\s\\S]*)\\n" +
+				escapeRegExp(mlCharacters) + "([\\s\\S]*)");
+			if (re.test(selection)) {
+				return re.exec(selection).slice(1, 4).join("");
+			}
+			else {
+				return mlCharacters + "\n" + selection + "\n" + mlCharacters;
+			}
+		}
+		else {
+			return Format.wrapper (characters);
+		}
+	}}
+
+
+/*
+ * Ripped out of a stack overvlow thread
+ * See http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+ * Escapes all the necessary special chars for regex
+ */
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 
 //
 // Opens socket, establishes connection to pad based on url location hash
