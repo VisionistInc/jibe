@@ -161,7 +161,7 @@ Format.bold = function () {
 }
 
 Format.italic = function () {
-	Format.replace (Format.wrapper ('*'));
+	Format.replace (Format.wrapper ('_'));
 }
 
 Format.code = function () {
@@ -172,7 +172,7 @@ Format.wrapper = function (characters) {
 	if (window.editor.somethingSelected ()) {
 		var selection = window.editor.getSelection ();
 		var match	  = false;
-		var chars     = ['**', '*', '`'];
+		var chars     = ['**', '_', '`'];
 
 		for (var i = 0; i < chars.length; i++) {
 			if (selection.startsWith (chars[i]) && selection.endsWith (chars[i])) {
