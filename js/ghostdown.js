@@ -207,7 +207,6 @@ Format.wrapText = function (characters) {
 		if (/^\s*$/.test(selection)) {
 			return selection;
 		}
-		else { console.log("'", selection, "'"); }
 		//Regex that picks apart the different pieces of the format.
 		var re = new RegExp("(.*)" + escapeRegExp(characters) + "(.*)" +
 				escapeRegExp(characters) + "(.*)");
@@ -280,6 +279,21 @@ pad.whenReady (function () {
 //
 // Chat functionality
 //
+function sendChatNotification(message) {
+	title   = "Message from " + message.client;
+	options = {body: message.message}
+	var notification = new Notification(title, options);
+	setTimeout(closeNotification(notification), 5000);
+}
+function closeNotification(notification) {
+	return function () {
+		notification.close();
+	}
+}
+
+$(function() { Notification.requestPermission(); });
+
+
 function addMessage(message) {
 	$("#typing-" + message.client).remove();
 	var classes = "chat-message";
@@ -287,6 +301,7 @@ function addMessage(message) {
 	if (message.client == clientID) {
 		classes += " bubble-mine animated bounceIn";
 	} else {
+		sendChatNotification(message);
 		classes += " bubble-other animated bounceIn";
 	}
 
@@ -308,8 +323,6 @@ function addMessage(message) {
   }
 	else {
 	}
-
-
 }
 
 function addTyping(data) {
@@ -369,7 +382,6 @@ $('#chat-message').keypress (function (event) {
 
 //This doesn't count pasting as typing. Not sure why.
 $('#chat-message').on('keyup change', function(event) {
-	console.log(event);
 	if (event.which != 13) {
 		if (typing != 1) {
 			typing = 1;
