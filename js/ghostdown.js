@@ -369,13 +369,16 @@ $('#chat-message').keypress (function (event) {
 
 //This doesn't count pasting as typing. Not sure why.
 $('#chat-message').on('keyup change', function(event) {
-	console.log("Chat message changed");
-	if (typing != 1) {
-		typing = 1;
-		sendTyping();
-		timeout = setTimeout(clearTyping, 2000);
-	} else {
-		clearTimeout(timeout);
-		timeout = setTimeout(clearTyping, 2000);
+	console.log(event);
+	if (event.which != 13) {
+		if (typing != 1) {
+			typing = 1;
+			sendTyping();
+			timeout = setTimeout(clearTyping, 2000);
+		} else {
+			clearTimeout(timeout);
+			timeout = setTimeout(clearTyping, 2000);
+		}
 	}
+	clearTimeout(timeout);
 });
