@@ -121,7 +121,7 @@ var clientID = Math.floor((Math.random() * 10000000));
 						if (lines[i].text === '') {
 							content += '<div class="blank-div" style="height: ' + lines[i].height + 'px;"></div>';
 						} else {
-							content += '<div class="timestamp" style="height: ' + lines[i].height + 'px;">';
+							content += '<div class="timestamp" style="height: ' + lines[i].height + 'px;" data-author="' + lines[i].author + '">';
 							content += '<p>' + lines[i].timestamp + '</p>';
 							content += '</div>';
 						}
@@ -157,15 +157,15 @@ var clientID = Math.floor((Math.random() * 10000000));
 				}
 
 				drawTimestamps (temp_array);
-
-				//
-				// for (var i = 0; i < window.editor.doc.children[0].lines.length; i++) {
-				// 	window.timestamps.doc.children[0].lines[i].height = window.editor.doc.children[0].lines[i].height;
-				// }
-				//
-				// console.info (window.timestamps.doc.children[0]);
-
 				updatePreview();
+
+				$('.timestamp').hover (
+					function () {
+						console.info ($(this).data ("author"));
+					}, function () {
+						console.info ("Left...");
+					}
+				);
 			});
 
 			updatePreview();
@@ -396,10 +396,8 @@ function addMessage(message) {
 	shouldScroll = shouldScroll < $(chatdiv).height() * 2 + 20
 
 	if(shouldScroll) {
-    $(chatpane).scrollTop(chatpane.scrollHeight);
-  }
-	else {
-	}
+    	$(chatpane).scrollTop(chatpane.scrollHeight);
+  	}
 }
 
 function addTyping(data) {

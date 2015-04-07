@@ -6,6 +6,7 @@ html, body {
 
 .container {
     width: 100%;
+    overflow: visible;
 }
 
 .editortoolbar {
@@ -18,10 +19,16 @@ html, body {
     width: 100%;
     padding-top: 25px;
     padding-left: 10px;
+    overflow: visible;
+
+}
+
+.entry-markdown {
+    margin-top: -18px;
 }
 
 #timestamps-container {
-    width: 95%;
+    width: 92.5%;
     text-align: right;
     position: absolute;
     margin-top: 40px;
@@ -30,7 +37,15 @@ html, body {
 .timestamp {
     color: #ababab;
     filter: inherit;
+    border-right: 2.75px solid #57b6ff;
 }
+
+.timestamp {
+    padding-right: 15px;
+    color: #ababab;
+    filter: inherit;
+}
+
 
 /*
  *  All chat-based styles
@@ -42,7 +57,7 @@ div.chat-container {
 }
 
 div.chat-pane {
-    height: 88%;
+    height: 90%;
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -56,24 +71,22 @@ div.typing-notify {
 }
 
 div.chat-input {
-    height: 111px;
+    height: 100px;
     width: 100%;
-    border-radius: 7.5px;
-    background-color: #dfdfdf;
+    border-top: 1px solid #d0d0d0;
+    margin-top: 25px;
 }
 
-div.chat-input > textarea {
+div.chat-input > input {
     width: 99%;
     resize: none;
     margin: auto;
-    margin-top: 8px;
-    font-size: 16px;
+    margin-top: 15px;
 }
 
 /* Every message 'bubble' gets this */
 div.chat-message {
     font-size: 15px;
-    /*font-weight: bold;*/
     color: white;
     padding: 5px 10px 7.5px 10px;
 }
@@ -99,7 +112,6 @@ div.chat-message {
 
 .bubble-other {
     background: #ff2d2d;
-    margin-left: 10px;
     float: left;
     clear: both;
 }
