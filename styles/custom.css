@@ -20,12 +20,16 @@ html, body {
     padding-left: 10px;
 }
 
-#entry-markdown {
-    margin-top: -15px;
+#timestamps-container {
+    width: 95%;
+    text-align: right;
+    position: absolute;
+    margin-top: 40px;
 }
 
-#entry-timestamp .CodeMirror {
-    text-align: right;
+.timestamp {
+    color: #ababab;
+    filter: inherit;
 }
 
 /*

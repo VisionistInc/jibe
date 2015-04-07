@@ -1,5 +1,7 @@
 
 window.editor = {};
+window.timestamps = {};
+window.lines = [];
 
 //TODO, let users pick their nicknames or get it from a cookie or something.
 var clientID = Math.floor((Math.random() * 10000000));
@@ -18,12 +20,8 @@ var clientID = Math.floor((Math.random() * 10000000));
 			mode: 'markdown',
 			tabMode: 'indent',
 			lineWrapping: true
+
 		});
-		// window.timestamps = CodeMirror.fromTextArea(document.getElementById('entry-timestamp'), {
-		// 	mode: 'markdown',
-		// 	tabMode: 'indent',
-		// 	lineWrapping: true
-		// });
 
 		// Really not the best way to do things as it includes Markdown formatting along with words
 		function updateWordCount() {
@@ -31,7 +29,11 @@ var clientID = Math.floor((Math.random() * 10000000));
 				editorValue = window.editor.getValue();
 
 			if (editorValue.length) {
-				wordCount.innerHTML = editorValue.match(/\S+/g).length + ' words';
+				if (editorValue.match(/\S+/g) === null) {
+					wordCount.innerHTML = '0 words';
+				} else {
+					wordCount.innerHTML = editorValue.match(/\S+/g).length + ' words';
+				}
 			}
 		}
 
@@ -89,7 +91,80 @@ var clientID = Math.floor((Math.random() * 10000000));
 				$(e.target).closest('section').addClass('active');
 			});
 
-			window.editor.on ("change", function () {
+			window.editor.on ("change", function (event) {
+				var cursor = window.editor.getCursor ();
+				var date_format = 'YYYY-MM-DD HH:MI:SS';
+
+				var searchForTimestamp = function (text) {
+					if (window.lines.length > 0) {
+						for (var i = 0; i < window.lines.length; i++) {
+							if (window.lines[i].text === text) {
+								return window.lines[i].timestamp;
+							}
+						}
+					}
+					return new Date ().toFormat (date_format);
+				}
+
+				var getTimestamp = function (text) {
+					if (text === '' || typeof text === 'undefined') {
+						return null;
+					} else {
+						return searchForTimestamp (text);
+					}
+				}
+
+				var drawTimestamps = function (lines) {
+					var content = '';
+
+					for (var i = 0; i < lines.length; i++) {
+						if (lines[i].text === '') {
+							content += '<div class="blank-div" style="height: ' + lines[i].height + 'px;"></div>';
+						} else {
+							content += '<div class="timestamp" style="height: ' + lines[i].height + 'px;">';
+							content += '<p>' + lines[i].timestamp + '</p>';
+							content += '</div>';
+						}
+					}
+
+					$("#timestamps-container").html (content);
+					window.lines = lines;
+				}
+
+				var temp_array = [];
+				var lines = [];
+				for (var i = 0; i < window.editor.doc.children.length; i++) {
+					for (var j = 0; j < window.editor.doc.children[i].lines.length; j++) {
+						lines.push (window.editor.doc.children[i].lines[j])
+					}
+				}
+
+				for (var i = 0; i < lines.length; i++) {
+					var line = lines[i];
+					var object = {
+						line : i,
+						height: line.height,
+						text : line.text,
+						timestamp : getTimestamp (line.text),
+						author : clientID
+					}
+
+					if (cursor.line === i) {
+						object.timestamp = new Date ().toFormat (date_format);
+					}
+
+					temp_array.push (object);
+				}
+
+				drawTimestamps (temp_array);
+
+				//
+				// for (var i = 0; i < window.editor.doc.children[0].lines.length; i++) {
+				// 	window.timestamps.doc.children[0].lines[i].height = window.editor.doc.children[0].lines[i].height;
+				// }
+				//
+				// console.info (window.timestamps.doc.children[0]);
+
 				updatePreview();
 			});
 
@@ -132,6 +207,8 @@ var clientID = Math.floor((Math.random() * 10000000));
 					$('.entry-preview').removeClass('scrolling');
 				}
 			});
+
+			window.editor.focus ();
 
 		});
 	});

@@ -48,22 +48,20 @@
                                         <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
                                     </header>
 
-                                    <!-- <div class="row">
-                                        <!-- Timestamps CodeMirror
-                                        <div class="col-md-3">
-                                            <section class="entry-markdown-content">
-                                                <textarea id="entry-timestamp"></textarea>
-                                            </section>
+                                    <div class="row" id="codemirror-container">
+                                        <!-- Timestamps CodeMirror -->
+                                        <div class="col-md-2">
+                                            <div id="timestamps-container"></div>
                                         </div>
 
-                                        <!-- Markdown CodeMirror
-                                        <div class="col-md-9"> -->
+                                        <!-- Markdown CodeMirror -->
+                                        <div class="col-md-10">
                                             <section class="entry-markdown-content">
                                                 <textarea id="entry-markdown">
                                                 </textarea>
                                             </section>
-                                        <!-- </div>
-                                    </div> -->
+                                        </div>
+                                    </div>
 
                                 </section>
                             </div>
@@ -100,6 +98,7 @@
         <script src="js/bootstrap.min.js"></script>
 
         <script src="/socket.io/socket.io.js"></script>
+        <script src="node_modules/date-utils/lib/date-utils.js"></script>
         <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
         <script src="js/share.uncompressed.js"></script>
         <script src="js/share-codemirror.js"></script>
