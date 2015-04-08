@@ -479,10 +479,9 @@ $('#chat-message').keypress (function (event) {
 				type 		: 'bubble',
 				pad_id  : window.pad_id,
 				client  : clientID,
-				message : message
+				message : message,
         timestamp: new Date()
 			};
-								};
 
 			chat.emit ('message', message);
 			addMessage (message);
