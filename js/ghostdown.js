@@ -1,10 +1,10 @@
 
 window.editor = {};
-window.lines = [];
-window.stamps = io (window.location.host + '/stamps', function() {
-	window.stamps.emit('subscribe', pad_id);
+window.lines  = [];
+window.pad_id = location.hash !== '' ? location.hash : 'The Dark Side';
+window.stamps = io (window.location.host + '/stamps', function () {
+	window.stamps.emit ('subscribe', pad_id);
 });
-
 
 //TODO, let users pick their nicknames or get it from a cookie or something.
 var clientID = Math.floor((Math.random() * 10000000));
@@ -117,6 +117,14 @@ var clientID = Math.floor((Math.random() * 10000000));
 					}
 				}
 
+				var sendToServer = function () {
+					window.stamps.emit ('stamps', {
+						pad_id    : window.pad_id,
+						lines     : window.lines,
+						timestamp : new Date ().toFormat (date_format)
+					});
+				}
+
 				var drawTimestamps = function (lines) {
 					var content = '';
 
@@ -132,6 +140,8 @@ var clientID = Math.floor((Math.random() * 10000000));
 
 					$("#timestamps-container").html (content);
 					window.lines = lines;
+
+
 					window.stamps.emit ('stamps', window.lines);
 				}
 
@@ -340,15 +350,9 @@ function escapeRegExp(str) {
 //
 // Opens socket, establishes connection to pad based on url location hash
 //
-var pad_id = location.hash;
-if (pad_id == '') {
-	// Using default hash
-	pad_id = "The Dark Side";
-}
-
 var socket = new BCSocket (null, { reconnect: true });
 var share  = new window.sharejs.Connection (socket);
-var pad    = share.get ('users', pad_id);
+var pad    = share.get ('users', window.pad_id);
 
 pad.subscribe ();
 
@@ -389,6 +393,8 @@ function addMessage(message) {
 		classes += " bubble-other animated bounceIn";
 	}
 
+	console.info (message.color);
+
 	chatdiv = $('<div>').addClass(classes).text(message.message).css('background-color', message.color);
 
 
@@ -417,17 +423,20 @@ function addTyping(data) {
 	}
 }
 
-var chat = io(window.location.host + '/chat', function() { chat.emit('subscribe', pad_id)});
-chat.emit('subscribe', pad_id);
-chat.on('message', addMessage);
-chat.on('typing', addTyping);
+var chat = io(window.location.host + '/chat', function() {
+	chat.emit('subscribe', window.pad_id)
+});
 
-var typing = 0;
+chat.emit ('subscribe', window.pad_id);
+chat.on   ('message'  , addMessage);
+chat.on   ('typing'   , addTyping);
+
+var typing  = 0;
 var timeout = {};
 
-function clearTyping() {
+function clearTyping () {
 	if (typing == 1) {
-		if ($('#chat-message').val() === "") {
+		if ($('#chat-message').val () === "") {
 			typing = 0;
 		} else {
 			typing = 2;
@@ -436,34 +445,30 @@ function clearTyping() {
 	}
 }
 
-function sendTyping() {
+function sendTyping () {
 	chat.emit ('typing', {
-		pad_id: pad_id,
-		client: clientID,
-		value: typing
+		pad_id : window.pad_id,
+		client : clientID,
+		value  : typing
 	});
-}
-
-function computeColor (string) {
-    var hash = 0;
-    for (var i = 0; i < string.length; i++) {
-        hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    hash = hash % 360;
-    return "hsl(" + hash + ", 35%, 40%)";
 }
 
 $('#chat-message').keypress (function (event) {
   if (event.keyCode == 13) {
 		message = $('#chat-message').val();
 		if (message !== "") {
-			message = {pad_id: pad_id, client: clientID, message: message, color: computeColor (clientID)};
+			message = {
+				type 		: 'bubble',
+				pad_id  : window.pad_id,
+				client  : clientID,
+				message : message
+			};
 
 			chat.emit ('message', message);
 			addMessage (message);
 
 			typing = 0;
-			sendTyping();
+			sendTyping ();
 
 			$('#chat-message').val ('');
 		}
@@ -532,3 +537,12 @@ function checkKeywords() {
 		}
 	}
 }
+
+// Will remove the user from server on disconnect
+window.addEventListener("beforeunload", function (e) {
+	chat.emit ('message', {
+		type 	 : 'disconnect',
+		client : clientID
+	});
+  return null;
+});
