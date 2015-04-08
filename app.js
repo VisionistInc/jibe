@@ -10,6 +10,12 @@ var app             = express ();
 var server          = require('http').createServer(app);
 var io              = require('socket.io').listen(server);
 var please          = require ('pleasejs');
+var es              = require('elasticsearch');
+
+var es_client       = new es.Client({
+  host: 'localhost:9200',
+  log: 'trace'
+});
 
 
 //TODO, break this out into a config file.
@@ -53,6 +59,19 @@ app.use (browserChannel (function (client) {
 
     return share.listen (stream);
 }));
+
+app.get('/chat/:padid/:start', function(req, res) {
+  es_client.search({
+    index: 'visionpad',
+    type: 'chat',
+    size: 50,
+    q: "pad_name:" + req.param('padid'),
+    sort: "timestamp:desc",
+    from: req.param('start')
+
+  }).then(function(results) { res.json(results.hits.hits)});
+});
+
 
 /*
  *  Everything chat related
@@ -114,6 +133,14 @@ chat.on('connection', function(socket) {
     } else {
       ChatRoom.removeUser (message);
     }
+    socket.broadcast.to(message.pad_id).emit('message', message);
+
+    //Add the message to elasticsearch:
+    es_client.create({
+      index: 'visionpad',
+      type:  'chat',
+      body:  message
+    });
   });
 
   socket.on('typing', function(data) {

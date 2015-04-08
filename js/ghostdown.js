@@ -5,9 +5,10 @@ window.pad_id = location.hash !== '' ? location.hash : 'The Dark Side';
 window.stamps = io (window.location.host + '/stamps', function () {
 	window.stamps.emit ('subscribe', pad_id);
 });
+window.chatCount = 0;
 
 //TODO, let users pick their nicknames or get it from a cookie or something.
-var clientID = Math.floor((Math.random() * 10000000));
+var clientID = Math.floor((Math.random() * 10000000)).toString();
 
 (function($, ShowDown, CodeMirror) {
 	"use strict";
@@ -382,14 +383,17 @@ function closeNotification(notification) {
 $(function() { Notification.requestPermission(); });
 
 
-function addMessage(message) {
+function addMessage(message, prepend) {
+	window.chatCount++;
 	$("#typing-" + message.client).remove();
 	var classes = "chat-message";
 
 	if (message.client == clientID) {
 		classes += " bubble-mine animated bounceIn";
 	} else {
-		sendChatNotification(message);
+		if (!prepend) {
+			sendChatNotification(message);
+		}
 		classes += " bubble-other animated bounceIn";
 	}
 
@@ -403,7 +407,11 @@ function addMessage(message) {
 	//stash the height difference
 	var shouldScroll = Math.abs(chatpane.scrollHeight - ($(chatpane).scrollTop() + $(chatpane).height()));
 
-	$('.chat-pane').append(chatdiv);
+	if (prepend) {
+		$('.chat-pane').prepend(chatdiv);
+	} else {
+		$('.chat-pane').append(chatdiv);
+	}
 
 	//decide whether to scroll or not.
 	shouldScroll = shouldScroll < $(chatdiv).height() * 2 + 20
@@ -411,6 +419,16 @@ function addMessage(message) {
 	if(shouldScroll) {
     	$(chatpane).scrollTop(chatpane.scrollHeight);
   	}
+}
+
+function getMoreMessages() {
+	$.get("/chat/" + pad_id + "/" + chatCount, function(data) {
+		for (var ii = 0; ii < data.length; ii++) {
+			console.log(data[ii]._source);
+			addMessage(data[ii]._source, true);
+		}
+	});
+
 }
 
 function addTyping(data) {
@@ -462,7 +480,9 @@ $('#chat-message').keypress (function (event) {
 				pad_id  : window.pad_id,
 				client  : clientID,
 				message : message
+        timestamp: new Date()
 			};
+								};
 
 			chat.emit ('message', message);
 			addMessage (message);
