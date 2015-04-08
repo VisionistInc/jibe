@@ -22,7 +22,8 @@
     "jsdom": "~4.1.0",
     "share-codemirror": "~0.1.0",
     "socket.io": "~1.3.5",
-    "date-utils": "~1.2.16"
+    "date-utils": "~1.2.16",
+    "phpjs": "~1.3.2"
   },
   "devDependencies": {
     "mocha": "1.16.2",

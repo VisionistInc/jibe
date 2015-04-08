@@ -1,7 +1,10 @@
 
 window.editor = {};
-window.timestamps = {};
 window.lines = [];
+window.stamps = io (window.location.host + '/stamps', function() {
+	window.stamps.emit('subscribe', pad_id);
+});
+
 
 //TODO, let users pick their nicknames or get it from a cookie or something.
 var clientID = Math.floor((Math.random() * 10000000));
@@ -129,6 +132,7 @@ var clientID = Math.floor((Math.random() * 10000000));
 
 					$("#timestamps-container").html (content);
 					window.lines = lines;
+					window.stamps.emit ('stamps', window.lines);
 				}
 
 				var temp_array = [];
@@ -167,7 +171,7 @@ var clientID = Math.floor((Math.random() * 10000000));
 					}
 				);
 
-				//check for @keywords. 
+				//check for @keywords.
 				checkKeywords();
 			});
 
@@ -385,7 +389,7 @@ function addMessage(message) {
 		classes += " bubble-other animated bounceIn";
 	}
 
-	chatdiv = $('<div>').addClass(classes).text(message.message);
+	chatdiv = $('<div>').addClass(classes).text(message.message).css('background-color', message.color);
 
 
 	var chatpane = document.getElementById('chat-pane');
@@ -440,11 +444,20 @@ function sendTyping() {
 	});
 }
 
+function computeColor (string) {
+    var hash = 0;
+    for (var i = 0; i < string.length; i++) {
+        hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    hash = hash % 360;
+    return "hsl(" + hash + ", 35%, 40%)";
+}
+
 $('#chat-message').keypress (function (event) {
   if (event.keyCode == 13) {
 		message = $('#chat-message').val();
 		if (message !== "") {
-			message = {pad_id: pad_id, client: clientID, message: message};
+			message = {pad_id: pad_id, client: clientID, message: message, color: computeColor (clientID)};
 
 			chat.emit ('message', message);
 			addMessage (message);

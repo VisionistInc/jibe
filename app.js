@@ -73,4 +73,18 @@ chat.on('connection', function(socket) {
 });
 
 
-chat.emit("hi");
+var stamps = io.of('/stamps');
+stamps.on('connection', function(socket) {
+  console.log('stamps someone connected');
+
+  socket.on('stamps', function(data) {
+    socket.broadcast.to(data.pad_id).emit('stamps', data);
+
+    //TODO store the data in elasticsearch
+  });
+
+  socket.on('subscribe', function(pad) {
+    socket.join(pad);
+  });
+
+})
