@@ -16,9 +16,10 @@
     <body>
 
         <div class="container">
+          <div class="row" style="height: 100%;">
 
                 <!-- Tabs -->
-                <div class="column col-md-9 col-sm-7">
+                <div id="tabs-container" class="col-md-9">
                     <div role="tabpanel">
                         <ul class="nav nav-tabs" role="tablist">
                             <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
@@ -42,7 +43,7 @@
                                 </div>
                                 <hr>
                                 <!-- Markdown Editor -->
-                                <section class="entry-markdown col-md-12 col-xs-12">
+                                <section class="entry-markdown col-md-12">
                                     <header class="floatingheader">
                                         <small class="pull-right"> <span class="entry-word-count js-entry-word-count">77 words</span></small>
                                     </header>
@@ -66,7 +67,7 @@
                             </div>
                             <div role="tabpanel" class="tab-pane" id="preview">
                                 <!-- Markdown Preview -->
-                                <section class="entry-preview active col-md-12 col-xs-12">
+                                <section class="entry-preview active col-md-12">
                                     <section class="entry-preview-content">
                                         <div class="rendered-markdown"></div>
                                     </section>
@@ -77,18 +78,17 @@
                 </div>
 
                 <!-- Chat -->
-                <div class="column col-md-3 col-sm-5">
-                    <div class="chat-container" data-spy="affix">
-                        <div class="chat-pane" id="chat-pane">
-                            <!--<div class="chat-message bubble-other">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse volutpat arcu id mattis commodo. Fusce in risus ultrices, gravida tellus a, facilisis nunc.</div>-->
-                            <div class="typing-notify"></div>
-                        </div>
-                        <div class="chat-input">
-                            <input type="email" class="form-control" id="chat-message" placeholder="Write your message here...">
-                        </div>
+                <div id="chat-container" class="col-md-3">
+                    <div class="row" data-spy="affix">
+                      <div class="col-md-12" id="chat-pane">
+                      </div>
+                      <div class="col-md-12" id="chat-input">
+                        <input type="email" class="form-control" id="chat-message" placeholder="Write your message here...">
+                      </div>
                     </div>
                 </div>
 
+            </div>
         </div>
 
         <!-- Everything Javascript -->
