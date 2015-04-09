@@ -593,5 +593,8 @@ function checkKeywords() {
 
 // Will remove the user from server on disconnect
 window.addEventListener("beforeunload", function (e) {
-	chat.emit ('disconnect', clientID);
+	chat.emit ('disconnect', {
+		client : clientID,
+		pad_id : pad_id
+	});
 });

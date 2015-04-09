@@ -84,7 +84,16 @@ chat.on('connection', function(socket) {
   console.info ("Someone has connected");
 
   var ChatRoom = ChatRoom || {};
-  var colors   = [];
+  ChatRoom.colors = {};
+  ChatRoom.pad_id = '';
+
+  ChatRoom.setPad = function (data, callback) {
+    ChatRoom.pad_id = data.pad_id;
+    if (!(data.pad_id in ChatRoom.colors)) {
+      ChatRoom.colors[data.pad_id] = [];
+    }
+    callback (data);
+  }
 
   ChatRoom.newColor = function (message) {
     return please.make_color ({
@@ -94,54 +103,58 @@ chat.on('connection', function(socket) {
   }
 
   ChatRoom.addUser = function (message) {
-    colors.push ({
+    ChatRoom.colors[ChatRoom.pad_id].push ({
       client: message.client,
       color: ChatRoom.newColor ()
     });
   }
 
   ChatRoom.searchForColor = function (message) {
-    for (var i = 0; i < colors.length; i++) {
-      if (colors[i].client === message.client) {
-        return colors[i].color;
+    for (var i = 0; i < ChatRoom.colors[ChatRoom.pad_id].length; i++) {
+      if (ChatRoom.colors[ChatRoom.pad_id][i].client === message.client) {
+        return ChatRoom.colors[ChatRoom.pad_id][i].color;
       }
     }
   }
 
-  ChatRoom.removeUser = function (clientID) {
-    for (var i = 0; i < colors.length; i++) {
-      if (colors[i].client === clientID) {
-        delete colors[i];
+  ChatRoom.removeUser = function (disconnect) {
+    for (var i = 0; i < ChatRoom.colors[ChatRoom.pad_id].length; i++) {
+      if (ChatRoom.colors[ChatRoom.pad_id][i].client === disconnect.client) {
+        delete ChatRoom.colors[ChatRoom.pad_id][i];
         return;
       }
     }
   }
 
   socket.on('message', function(message) {
-    if (colors.length !== 0) {
-      message.color = ChatRoom.searchForColor (message);
-      if (typeof message.color === 'undefined') {
+    ChatRoom.setPad (message, function (message) {
+      // Processes color assignment for the user
+      if (ChatRoom.colors[ChatRoom.pad_id].length !== 0) {
+        message.color = ChatRoom.searchForColor (message);
+        if (typeof message.color === 'undefined') {
+          ChatRoom.addUser (message);
+          message.color = ChatRoom.searchForColor (message);
+        }
+      } else {
         ChatRoom.addUser (message);
         message.color = ChatRoom.searchForColor (message);
       }
-    } else {
-      ChatRoom.addUser (message);
-      message.color = ChatRoom.searchForColor (message);
-    }
 
-    socket.broadcast.to(message.pad_id).emit('message', message);
+      // Sends the message to everyone except the sender
+      socket.broadcast.to(ChatRoom.pad_id).emit('message', message);
 
-    //Add the message to elasticsearch:
-    es_client.create({
-      index: 'visionpad',
-      type:  'chat',
-      body:  message
+      // Adds the message to ElasticSearch
+      es_client.create({
+        index: 'visionpad',
+        type:  'chat',
+        body:  message
+      });
     });
   });
 
   //remove the user from the list of active colors.
-  socket.on('disconnect', function(clientID) {
-    ChatRoom.removeUser (clientID);
+  socket.on('disconnect', function (disconnect) {
+    ChatRoom.setPad (disconnect, ChatRoom.removeUser);
   });
 
   //re-broadcast typing data to everyone else.
