@@ -448,6 +448,7 @@ $('#chat-pane').scroll(function() {
 			var newHeight = document.getElementById('chat-pane').scrollHeight;
 			$('#chat-pane').scrollTop(newHeight - oldHeight + oldPos);
 		});
+	}
 });
 
 function addTyping(data) {
