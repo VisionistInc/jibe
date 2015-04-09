@@ -1,7 +1,7 @@
 
 window.editor = {};
 window.lines  = [];
-window.pad_id = location.hash !== '' ? location.hash : 'The Dark Side';
+window.pad_id = location.hash !== '' ? location.hash.substring(1) : 'The Dark Side';
 window.stamps = io (window.location.host + '/stamps', function () {
 	window.stamps.emit ('subscribe', pad_id);
 });
@@ -14,6 +14,7 @@ var clientID = Math.floor((Math.random() * 10000000)).toString();
 	"use strict";
 
 	$(function() {
+		getMoreMessages();
 
 		if (!document.getElementById('entry-markdown'))
 			return;
@@ -397,8 +398,6 @@ function addMessage(message, prepend) {
 		classes += " bubble-other animated bounceIn";
 	}
 
-	console.info (message.color);
-
 	chatdiv = $('<div>').addClass(classes).text(message.message).css('background-color', message.color);
 
 
@@ -421,18 +420,35 @@ function addMessage(message, prepend) {
   	}
 }
 
+var allMessages = false;
+var fetchInProgress = false;
+
 //load more chat messages from the server, prepending them to the chat messages.
-function getMoreMessages() {
-	$.get("/chat/" + pad_id + "/" + chatCount, function(data) {
-		for (var ii = 0; ii < data.length; ii++) {
-			console.log(data[ii]._source);
-			addMessage(data[ii]._source, true);
-		}
-	});
+function getMoreMessages(callback) {
+	if (!allMessages && !fetchInProgress) {
+		fetchInProgress = true;
+		$.get("/chat/" + pad_id + "/" + chatCount, function(data) {
+			if (data.length < 50) {
+				allMessages = true;
+			}
+			for (var ii = 0; ii < data.length; ii++) {
+				addMessage(data[ii]._source, true);
+			}
+			fetchInProgress = false;
+			if (callback) callback();
+		});
+	}
 }
 
 $('.chat-pane').scroll(function() {
-	console.log("it works");
+	if ($('.chat-pane').scrollTop() < 250) {
+		var oldHeight = document.getElementById('chat-pane').scrollHeight;
+		var oldPos    = $('.chat-pane').scrollTop();
+		getMoreMessages(function() {
+			var newHeight = document.getElementById('chat-pane').scrollHeight;
+			$('.chat-pane').scrollTop(newHeight - oldHeight + oldPos);
+		});
+	}
 });
 
 function addTyping(data) {
