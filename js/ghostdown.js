@@ -7,8 +7,22 @@ window.stamps = io (window.location.host + '/stamps', function () {
 });
 window.chatCount = 0;
 
+
+function readCookie(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++) {
+      var c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+}
+
 //TODO, let users pick their nicknames or get it from a cookie or something.
-var clientID = Math.floor((Math.random() * 10000000)).toString();
+
+var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).toString();
+
 
 (function($, ShowDown, CodeMirror) {
 	"use strict";

@@ -1,0 +1,37 @@
+<html>
+<head>
+  <title>Login</title>
+  <script type="text/javascript">
+  function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+  }
+
+  window.onload = function() {
+    currentUser = readCookie('username');
+    if (currentUser !== null) {
+      document.getElementById('client_id').value = currentUser;
+    }
+    document.getElementById('client_id_form').onsubmit = function() {
+      var value = document.getElementById('client_id').value;
+      document.cookie="username=" + value + ";";
+      console.log(value);
+      return false;
+    }
+  };
+
+  </script>
+</head>
+<body>
+  <form id="client_id_form">
+    <input type="text" id="client_id"><input type="submit">
+
+  </form>
+</body>
+</html>
