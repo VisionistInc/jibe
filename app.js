@@ -80,11 +80,12 @@ app.get('/chat/:padid/:start', function(req, res) {
 var chat   = io.of('/chat');
 var stamps = io.of('/stamps');
 
+var ChatRoom = ChatRoom || {};
+ChatRoom.colors = {};
+
 chat.on('connection', function(socket) {
   console.info ("Someone has connected");
 
-  var ChatRoom = ChatRoom || {};
-  ChatRoom.colors = {};
   ChatRoom.pad_id = '';
 
   ChatRoom.setPad = function (data, callback) {

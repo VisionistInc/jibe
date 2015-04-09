@@ -26,7 +26,6 @@ div#tabs-container
 
 .timestamp
   color: #ababab
-  border-right: 2.75px solid #57b6ff
   padding-right: 20px
   color: #ababab
   filter: inherit
@@ -35,6 +34,10 @@ div#tabs-container
   text-overflow: ellipsis
   word-break: break-all
   word-wrap: break-word
+
+.timestamp-mine
+  @extend: .timestamp
+  border-right: 2.75px solid #57b6ff
 
 .timestamp > p
   display: inline

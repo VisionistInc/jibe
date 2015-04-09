@@ -188,7 +188,6 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 				}
 
 				Timestamps.drawTimestamps (temp_array);
-				updatePreview();
 
 				$('.timestamp').hover (
 					function () {
@@ -198,14 +197,17 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 					}
 				);
 
-				//check for @keywords.
-				checkKeywords();
+				// Checks for @keywords inside editor
+				checkKeywords ();
+
+				// Updates the markdown Preview panel
+				updatePreview ();
 			});
 
 			updatePreview();
 
 			// Sync scrolling
-			function syncScroll(e) {
+			function syncScroll (e) {
 				// vars
 				var $codeViewport = $(e.target),
 					$previewViewport = $('.entry-preview-content'),
@@ -214,7 +216,7 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 
 					// calc position
 					codeHeight = $codeContent.height() - $codeViewport.height(),
-					previewHeight = $previewContent.height() - $previewViewport.height(),
+					previewHeight = $previewContent.height() - $previewViewport.height();
 					ratio = previewHeight / codeHeight,
 					previewPostition = $codeViewport.scrollTop() * ratio;
 
@@ -406,14 +408,16 @@ function addMessage(message, prepend) {
 
 	if (message.client == clientID) {
 		classes += " bubble-mine animated bounceIn";
+		chatdiv = $('<div>').addClass(classes).text(message.message);
+
 	} else {
 		if (!prepend) {
 			sendChatNotification(message);
 		}
 		classes += " bubble-other animated bounceIn";
+		chatdiv = $('<div>').addClass(classes).text(message.message).css('background-color', message.color);
 	}
 
-	chatdiv = $('<div>').addClass(classes).text(message.message).css('background-color', message.color);
 
 
 	var chatpane = document.getElementById('chat-pane');
@@ -593,9 +597,9 @@ function checkKeywords() {
 }
 
 // Will remove the user from server on disconnect
-window.addEventListener("beforeunload", function (e) {
-	chat.emit ('disconnect', {
-		client : clientID,
-		pad_id : pad_id
-	});
-});
+// window.addEventListener("beforeunload", function (e) {
+// 	chat.emit ('disconnect', {
+// 		client : clientID,
+// 		pad_id : pad_id
+// 	});
+// });
