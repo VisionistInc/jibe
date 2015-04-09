@@ -107,9 +107,9 @@ chat.on('connection', function(socket) {
     }
   }
 
-  ChatRoom.removeUser = function (message) {
+  ChatRoom.removeUser = function (clientID) {
     for (var i = 0; i < colors.length; i++) {
-      if (colors[i].client === message.client) {
+      if (colors[i].client === clientID) {
         delete colors[i];
         return;
       }
@@ -117,22 +117,17 @@ chat.on('connection', function(socket) {
   }
 
   socket.on('message', function(message) {
-    if (message.type === 'bubble') {
-      if (colors.length !== 0) {
-        message.color = ChatRoom.searchForColor (message);
-        if (typeof message.color === 'undefined') {
-          ChatRoom.addUser (message);
-          message.color = ChatRoom.searchForColor (message);
-        }
-      } else {
+    if (colors.length !== 0) {
+      message.color = ChatRoom.searchForColor (message);
+      if (typeof message.color === 'undefined') {
         ChatRoom.addUser (message);
         message.color = ChatRoom.searchForColor (message);
       }
-
-      socket.broadcast.to(message.pad_id).emit('message', message);
     } else {
-      ChatRoom.removeUser (message);
+      ChatRoom.addUser (message);
+      message.color = ChatRoom.searchForColor (message);
     }
+
     socket.broadcast.to(message.pad_id).emit('message', message);
 
     //Add the message to elasticsearch:
@@ -143,11 +138,18 @@ chat.on('connection', function(socket) {
     });
   });
 
+  //remove the user from the list of active colors.
+  socket.on('disconnect', function(clientID) {
+    ChatRoom.removeUser (clientID);
+  });
+
+  //re-broadcast typing data to everyone else.
   socket.on('typing', function(data) {
     socket.broadcast.to(data.pad_id).emit('typing', data);
     console.log(data.client + " is typing on pad " + data.pad_id + ": " + data.value);
   });
 
+  //put the socket in the room for the pad they're on.
   socket.on('subscribe', function(pad) {
     socket.join(pad);
   });

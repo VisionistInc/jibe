@@ -421,6 +421,7 @@ function addMessage(message, prepend) {
   	}
 }
 
+//load more chat messages from the server, prepending them to the chat messages.
 function getMoreMessages() {
 	$.get("/chat/" + pad_id + "/" + chatCount, function(data) {
 		for (var ii = 0; ii < data.length; ii++) {
@@ -428,8 +429,11 @@ function getMoreMessages() {
 			addMessage(data[ii]._source, true);
 		}
 	});
-
 }
+
+$('.chat-pane').scroll(function() {
+	console.log("it works");
+});
 
 function addTyping(data) {
 	$("#typing-" + data.client).remove();
@@ -559,9 +563,5 @@ function checkKeywords() {
 
 // Will remove the user from server on disconnect
 window.addEventListener("beforeunload", function (e) {
-	chat.emit ('message', {
-		type 	 : 'disconnect',
-		client : clientID
-	});
-  return null;
+	chat.emit ('disconnect', clientID);
 });
