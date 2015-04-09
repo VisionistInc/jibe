@@ -109,6 +109,7 @@ chat.on('connection', function(socket) {
     });
   }
 
+  // Searches the colors object for the user
   ChatRoom.searchForColor = function (message) {
     for (var i = 0; i < ChatRoom.colors[ChatRoom.pad_id].length; i++) {
       if (ChatRoom.colors[ChatRoom.pad_id][i].client === message.client) {
@@ -117,6 +118,7 @@ chat.on('connection', function(socket) {
     }
   }
 
+  // Removes the user from the colors object
   ChatRoom.removeUser = function (disconnect) {
     for (var i = 0; i < ChatRoom.colors[ChatRoom.pad_id].length; i++) {
       if (ChatRoom.colors[ChatRoom.pad_id][i].client === disconnect.client) {
@@ -127,6 +129,7 @@ chat.on('connection', function(socket) {
   }
 
   socket.on('message', function(message) {
+    // Sets the pad the sender is in
     ChatRoom.setPad (message, function (message) {
       // Processes color assignment for the user
       if (ChatRoom.colors[ChatRoom.pad_id].length !== 0) {

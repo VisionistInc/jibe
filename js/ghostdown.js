@@ -112,9 +112,11 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 
 			window.editor.on ("change", function (event) {
 				var cursor = window.editor.getCursor ();
-				var date_format = 'YYYY-MM-DD HH:MI:SS';
 
-				var searchForTimestamp = function (text) {
+				var Timestamps = Timestamps || {};
+				Timestamps.format = 'YYYY-MM-DD HH:MI:SS';
+
+				Timestamps.searchForTimestamp = function (text) {
 					if (window.lines.length > 0) {
 						for (var i = 0; i < window.lines.length; i++) {
 							if (window.lines[i].text === text) {
@@ -122,26 +124,26 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 							}
 						}
 					}
-					return new Date ().toFormat (date_format);
+					return new Date ().toFormat (Timestamps.format);
 				}
 
-				var getTimestamp = function (text) {
+				Timestamps.getTimestamp = function (text) {
 					if (text === '' || typeof text === 'undefined') {
 						return null;
 					} else {
-						return searchForTimestamp (text);
+						return Timestamps.searchForTimestamp (text);
 					}
 				}
 
-				var sendToServer = function () {
+				Timestamps.sendToServer = function () {
 					window.stamps.emit ('stamps', {
 						pad_id    : window.pad_id,
 						lines     : window.lines,
-						timestamp : new Date ().toFormat (date_format)
+						timestamp : new Date ().toFormat (Timestamps.format)
 					});
 				}
 
-				var drawTimestamps = function (lines) {
+				Timestamps.drawTimestamps = function (lines) {
 					var content = '';
 
 					for (var i = 0; i < lines.length; i++) {
@@ -155,9 +157,8 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 					}
 
 					$("#timestamps-container").html (content);
+
 					window.lines = lines;
-
-
 					window.stamps.emit ('stamps', window.lines);
 				}
 
@@ -175,18 +176,18 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 						line : i,
 						height: line.height,
 						text : line.text,
-						timestamp : getTimestamp (line.text),
+						timestamp : Timestamps.getTimestamp (line.text),
 						author : clientID
 					}
 
 					if (cursor.line === i) {
-						object.timestamp = new Date ().toFormat (date_format);
+						object.timestamp = new Date ().toFormat (Timestamps.format);
 					}
 
 					temp_array.push (object);
 				}
 
-				drawTimestamps (temp_array);
+				Timestamps.drawTimestamps (temp_array);
 				updatePreview();
 
 				$('.timestamp').hover (
