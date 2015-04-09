@@ -22,6 +22,7 @@
       var value = document.getElementById('client_id').value;
       document.cookie="username=" + value + ";";
       console.log(value);
+      window.location.href='/';  
       return false;
     }
   };
