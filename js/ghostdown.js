@@ -407,9 +407,9 @@ function addMessage(message, prepend) {
 	var shouldScroll = Math.abs(chatpane.scrollHeight - ($(chatpane).scrollTop() + $(chatpane).height()));
 
 	if (prepend) {
-		$('.chat-pane').prepend(chatdiv);
+		$('#chat-pane').prepend(chatdiv);
 	} else {
-		$('.chat-pane').append(chatdiv);
+		$('#chat-pane').append(chatdiv);
 	}
 
 	//decide whether to scroll or not.
@@ -440,13 +440,13 @@ function getMoreMessages(callback) {
 	}
 }
 
-$('.chat-pane').scroll(function() {
-	if ($('.chat-pane').scrollTop() < 250) {
+$('#chat-pane').scroll(function() {
+	if ($('#chat-pane').scrollTop() < 250) {
 		var oldHeight = document.getElementById('chat-pane').scrollHeight;
-		var oldPos    = $('.chat-pane').scrollTop();
+		var oldPos    = $('#chat-pane').scrollTop();
 		getMoreMessages(function() {
 			var newHeight = document.getElementById('chat-pane').scrollHeight;
-			$('.chat-pane').scrollTop(newHeight - oldHeight + oldPos);
+			$('#chat-pane').scrollTop(newHeight - oldHeight + oldPos);
 		});
 	}
 });

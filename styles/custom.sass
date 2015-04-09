@@ -3,73 +3,64 @@ html, body
   height: 100%
   min-height: 100% !important
 
-
 .container
   width: 100%
-  overflow: visible
-  border: 2px solid red
   height: 100%
 
+
+
+div#tabs-container
+  padding: 15px
 
 .editortoolbar
   margin-top: 18px
   margin-bottom: -2.5px
   padding-left: 17.5px
 
-
 .entry-markdown
   margin-top: -18px
 
+/*
+ *  Everything Timestamps
+ */
 
 #timestamps-container
-  width: 92.5%
+  width: 92%
   text-align: right
   position: absolute
   margin-top: 40px
 
-
 .timestamp
   color: #ababab
-  filter: inherit
   border-right: 2.75px solid #57b6ff
-
-
-.timestamp
   padding-right: 15px
   color: #ababab
   filter: inherit
 
 
+/*
+ *  Everything Chat
+ */
 
-//
-//  All chat based styles
-//
-div.chat-container
+.affix
+  width: inherit
+
+div#chat-container,
+div#chat-container .row
   height: 100%
 
-
-div.chat-pane
-  height: 92.5%
-  width: 100%
+div#chat-pane
   overflow-y: auto
   overflow-x: hidden
-  border: 2px solid black
+  height: calc(100% - 65px)
 
-
-div.chat-input
-  height: 8.5%
-  width: 95%
+div#chat-input
   border-top: 1px solid #d0d0d0
-  @media (max-width: 1199px)
-    height: 15%
+  height: 65px
 
-
-
-div.chat-input > input
-  resize: none
+div#chat-input > input
   margin: auto
   margin-top: 15px
-
 
 div.typing-notify
   position: fixed
@@ -77,15 +68,10 @@ div.typing-notify
   width: 100%
   bottom: 140px
 
-
-//
-//  Every message 'bubble' gets this
-//
 div.chat-message
   font-size: 15px
   color: white
   padding: 5px 10px 7.5px 10px
-
 
 .bubble-mine,
 .bubble-other
@@ -98,24 +84,19 @@ div.chat-message
   border-radius: 4px
   margin-top: 10px
 
-
 .bubble-mine
   background: #57b6ff
-  margin-right: 19px
   float: right
   clear: both
-
 
 .bubble-other
   background: #ff2d2d
   float: left
   clear: both
 
-
 .bubble-mine:first-child,
 .bubble-other:first-child
-  margin-top: 25px
-
+  margin-top: 15px
 
 .bubble-mine:last-child,
 .bubble-other:last-child
