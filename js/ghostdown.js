@@ -2,11 +2,15 @@
 window.editor = {};
 window.lines  = [];
 window.pad_id = location.hash !== '' ? location.hash.substring(1) : 'The Dark Side';
+window.chatCount = 0;
+window.is_typing = false;
+
 window.stamps = io (window.location.host + '/stamps', function () {
 	window.stamps.emit ('subscribe', pad_id);
 });
-window.chatCount = 0;
-
+window.chat = io (window.location.host + '/chat', function() {
+	window.chat.emit('subscribe', window.pad_id)
+});
 
 function readCookie(name) {
   var nameEQ = name + "=";
@@ -23,7 +27,6 @@ function readCookie(name) {
 
 var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).toString();
 
-
 (function($, ShowDown, CodeMirror) {
 	"use strict";
 
@@ -39,7 +42,6 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 			mode: 'markdown',
 			tabMode: 'indent',
 			lineWrapping: true
-
 		});
 
 		// Really not the best way to do things as it includes Markdown formatting along with words
@@ -110,9 +112,19 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 				$(e.target).closest('section').addClass('active');
 			});
 
+			window.editor.on ('keyup', function (event) {
+				var cursor = window.editor.getCursor ();
+				if (window.editor.getLine (cursor.line) !== '') {
+					window.chat.emit ('active', {
+						pad_id : window.pad_id,
+						client : clientID,
+						line  : cursor.line
+					});
+				}
+			});
+
 			window.editor.on ("change", function (event) {
 				var cursor = window.editor.getCursor ();
-
 				var Timestamps = Timestamps || {};
 				Timestamps.format = 'YYYY-MM-DD HH:MI:SS';
 
@@ -150,7 +162,7 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 						if (lines[i].text === '') {
 							content += '<div class="blank-div" style="height: ' + lines[i].height + 'px;"></div>';
 						} else {
-							content += '<div class="timestamp" style="height: ' + lines[i].height + 'px;" data-author="' + lines[i].author + '">';
+							content += '<div class="timestamp-mine" style="height: ' + lines[i].height + 'px;" data-line="' + i + '">';
 							content += '<p>' + lines[i].timestamp + '</p>';
 							content += '</div>';
 						}
@@ -187,6 +199,7 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 					temp_array.push (object);
 				}
 
+				console.info (window.editor.getLine (cursor.line));
 				Timestamps.drawTimestamps (temp_array);
 
 				$('.timestamp').hover (
@@ -366,9 +379,9 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-//
-// Opens socket, establishes connection to pad based on url location hash
-//
+/*
+ * Opens socket, establishes connection to pad based on url location hash
+ */
 var socket = new BCSocket (null, { reconnect: true });
 var share  = new window.sharejs.Connection (socket);
 var pad    = share.get ('users', window.pad_id);
@@ -382,10 +395,9 @@ pad.whenReady (function () {
   	}
 });
 
-
-//
-// Chat functionality
-//
+/*
+ * Chat functionality
+ */
 function sendChatNotification(message) {
 	title   = "Message from " + message.client;
 	options = {body: message.message}
@@ -417,8 +429,6 @@ function addMessage(message, prepend) {
 		classes += " bubble-other animated bounceIn";
 		chatdiv = $('<div>').addClass(classes).text(message.message).css('background-color', message.color);
 	}
-
-
 
 	var chatpane = document.getElementById('chat-pane');
 
@@ -471,12 +481,14 @@ $('#chat-pane').scroll(function() {
 });
 
 function addTyping(data) {
-	$("#typing-" + data.client).remove();
+	// $("#typing-" + data.client).remove();
+	$("#typing-notify").empty();
+
 	if (data.value == 1) {
-		var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " is typing");
-		$('.typing-notify').append(typing);
+		var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " is typing...");
+		$('#typing-notify').html(typing);
 	} else if (data.value == 2) { var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " has entered text");
-		$('.typing-notify').append(typing);
+		$('#typing-notify').html(typing);
 	}
 }
 
@@ -484,9 +496,9 @@ var chat = io(window.location.host + '/chat', function() {
 	chat.emit('subscribe', window.pad_id)
 });
 
-chat.emit ('subscribe', window.pad_id);
-chat.on   ('message'  , addMessage);
-chat.on   ('typing'   , addTyping);
+window.chat.emit ('subscribe', window.pad_id);
+window.chat.on   ('message'  , addMessage);
+window.chat.on   ('typing'   , addTyping);
 
 var typing  = 0;
 var timeout = {};
@@ -503,12 +515,18 @@ function clearTyping () {
 }
 
 function sendTyping () {
-	chat.emit ('typing', {
+	window.chat.emit ('typing', {
 		pad_id : window.pad_id,
 		client : clientID,
-		value  : typing
+		value  : typing,
 	});
 }
+
+$('#chat-message').keyup (function (event) {
+	if ($(this).val () === '') {
+		setTimeout(clearTyping, 1000);
+	}
+});
 
 $('#chat-message').keypress (function (event) {
   if (event.keyCode == 13) {
@@ -522,13 +540,11 @@ $('#chat-message').keypress (function (event) {
         timestamp: new Date()
 			};
 
-			chat.emit ('message', message);
+			window.chat.emit ('message', message);
 			addMessage (message);
 
-			typing = 0;
-			sendTyping ();
-
 			$('#chat-message').val ('');
+			setTimeout(clearTyping, 1000);
 		}
 		return false;
 	}
@@ -596,6 +612,9 @@ function checkKeywords() {
 	}
 }
 
+/*
+ *	Taken out because chat bubble colors would get mixed up
+ */
 // Will remove the user from server on disconnect
 // window.addEventListener("beforeunload", function (e) {
 // 	chat.emit ('disconnect', {

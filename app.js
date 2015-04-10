@@ -37,7 +37,7 @@ app.use (browserChannel (function (client) {
     };
 
     stream._read = function () {
-        // Nothing special here; just reading from the stream...
+
     };
 
     stream.headers = client.headers;
@@ -80,72 +80,111 @@ app.get('/chat/:padid/:start', function(req, res) {
 var chat   = io.of('/chat');
 var stamps = io.of('/stamps');
 
-var ChatRoom = ChatRoom || {};
-ChatRoom.colors = {};
+var Pad = Pad || {};
+Pad.colors = {};
+Pad.active_lines = {};
 
 chat.on('connection', function(socket) {
   console.info ("Someone has connected");
+  Pad.pad_id = '';
 
-  ChatRoom.pad_id = '';
-
-  ChatRoom.setPad = function (data, callback) {
-    ChatRoom.pad_id = data.pad_id;
-    if (!(data.pad_id in ChatRoom.colors)) {
-      ChatRoom.colors[data.pad_id] = [];
-    }
-    callback (data);
-  }
-
-  ChatRoom.newColor = function (message) {
+  // Creates a new color by PleaseJS
+  Pad.newColor = function (message) {
     return please.make_color ({
       saturation : 1.0,
       value      : 0.8
     })[0];
   }
 
-  ChatRoom.addUser = function (message) {
-    ChatRoom.colors[ChatRoom.pad_id].push ({
-      client: message.client,
-      color: ChatRoom.newColor ()
-    });
+  // Sets the pad the user is in before doing anything
+  Pad.setPad = function (data, callback) {
+    if (typeof data.pad_id !== 'undefined') {
+      Pad.pad_id = data.pad_id;
+      if (!(data.pad_id in Pad.colors)) {
+        Pad.colors[data.pad_id] = [];
+      }
+      if (!(data.pad_id in Pad.active_lines)) {
+        Pad.active_lines[data.pad_id] = [];
+      }
+      callback (data);
+    }
+  }
+
+  // Registers the user in server, assigning a color
+  Pad.setUser = function (message) {
+    if (Pad.colors[Pad.pad_id].length !== 0) {
+      var color = Pad.searchForColor (message);
+      if (typeof color === 'undefined') {
+        Pad.colors[Pad.pad_id].push ({
+          client: message.client,
+          color: Pad.newColor ()
+        });
+      }
+    } else {
+      Pad.colors[Pad.pad_id].push ({
+        client: message.client,
+        color: Pad.newColor ()
+      });
+    }
   }
 
   // Searches the colors object for the user
-  ChatRoom.searchForColor = function (message) {
-    for (var i = 0; i < ChatRoom.colors[ChatRoom.pad_id].length; i++) {
-      if (ChatRoom.colors[ChatRoom.pad_id][i].client === message.client) {
-        return ChatRoom.colors[ChatRoom.pad_id][i].color;
+  Pad.searchForColor = function (message) {
+    for (var i = 0; i < Pad.colors[Pad.pad_id].length; i++) {
+      if (Pad.colors[Pad.pad_id][i].client === message.client) {
+        //console.info (Pad.colors[Pad.pad_id][i].color);
+        return Pad.colors[Pad.pad_id][i].color;
       }
     }
   }
 
   // Removes the user from the colors object
-  ChatRoom.removeUser = function (disconnect) {
-    for (var i = 0; i < ChatRoom.colors[ChatRoom.pad_id].length; i++) {
-      if (ChatRoom.colors[ChatRoom.pad_id][i].client === disconnect.client) {
-        delete ChatRoom.colors[ChatRoom.pad_id][i];
+  Pad.removeUser = function (disconnect) {
+    for (var i = 0; i < Pad.colors[Pad.pad_id].length; i++) {
+      if (Pad.colors[Pad.pad_id][i].client === disconnect.client) {
+        delete Pad.colors[Pad.pad_id][i];
         return;
       }
     }
   }
 
-  socket.on('message', function(message) {
-    // Sets the pad the sender is in
-    ChatRoom.setPad (message, function (message) {
-      // Processes color assignment for the user
-      if (ChatRoom.colors[ChatRoom.pad_id].length !== 0) {
-        message.color = ChatRoom.searchForColor (message);
-        if (typeof message.color === 'undefined') {
-          ChatRoom.addUser (message);
-          message.color = ChatRoom.searchForColor (message);
+  Pad.refreshActiveLines = function (data) {
+    if (Pad.active_lines[Pad.pad_id].length !== 0) {
+      var found = false;
+      for (var i = 0; i < Pad.active_lines[Pad.pad_id].length; i++) {
+        if (Pad.active_lines[Pad.pad_id][i].line === data.line) {
+          Pad.active_lines[Pad.pad_id][i].client = data.client;
+          Pad.active_lines[Pad.pad_id][i].color  = Pad.searchForColor (data);
+          found = true;
+          break;
         }
-      } else {
-        ChatRoom.addUser (message);
-        message.color = ChatRoom.searchForColor (message);
       }
 
+      if (!found) {
+        Pad.active_lines[Pad.pad_id].push ({
+          client : data.client,
+          line   : data.line,
+          color  : Pad.searchForColor (data)
+        });
+      }
+    } else {
+      Pad.active_lines[Pad.pad_id].push ({
+        client : data.client,
+        line   : data.line,
+        color  : Pad.searchForColor (data)
+      });
+    }
+  }
+
+  socket.on('message', function(message) {
+    // Sets the pad the sender is in
+    Pad.setPad (message, function (message) {
+      // Processes color assignment for the user
+      Pad.setUser (message);
+      message.color = Pad.searchForColor (message);
+
       // Sends the message to everyone except the sender
-      socket.broadcast.to(ChatRoom.pad_id).emit('message', message);
+      socket.broadcast.to(Pad.pad_id).emit('message', message);
 
       // Adds the message to ElasticSearch
       es_client.create({
@@ -156,18 +195,26 @@ chat.on('connection', function(socket) {
     });
   });
 
-  //remove the user from the list of active colors.
+  // Remove the user from the list of active colors on disconnects
   socket.on('disconnect', function (disconnect) {
-    ChatRoom.setPad (disconnect, ChatRoom.removeUser);
+    Pad.setPad (disconnect, Pad.removeUser);
   });
 
-  //re-broadcast typing data to everyone else.
   socket.on('typing', function(data) {
     socket.broadcast.to(data.pad_id).emit('typing', data);
     console.log(data.client + " is typing on pad " + data.pad_id + ": " + data.value);
   });
 
-  //put the socket in the room for the pad they're on.
+  // Re-broadcast typing data to everyone else
+  socket.on('active', function(data) {
+    Pad.setPad (data, function (data) {
+      Pad.setUser (data);
+      Pad.refreshActiveLines (data);
+      console.info (Pad.active_lines);
+    });
+  });
+
+  // Puts the socket in the room for the pad the users are on
   socket.on('subscribe', function(pad) {
     socket.join(pad);
   });
