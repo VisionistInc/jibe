@@ -61,16 +61,15 @@ app.use (browserChannel (function (client) {
 }));
 
 app.get('/chat/:padid/:start', function(req, res) {
-  console.log(req.param('padid'), req.param('start'));
+  console.log(req.params.padid, req.params.start);
   es_client.search({
     index: 'visionpad',
     ignore_unavailable: true,
     type: 'chat',
     size: 50,
-    q: "pad_id:" + req.param('padid'),
+    q: "pad_id:" + req.params.padid,
     sort: "timestamp:desc",
-    from: req.param('start')
-
+    from: req.params.start
   }).then(function(results) { res.json(results.hits.hits)});
 });
 
