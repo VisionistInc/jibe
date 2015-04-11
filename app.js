@@ -64,6 +64,7 @@ app.get('/chat/:padid/:start', function(req, res) {
   console.log(req.param('padid'), req.param('start'));
   es_client.search({
     index: 'visionpad',
+    ignore_unavailable: true,
     type: 'chat',
     size: 50,
     q: "pad_id:" + req.param('padid'),
