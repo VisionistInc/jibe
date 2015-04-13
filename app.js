@@ -31,22 +31,13 @@ server.listen (port, function () {
 var source = path.join(__dirname, 'sass');
 var destination = path.join(__dirname, 'public/styles');
 
-console.log("source", source);
-console.log("destination", destination);
-
-app.use ('/', sassMiddleware({
+app.use ('/styles', sassMiddleware({
 
     src: source,
     dest: destination,
     debug: true,
     outputStyle: 'compressed'
 }));
-
-app.use (function(req, res, next) {
-    console.log(req.url);
-    console.log(res.get('Content-Type'));
-    next();
-});
 
 app.use ('/node_modules', express.static (path.join(__dirname, '/node_modules')));
 
