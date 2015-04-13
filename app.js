@@ -12,6 +12,9 @@ var io              = require('socket.io').listen(server);
 var please          = require ('pleasejs');
 var es              = require('elasticsearch');
 
+var sassMiddleware = require('node-sass-middleware'),
+    path = require('path');
+
 var es_client       = new es.Client({
   host: 'localhost:9200',
   log: 'trace'
@@ -25,7 +28,30 @@ server.listen (port, function () {
     console.info ('Server listening at port %d', port);
 });
 
-app.use (express.static (__dirname));
+var source = path.join(__dirname, 'sass');
+var destination = path.join(__dirname, 'public/styles');
+
+console.log("source", source);
+console.log("destination", destination);
+
+app.use ('/', sassMiddleware({
+
+    src: source,
+    dest: destination,
+    debug: true,
+    outputStyle: 'compressed'
+}));
+
+app.use (function(req, res, next) {
+    console.log(req.url);
+    console.log(res.get('Content-Type'));
+    next();
+});
+
+app.use ('/node_modules', express.static (path.join(__dirname, '/node_modules')));
+
+app.use (express.static (path.join(__dirname, '/public')));
+
 app.use (browserChannel (function (client) {
     var stream = new Duplex ({ objectMode: true });
 
