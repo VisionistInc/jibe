@@ -195,6 +195,10 @@ chat.on('connection', function(socket) {
     });
   });
 
+  socket.on ('content', function (data) {
+
+  });
+
   // Remove the user from the list of active colors on disconnects
   socket.on('disconnect', function (disconnect) {
     Pad.setPad (disconnect, Pad.removeUser);

@@ -1,0 +1,74 @@
+<div class="container-fluid">
+  <div class="row" style="height: 100%;">
+
+        <!-- Tabs -->
+        <div id="tabs-container" class="col-md-9 col-sm-8 col-xs-12">
+            <div role="tabpanel">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
+                    <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="markdown">
+                        <!-- Toolbar -->
+                        <div class="editortoolbar row">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button id="format-bold" type="button" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-bold" aria-hidden="true"></span>
+                                </button>
+                                <button id="format-italic" type="button" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-italic" aria-hidden="true"></span>
+                                </button>
+                                <button id="format-code" type="button" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-barcode" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Markdown Editor -->
+                        <section class="entry-markdown col-md-12">
+                            <header class="floatingheader">
+                                <small class="pull-right"><span class="entry-word-count js-entry-word-count">0 words</span></small>
+                            </header>
+
+                            <div class="row" id="codemirror-container">
+                                <!-- Timestamps CodeMirror -->
+                                <div class="col-md-2 hidden-xs hidden-sm">
+                                    <div id="timestamps-container"></div>
+                                </div>
+
+                                <!-- Markdown CodeMirror -->
+                                <div class="col-md-10">
+                                    <section class="entry-markdown-content">
+                                        <textarea id="entry-markdown">
+                                        </textarea>
+                                    </section>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="preview">
+                        <!-- Markdown Preview -->
+                        <section class="entry-preview active col-md-12">
+                            <section class="entry-preview-content">
+                                <div class="rendered-markdown"></div>
+                            </section>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div id="chat-container" class="col-md-3 col-sm-4 hidden-xs">
+            <div class="row" data-spy="affix">
+              <div class="col-md-12" id="chat-pane">
+              </div>
+              <div class="col-md-12" id="chat-input">
+                <input type="email" class="form-control" id="chat-message" placeholder="Write your message here...">
+              </div>
+            </div>
+        </div>
+
+    </div>
+</div>
