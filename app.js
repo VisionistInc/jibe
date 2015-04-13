@@ -16,6 +16,8 @@ var es_client       = new es.Client({
   log: 'trace'
 });
 
+var path = require('path');
+
 
 //TODO, break this out into a config file.
 var port            = 3000;
