@@ -103,7 +103,6 @@ function Timestamps (data) {
         number++;
       }
     }
-
     return lines;
   }
 

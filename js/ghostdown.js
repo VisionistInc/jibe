@@ -63,6 +63,9 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 			updateWordCount();
 		}
 
+		/*********************************************************************/
+		/**** Modulate: ******************************************************/
+
 		$(document).ready(function() {
 			$('.entry-markdown header, .entry-preview header').click(function(e) {
 				$('.entry-markdown, .entry-preview').removeClass('active');
@@ -86,6 +89,9 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 				format     : 'YYYY-MM-DD HH:MI:SS'
 			});
 
+			/*
+			 *	Fires after every character is finished being typed
+			 */
 			window.editor.on ('keyup', function (event) {
 				var cursor = window.editor.getCursor ();
 				if (window.editor.getLine (cursor.line) !== '') {
@@ -97,6 +103,9 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 				}
 			});
 
+			/*
+			 *	Fires whenever the editor is being modified.
+			 */
 			window.editor.on ("change", function (event) {
 				timestamps.draw ();
 				checkKeywords ();
@@ -105,6 +114,10 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 
 			updatePreview();
 		});
+
+		/*********************************************************************/
+		/*********************************************************************/
+
 	});
 }(jQuery, Showdown, CodeMirror));
 
