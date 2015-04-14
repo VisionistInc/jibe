@@ -15,6 +15,7 @@ var es_client       = new es.Client({host: 'localhost:9200', log: 'trace'});
 var sassMiddleware  = require('node-sass-middleware');
 var path            = require('path');
 var authors         = require('./lib/models/Author.js');
+var chatRoutes      = require('./lib/routes/chat.js');
 
 //TODO, break this out into a config file.
 var port            = 3000;
@@ -69,20 +70,8 @@ app.use (browserChannel (function (client) {
     return share.listen (stream);
 }));
 
-// load the last 50 chat messages when someone joins
-app.get('/chat/:padid/:start', function(req, res) {
-  console.log(req.params.padid, req.params.start);
-  es_client.search({
-    index: 'visionpad',
-    ignore_unavailable: true,
-    type: 'chat',
-    size: 50,
-    q: "pad_id:" + req.params.padid,
-    sort: "timestamp:desc",
-    from: req.params.start
-  }).then(function(results) { res.json(results.hits.hits); });
-});
-
+// chat routes
+app.use('/chat', chatRoutes);
 
 /*
  *  Everything chat related
@@ -149,7 +138,7 @@ chat.on('connection', function(socket) {
 
       // Adds the message to ElasticSearch
       es_client.create({
-        index: 'visionpad',
+        index: 'jibe',
         type:  'chat',
         body:  message
       });
