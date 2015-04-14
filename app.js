@@ -1,17 +1,11 @@
 var express         = require('express');
-var Duplex          = require('stream').Duplex;
-var browserChannel  = require('browserchannel').server;
-var livedb          = require('livedb');
-var sharejs         = require('share');
-var shareCodeMirror = require('share-codemirror');
-var backend         = livedb.client (livedb.memory ());
-var share           = sharejs.server.createClient ({ backend: backend });
 var es              = require('elasticsearch');
 var es_client       = new es.Client({host: 'localhost:9200', log: 'trace'});
 var sassMiddleware  = require('node-sass-middleware');
 var path            = require('path');
 var authors         = require('./lib/models/Author.js');
 var chatRoutes      = require('./lib/routes/chat.js');
+var browserChannelMiddleware = require('./lib/middleware/browserchannel.js');
 var router = express.Router();
 
 /**
@@ -28,10 +22,10 @@ var router = express.Router();
  *     io = require('socket.io').listen(server);
  *
  * var jibe = require('jibe');
- * app.use(jibe(io));
- *
+ * app.use(jibe(io).router);
+ * app.use(jibe.browserChannelMiddleware);
  */
-module.exports = function(io) {
+exports.router = function(io) {
   // chat routes
   router.use('/chat', chatRoutes);
 
@@ -44,49 +38,21 @@ module.exports = function(io) {
     })
   );
 
-  router.use (express.static (path.join(__dirname, '/public')));
-  router.use ('/node_modules', express.static (path.join(__dirname, '/node_modules')));
-
-  router.use (browserChannel (function (client) {
-      var stream = new Duplex ({ objectMode: true });
-
-      stream._write = function (chunk, encoding, callback) {
-        if (client.state !== 'closed') {
-          client.send (chunk);
-        }
-        callback ();
-      };
-
-      stream._read = function () {
-
-      };
-
-      stream.headers = client.headers;
-      stream.remoteAddress = stream.address;
-
-      client.on ('message', function (data) {
-        stream.push (data);
-      });
-
-      stream.on ('error', function (message) {
-        client.stop ();
-      });
-
-      client.on ('close', function (reason) {
-        stream.emit ('close');
-        stream.emit ('end');
-        stream.end ();
-      });
-
-      return share.listen (stream);
-  }));
+  // browser channel for shareJS communication
+  //router.use(browserChannel({base: '/jibe'}, browserChannelFunction));
 
   if(io) {
     attachSockets(io);
   }
 
+  router.use('/node_modules', express.static(path.join(__dirname, '/node_modules')));
+  router.use(express.static(path.join(__dirname, '/public')));
+
   return router;
 };
+
+// app.use(jibe.browserChannelMiddleware)
+exports.browserChannelMiddleware = browserChannelMiddleware;
 
 function attachSockets(io) {
   /*
