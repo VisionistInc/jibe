@@ -14,7 +14,7 @@ Jibe: be in accord; agree. A modern, lightweight, collaborative editing environm
         var app = require('express')(),
             server = require('http').createServer(app),
             io = require('socket.io').listen(server),
-            jibe = require('../app.js');
+            jibe = require('jibe');
 
         // initialize jibe
         app.use('/path/to/jibe', jibe.router(io));
