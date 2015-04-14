@@ -4,5 +4,9 @@ Jibe: be in accord; agree. A modern, lightweight, collaborative editing environm
 ## Installation
 * `npm install`
 * Start [Elasticsearch 1.4+](https://www.elastic.co/downloads/elasticsearch) with default settings
-* `node app.js`
+* `npm start`
 * Go to [http://localhost:3000](http://localhost:3000)
+
+## Integrating with your application via npm
+* `npm install --save VisionistInc/jibe`
+* TODO
