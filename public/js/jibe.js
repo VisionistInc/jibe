@@ -57,7 +57,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
     } else {
       var socket = new BCSocket (null, { reconnect: true });
       var share  = new window.sharejs.Connection (socket);
-      return share.get ('users', room);
+      return share.get (channel, room);
     }
   }
 
@@ -124,7 +124,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
       var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
       var room       = getLocation ();
       var stamps_io  = setSocket ('io', stamps_io, '/stamps', room);
-      var editor_bc  = setSocket ('bc', null, null, room);
+      var editor_bc  = setSocket ('bc', null, 'jibe', room);
       var editor     = setCodeMirror ();
       var converter  = new Showdown.converter ();
       var timestamps = setTimestamps (editor);
@@ -183,7 +183,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
  *  -- plays nice with other jQuery plugins.
  *
  *  Utilization: $('div').jibe ()
- *  ...the rest is magic!
+ *  ...the rest is magic! :-)
  */
 (function ($, Jibe) {
 	$.fn.jibe = function () {
