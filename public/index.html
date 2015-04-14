@@ -1,44 +1,36 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Ghosditor Demo</title>
+  <head>
+    <title>Ghosditor Demo</title>
 
-        <!-- Viewport mobile tag for sensible mobile support -->
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- Viewport mobile tag for sensible mobile support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-        <!--Everything CSS-->
-        <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles/animate.css">
-        <link rel="stylesheet" href="styles/editor.css">
-        <link rel="stylesheet" href="styles/custom.css">
-    </head>
-    <body>
-        <!-- Is replaced by downloaded HTML -->
-        <div id="codemirror-editor"></div>
+    <!--Everything CSS-->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/animate.css">
+    <link rel="stylesheet" href="styles/custom.css">
+    <link rel="stylesheet" href="styles/editor.css">
+  </head>
+  <body>
+    <!-- Is replaced by downloaded HTML -->
+    <div id="codemirror-editor"></div>
 
-        <!-- Node Modules -->
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="node_modules/jquery/dist/jquery.min.js"></script>
-        <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="node_modules/date-utils/lib/date-utils.js"></script>
-        <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
-        <script src="node_modules/showdown/src/showdown.js"></script>
-        <script src="node_modules/share/webclient/share.js"></script>
-        <script src="node_modules/share-codemirror/share-codemirror.js"></script>
-        <script src="node_modules/codemirror/lib/codemirror.js"></script>
-        <script src="node_modules/codemirror/mode/markdown/markdown.js"></script>
+    <!-- Node Modules -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/date-utils/lib/date-utils.js"></script>
+    <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
+    <script src="node_modules/showdown/src/showdown.js"></script>
+    <script src="node_modules/share/webclient/share.js"></script>
+    <script src="node_modules/share-codemirror/share-codemirror.js"></script>
+    <script src="node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="node_modules/codemirror/mode/markdown/markdown.js"></script>
 
-        <script>
-          $.ajax ({
-            url: "/templates/editor.html",
-            type: "GET",
-            success: function (data) {
-              $("#codemirror-editor").html (data);
-            },
-            async: false
-          });
-        </script>
-
-        <script src="js/custom/textformat.js"></script>
-        <script src="js/custom/timestamps.js"></script>
-        <script src="js/ghostdown.js"></script>
+    <!-- Custom Javascripts -->
+    <script src="js/custom/textformat.js"></script>
+    <script src="js/custom/timestamps.js"></script>
+    <script src="js/ghostdown.js"></script>
+  </body>
+</html>

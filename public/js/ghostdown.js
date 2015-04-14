@@ -1,4 +1,21 @@
 
+
+/*
+ *	Download the HTML from the server 
+ */
+$.ajax ({
+	url: "/templates/editor.html",
+	type: "GET",
+	success: function (data) {
+		$("#codemirror-editor").html (data);
+	},
+	async: false
+});
+
+
+
+
+
 window.editor = {};
 window.pad_id = location.hash !== '' ? location.hash.substring(1) : 'The Dark Side';
 
@@ -52,7 +69,6 @@ function Jibe () {
 
 
 
-CodeMirror.defineMIME("text/x-markdown", "markdown");
 
 
 ////////////////////////
