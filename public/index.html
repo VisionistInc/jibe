@@ -17,11 +17,16 @@
         <div id="codemirror-editor"></div>
 
         <!-- Node Modules -->
+        <script src="/socket.io/socket.io.js"></script>
         <script src="node_modules/jquery/dist/jquery.min.js"></script>
         <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="node_modules/date-utils/lib/date-utils.js"></script>
         <script src="node_modules/browserchannel/dist/bcsocket.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
+        <script src="node_modules/showdown/src/showdown.js"></script>
+        <script src="node_modules/share/webclient/share.js"></script>
+        <script src="node_modules/share-codemirror/share-codemirror.js"></script>
+        <script src="node_modules/codemirror/lib/codemirror.js"></script>
+        <script src="node_modules/codemirror/mode/markdown/markdown.js"></script>
 
         <script>
           $.ajax ({
@@ -34,13 +39,6 @@
           });
         </script>
 
-        <script src="js/share.uncompressed.js"></script>
-        <script src="js/share-codemirror.js"></script>
-        <script src="js/codemirror.js"></script>
-        <script src="js/showdown.js"></script>
         <script src="js/custom/textformat.js"></script>
         <script src="js/custom/timestamps.js"></script>
         <script src="js/ghostdown.js"></script>
-
-    </body>
-</html>

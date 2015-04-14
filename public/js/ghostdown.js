@@ -1,15 +1,20 @@
 
 window.editor = {};
 window.pad_id = location.hash !== '' ? location.hash.substring(1) : 'The Dark Side';
-window.chatCount = 0;
-window.is_typing = false;
 
 window.stamps = io (window.location.host + '/stamps', function () {
 	window.stamps.emit ('subscribe', pad_id);
 });
+
+
+window.chatCount = 0;
+window.is_typing = false;
 window.chat = io (window.location.host + '/chat', function() {
 	window.chat.emit('subscribe', window.pad_id)
 });
+
+
+
 
 function readCookie(name) {
   var nameEQ = name + "=";
@@ -28,9 +33,14 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 
 
 
-function Jibe (ShowDown, CodeMirror) {
+
+
+
+
+
+function Jibe () {
 	if (document.getElementById ('entry-markdown')) {
-		this.converter = new ShowDown.converter ();
+		this.converter = new Showdown.converter ();
 
 
 
@@ -42,21 +52,18 @@ function Jibe (ShowDown, CodeMirror) {
 
 
 
+CodeMirror.defineMIME("text/x-markdown", "markdown");
 
 
+////////////////////////
 
-
-(function($, ShowDown, CodeMirror) {
-	"use strict";
-
-	$(function() {
 		getMoreMessages();
 
-		if (!document.getElementById('entry-markdown'))
-			return;
+		// if (!document.getElementById('entry-markdown'))
+		// 	return;
 
 		//var delay;
-		var converter = new ShowDown.converter();
+		var converter = new Showdown.converter();
 		window.editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
 			mode: 'markdown',
 			tabMode: 'indent',
@@ -138,8 +145,9 @@ function Jibe (ShowDown, CodeMirror) {
 		/*********************************************************************/
 		/*********************************************************************/
 
-	});
-}(jQuery, Showdown, CodeMirror));
+/////////////////
+
+
 
 
 /*
