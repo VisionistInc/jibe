@@ -4,7 +4,7 @@
  *	Download the HTML from the server
  */
 $.ajax ({
-	url: "/templates/editor.html",
+	url: "templates/editor.html",
 	type: "GET",
 	success: function (data) {
 		$("#codemirror-editor").html (data);
@@ -237,7 +237,7 @@ var fetchInProgress = false;
 function getMoreMessages(callback) {
 	if (!allMessages && !fetchInProgress) {
 		fetchInProgress = true;
-		$.get("/chat/" + pad_id + "/" + chatCount, function(data) {
+		$.get("chat/" + pad_id + "/" + chatCount, function(data) {
 			if (data.length < 50) {
 				allMessages = true;
 			}
