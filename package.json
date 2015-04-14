@@ -1,11 +1,24 @@
 {
-  "name": "visionpad",
-  "version": "0.0.0",
-  "description": "Lightweight collaborative markdown notepad",
+  "name": "jibe",
+  "version": "0.0.1",
+  "author": "Visionist, Inc.",
+  "description": "Jibe: be in accord; agree. A modern, lightweight, collaborative editing environment",
+  "keywords": ["lightweight", "collaborative", "editor", "markdown"],
+  "homepage": "https://github.com/VisionistInc/jibe",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0",
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VisionistInc/jibe",
+  },
+  "bugs": {
+    "url": "https://github.com/VisionistInc/jibe/issues",
+  },
   "main": "app.js",
-  "author": "Visionist, Inc",
-  "private": true,
-  "license": "undefined",
   "dependencies": {
     "bootstrap": "~3.3.4",
     "browserchannel": "~2.0.0",
