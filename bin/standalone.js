@@ -4,7 +4,7 @@ var app = require('express')(),
     jibe = require('../app.js');
 
 // initialize jibe
-app.use('/jibe', jibe.router(io));
+app.use(jibe.router(io));
 app.use(jibe.browserChannelMiddleware);
 
 // start server TODO config for port
