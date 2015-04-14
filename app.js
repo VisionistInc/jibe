@@ -12,8 +12,9 @@ var io              = require('socket.io').listen(server);
 var please          = require ('pleasejs');
 var es              = require('elasticsearch');
 var es_client       = new es.Client({host: 'localhost:9200', log: 'trace'});
-var sassMiddleware  = require('node-sass-middleware')
+var sassMiddleware  = require('node-sass-middleware');
 var path            = require('path');
+var authors         = require('./lib/models/Author.js');
 
 //TODO, break this out into a config file.
 var port            = 3000;
@@ -68,6 +69,7 @@ app.use (browserChannel (function (client) {
     return share.listen (stream);
 }));
 
+// load the last 50 chat messages when someone joins
 app.get('/chat/:padid/:start', function(req, res) {
   console.log(req.params.padid, req.params.start);
   es_client.search({
@@ -78,7 +80,7 @@ app.get('/chat/:padid/:start', function(req, res) {
     q: "pad_id:" + req.params.padid,
     sort: "timestamp:desc",
     from: req.params.start
-  }).then(function(results) { res.json(results.hits.hits)});
+  }).then(function(results) { res.json(results.hits.hits); });
 });
 
 
@@ -89,80 +91,31 @@ var chat   = io.of('/chat');
 var stamps = io.of('/stamps');
 
 var Pad = Pad || {};
-Pad.colors = {};
 Pad.active_lines = {};
 
 chat.on('connection', function(socket) {
   console.info ("Someone has connected");
   Pad.pad_id = '';
 
-  // Creates a new color by PleaseJS
-  Pad.newColor = function (message) {
-    return please.make_color ({
-      saturation : 1.0,
-      value      : 0.8
-    })[0];
-  }
-
   // Sets the pad the user is in before doing anything
   Pad.setPad = function (data, callback) {
     if (typeof data.pad_id !== 'undefined') {
       Pad.pad_id = data.pad_id;
-      if (!(data.pad_id in Pad.colors)) {
-        Pad.colors[data.pad_id] = [];
-      }
       if (!(data.pad_id in Pad.active_lines)) {
         Pad.active_lines[data.pad_id] = [];
       }
       callback (data);
     }
-  }
+  };
 
-  // Registers the user in server, assigning a color
-  Pad.setUser = function (message) {
-    if (Pad.colors[Pad.pad_id].length !== 0) {
-      var color = Pad.searchForColor (message);
-      if (typeof color === 'undefined') {
-        Pad.colors[Pad.pad_id].push ({
-          client: message.client,
-          color: Pad.newColor ()
-        });
-      }
-    } else {
-      Pad.colors[Pad.pad_id].push ({
-        client: message.client,
-        color: Pad.newColor ()
-      });
-    }
-  }
-
-  // Searches the colors object for the user
-  Pad.searchForColor = function (message) {
-    for (var i = 0; i < Pad.colors[Pad.pad_id].length; i++) {
-      if (Pad.colors[Pad.pad_id][i].client === message.client) {
-        //console.info (Pad.colors[Pad.pad_id][i].color);
-        return Pad.colors[Pad.pad_id][i].color;
-      }
-    }
-  }
-
-  // Removes the user from the colors object
-  Pad.removeUser = function (disconnect) {
-    for (var i = 0; i < Pad.colors[Pad.pad_id].length; i++) {
-      if (Pad.colors[Pad.pad_id][i].client === disconnect.client) {
-        delete Pad.colors[Pad.pad_id][i];
-        return;
-      }
-    }
-  }
-
-  Pad.refreshActiveLines = function (data) {
+  Pad.refreshActiveLines = function (data, author) {
     if (Pad.active_lines[Pad.pad_id].length !== 0) {
       var found = false;
       for (var i = 0; i < Pad.active_lines[Pad.pad_id].length; i++) {
         if (Pad.active_lines[Pad.pad_id][i].line === data.line) {
-          Pad.active_lines[Pad.pad_id][i].client = data.client;
-          Pad.active_lines[Pad.pad_id][i].color  = Pad.searchForColor (data);
+          Pad.active_lines[Pad.pad_id][i].client = author.id;
+          Pad.active_lines[Pad.pad_id][i].color = author.color;
+
           found = true;
           break;
         }
@@ -170,26 +123,26 @@ chat.on('connection', function(socket) {
 
       if (!found) {
         Pad.active_lines[Pad.pad_id].push ({
-          client : data.client,
+          client : author.id,
           line   : data.line,
-          color  : Pad.searchForColor (data)
+          color  : author.color
         });
       }
     } else {
       Pad.active_lines[Pad.pad_id].push ({
-        client : data.client,
+        client : author.id,
         line   : data.line,
-        color  : Pad.searchForColor (data)
+        color  : author.color
       });
     }
-  }
+  };
 
   socket.on('message', function(message) {
     // Sets the pad the sender is in
     Pad.setPad (message, function (message) {
       // Processes color assignment for the user
-      Pad.setUser (message);
-      message.color = Pad.searchForColor (message);
+      var author = authors.getOrCreate(message.client);
+      message.color = author.color;
 
       // Sends the message to everyone except the sender
       socket.broadcast.to(Pad.pad_id).emit('message', message);
@@ -209,7 +162,7 @@ chat.on('connection', function(socket) {
 
   // Remove the user from the list of active colors on disconnects
   socket.on('disconnect', function (disconnect) {
-    Pad.setPad (disconnect, Pad.removeUser);
+    //Pad.setPad (disconnect, Pad.removeUser);
   });
 
   socket.on('typing', function(data) {
@@ -220,8 +173,8 @@ chat.on('connection', function(socket) {
   // Re-broadcast typing data to everyone else
   socket.on('active', function(data) {
     Pad.setPad (data, function (data) {
-      Pad.setUser (data);
-      Pad.refreshActiveLines (data);
+      var author = authors.getOrCreate(data.client);
+      Pad.refreshActiveLines (data, author);
       console.info (Pad.active_lines);
     });
   });
