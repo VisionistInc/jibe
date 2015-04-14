@@ -1,4 +1,4 @@
-window.CodeMirror = (function() {
+CodeMirror = (function() {
 	"use strict";
 
 	// BROWSER SNIFFING

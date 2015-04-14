@@ -26,6 +26,26 @@ function readCookie(name) {
 
 var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).toString();
 
+
+
+function Jibe (ShowDown, CodeMirror) {
+	if (document.getElementById ('entry-markdown')) {
+		this.converter = new ShowDown.converter ();
+
+
+
+
+	} else {
+		return;
+	}
+}
+
+
+
+
+
+
+
 (function($, ShowDown, CodeMirror) {
 	"use strict";
 

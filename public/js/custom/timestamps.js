@@ -40,12 +40,11 @@ function Timestamps (data) {
   this.getTimestamp = function (text) {
     if (text !== '' || typeof text !== 'undefined') {
       if (this.lines.length > 0) {
-        return this.lines.map (function (object) {
-          if (object.text === text) {
-              console.info (object.timestamp);
-              return object.timestamp;
+        for (var i = 0; i < this.lines.length; i++) {
+          if (this.lines[i].text == text) {
+            return this.lines[i].timestamp;
           }
-        });
+        }
       }
       return this.newDate ();
     } else {
@@ -60,7 +59,7 @@ function Timestamps (data) {
     var content = '';
     for (var i = 0; i < lines.length; i++) {
       if (lines[i].text !== '') {
-        content += '<div class="timestamp-mine" style="height: ' + lines[i].height + 'px;" data-line="' + i + '">';
+        content += '<div class="timestamp-mine" style="height: ' + lines[i].height + 'px;">';
         content += '<p>' + lines[i].timestamp + '</p>';
         content += '</div>';
       } else {
@@ -87,10 +86,11 @@ function Timestamps (data) {
     var array  = [];
     var number = 0;
 
+    console.info (instance.codemirror.doc.children);
+
     for (var i = 0; i < instance.codemirror.doc.children.length; i++) {
       for (var j = 0; j < instance.codemirror.doc.children[i].lines.length; j++) {
         var line = instance.codemirror.doc.children[i].lines[j];
-        console.info (cursor.line);
         lines.push ({
 					line      : number,
 					height    : line.height,
