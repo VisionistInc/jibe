@@ -11,13 +11,9 @@ var server          = require('http').createServer(app);
 var io              = require('socket.io').listen(server);
 var please          = require ('pleasejs');
 var es              = require('elasticsearch');
-var es_client       = new es.Client({
-  host: 'localhost:9200',
-  log: 'trace'
-});
-
-var path = require('path');
-
+var es_client       = new es.Client({host: 'localhost:9200', log: 'trace'});
+var sassMiddleware  = require('node-sass-middleware')
+var path            = require('path');
 
 //TODO, break this out into a config file.
 var port            = 3000;
@@ -25,6 +21,15 @@ var port            = 3000;
 server.listen (port, function () {
     console.info ('Server listening at port %d', port);
 });
+
+app.use(
+  sassMiddleware({
+    src: __dirname + '/scss',
+    dest: __dirname + '/public/styles',
+    prefix: '/styles',
+    debug: true,
+  })
+);
 
 app.use (express.static (path.join(__dirname, '/public')));
 app.use ('/node_modules', express.static (path.join(__dirname, '/node_modules')));
