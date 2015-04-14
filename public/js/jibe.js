@@ -66,10 +66,10 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
    */
   function setCodeMirror () {
     return CodeMirror.fromTextArea (document.getElementById ('entry-markdown'), {
-			mode         : 'markdown',
-			tabMode      : 'indent',
-			lineWrapping : true
-		});
+      mode         : 'markdown',
+      tabMode      : 'indent',
+      lineWrapping : true,
+    });
   }
 
   /*
@@ -160,14 +160,18 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
        *  -- sends current line and author to server to timestamp author color coding.
        */
       editor.on ('keyup', function (event) {
-				var cursor = editor.getCursor ();
-				if (editor.getLine (cursor.line) !== '') {
-					// window.chat.emit ('active', {
-					// 	pad_id : window.pad_id,
-					// 	client : clientID,
-					// 	line   : cursor.line
-					// });``
-				}
+        var cursor = editor.getCursor ();
+        if (editor.getLine (cursor.line) !== '') {
+          //
+          // Ignore the following.
+          // This will be fixed as soon as chat becomes modulated into chat.js.
+          //
+          // window.chat.emit ('active', {
+          //   pad_id: window.pad_id,
+          //   client: clientID,
+          //   line: cursor.line
+          // });
+        }
 			});
 
       /*
@@ -182,8 +186,8 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
  *  Sets up scope and protects the jQuery $ sign --
  *  -- plays nice with other jQuery plugins.
  *
- *  Utilization: $('div').jibe ()
- *  ...the rest is magic! :-)
+ *  Utilization: $('div').jibe () ...
+ *  ... you're welcome :-)
  */
 (function ($, Jibe) {
 	$.fn.jibe = function () {
