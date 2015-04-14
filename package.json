@@ -8,15 +8,15 @@
   "licenses": [
     {
       "type": "Apache-2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/VisionistInc/jibe",
+    "url": "https://github.com/VisionistInc/jibe"
   },
   "bugs": {
-    "url": "https://github.com/VisionistInc/jibe/issues",
+    "url": "https://github.com/VisionistInc/jibe/issues"
   },
   "main": "app.js",
   "dependencies": {

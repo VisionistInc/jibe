@@ -121,6 +121,7 @@ var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).
 	});
 }(jQuery, Showdown, CodeMirror));
 
+
 /*
  * Opens socket, establishes connection to pad based on url location hash
  */
