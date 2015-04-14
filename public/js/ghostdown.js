@@ -1,53 +1,5 @@
 
-
-/*
- *	Download the HTML from the server
- */
-$.ajax ({
-	url: "templates/editor.html",
-	type: "GET",
-	success: function (data) {
-		$("#codemirror-editor").html (data);
-	},
-	async: false
-});
-
-
-
-if (document.getElementById ('entry-markdown')) {
-} else {
-	console.info ("Couldn't find #entry-markdown section in document");
-}
-
-
-
-
-function Jibe () {
-	this.converter = new Showdown.converter ();
-
-
-
-
-}
-
-
-
-window.editor = {};
-window.pad_id = location.hash !== '' ? location.hash.substring(1) : 'The Dark Side';
-
-window.stamps = io (window.location.host + '/stamps', function () {
-	window.stamps.emit ('subscribe', pad_id);
-});
-
-
-window.chatCount = 0;
-window.is_typing = false;
-window.chat = io (window.location.host + '/chat', function() {
-	window.chat.emit('subscribe', window.pad_id)
-});
-
-
-
+$('#jibe-container').jibe ();
 
 function readCookie(name) {
   var nameEQ = name + "=";
@@ -59,122 +11,21 @@ function readCookie(name) {
   }
   return null;
 }
-
-//TODO, let users pick their nicknames or get it from a cookie or something.
-
 var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).toString();
+window.pad_id = location.hash !== '' ? location.hash.substring(1) : 'The Dark Side';
 
 
-////////////////////////
-
-		getMoreMessages();
-
-		// if (!document.getElementById('entry-markdown'))
-		// 	return;
-
-		//var delay;
-		var converter = new Showdown.converter();
-		window.editor = CodeMirror.fromTextArea(document.getElementById('entry-markdown'), {
-			mode: 'markdown',
-			tabMode: 'indent',
-			lineWrapping: true
-		});
-
-		// Really not the best way to do things as it includes Markdown formatting along with words
-		function updateWordCount() {
-			var wordCount = document.getElementsByClassName('entry-word-count')[0],
-				editorValue = window.editor.getValue();
-
-			if (editorValue.length) {
-				if (editorValue.match(/\S+/g) === null) {
-					wordCount.innerHTML = '0 words';
-				} else {
-					wordCount.innerHTML = editorValue.match(/\S+/g).length + ' words';
-				}
-			}
-		}
-
-		function updatePreview() {
-			var preview = document.getElementsByClassName('rendered-markdown')[0];
-			preview.innerHTML = converter.makeHtml(window.editor.getValue());
-			updateWordCount();
-		}
-
-		/*********************************************************************/
-		/**** Modulate: ******************************************************/
-
-		$(document).ready(function() {
-			$('.entry-markdown header, .entry-preview header').click(function(e) {
-				$('.entry-markdown, .entry-preview').removeClass('active');
-				$(e.target).closest('section').addClass('active');
-			});
-
-			/*
-			 *	Sets up the CodeMirror editor for text formatting
-			 */
-			var format = new TextFormat ({ codemirror: window.editor });
-			$('#format-bold'  ).click (function () { format.bold ();      });
-			$('#format-code'  ).click (function () { format.monospace (); });
-			$('#format-italic').click (function () { format.italic ();    });
-
-			/*
-			 *	Sets up timestamps to work alonside the CodeMirror editor
-			 */
-			var timestamps = new Timestamps ({
-				container  : '#timestamps-container',
-				codemirror : window.editor,
-				format     : 'YYYY-MM-DD HH:MI:SS'
-			});
-
-			/*
-			 *	Fires after every character is finished being typed
-			 */
-			window.editor.on ('keyup', function (event) {
-				var cursor = window.editor.getCursor ();
-				if (window.editor.getLine (cursor.line) !== '') {
-					window.chat.emit ('active', {
-						pad_id : window.pad_id,
-						client : clientID,
-						line   : cursor.line
-					});
-				}
-			});
-
-			/*
-			 *	Fires whenever the editor is being modified.
-			 */
-			window.editor.on ("change", function (event) {
-				timestamps.draw ();
-				checkKeywords ();
-				updatePreview ();
-			});
-
-			updatePreview();
-		});
-
-		/*********************************************************************/
-		/*********************************************************************/
-
-/////////////////
+//////////////////////////////////////////////////////////////////////////
 
 
-
-
-/*
- * Opens socket, establishes connection to pad based on url location hash
- */
-var socket = new BCSocket (null, { reconnect: true });
-var share  = new window.sharejs.Connection (socket);
-var pad    = share.get ('users', window.pad_id);
-
-pad.subscribe ();
-
-pad.whenReady (function () {
-  	if (!pad.type) pad.create ('text');
-	if (pad.type && pad.type.name === 'text') {
-		pad.attachCodeMirror (window.editor);
-  	}
+//////// CHAT /////////
+window.chatCount = 0;
+window.is_typing = false;
+window.chat = io (window.location.host + '/chat', function() {
+	window.chat.emit('subscribe', window.pad_id)
 });
+
+getMoreMessages();
 
 /*
  * Chat functionality

@@ -86,8 +86,6 @@ function Timestamps (data) {
     var array  = [];
     var number = 0;
 
-    console.info (instance.codemirror.doc.children);
-
     for (var i = 0; i < instance.codemirror.doc.children.length; i++) {
       for (var j = 0; j < instance.codemirror.doc.children[i].lines.length; j++) {
         var line = instance.codemirror.doc.children[i].lines[j];
