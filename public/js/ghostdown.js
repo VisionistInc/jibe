@@ -1,7 +1,7 @@
 
 
 /*
- *	Download the HTML from the server 
+ *	Download the HTML from the server
  */
 $.ajax ({
 	url: "/templates/editor.html",
@@ -13,6 +13,22 @@ $.ajax ({
 });
 
 
+
+if (document.getElementById ('entry-markdown')) {
+} else {
+	console.info ("Couldn't find #entry-markdown section in document");
+}
+
+
+
+
+function Jibe () {
+	this.converter = new Showdown.converter ();
+
+
+
+
+}
 
 
 
@@ -47,28 +63,6 @@ function readCookie(name) {
 //TODO, let users pick their nicknames or get it from a cookie or something.
 
 var clientID = readCookie('username') || Math.floor((Math.random() * 10000000)).toString();
-
-
-
-
-
-
-
-
-function Jibe () {
-	if (document.getElementById ('entry-markdown')) {
-		this.converter = new Showdown.converter ();
-
-
-
-
-	} else {
-		return;
-	}
-}
-
-
-
 
 
 ////////////////////////
