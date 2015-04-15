@@ -45,7 +45,7 @@ exports.router = function(io) {
     attachSockets(io);
   }
 
-  router.use('/node_modules', express.static(path.join(__dirname, '/node_modules')));
+  router.use('/lib', express.static(path.join(__dirname, '/node_modules')));
   router.use(express.static(path.join(__dirname, '/public')));
 
   return router;
