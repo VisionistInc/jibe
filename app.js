@@ -95,18 +95,23 @@ function attachSockets(io) {
       var found = false;
       for (var i = 0; i < room.lines.length; i++) {
         if (room.lines[i].linenumber === data.line) {
-          room.lines[i].author = author;
+
+          // if author changed, let other users know
+          if (room.lines[i].author !== author) {
+            room.lines[i].author = author;
+            socket.to(room.id).emit('active', room.lines[i]);
+          }
+
           found = true;
           break;
         }
       }
 
+      // append the new line, then inform other users in the room
       if (!found) {
         room.appendLine(author, data.line);
+        socket.to(room.id).emit('active', room.lines[room.lines.length-1]);
       }
-
-      // send all room members the line information now
-      socket.to(room.id).emit('active', room.lines);
     });
 
     // Puts the socket in the room for the pad the users are on
