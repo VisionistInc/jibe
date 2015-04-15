@@ -189,13 +189,27 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        */
       editor.on ('keyup', function (event) {
         var cursor = editor.getCursor ();
-        if (editor.getLine (cursor.line) !== '') {
-          editor_io.emit ('change', {
-            pad_id : room,
-            client : client,
-            line   : cursor.line
-          });
-        }
+        var value  = editor.getLine (cursor.line);
+        var height = function () {
+          var number = 0;
+          for (var i = 0; i < editor.doc.children.length; i++) {
+            for (var j = 0; j < editor.doc.children[i].lines.length; j++) {
+              var line = editor.doc.children[i].lines[j];
+              if (cursor.line === number) {
+                return line.height;
+              }
+              number++;
+            }
+          }
+        };
+
+        editor_io.emit ('change', {
+          room   : room,
+          client : client,
+          line   : cursor.line,
+          height : height(),
+          text   : value === '' ? null : value
+        });
       });
 
       editor_io.on ('change', function(data) {
