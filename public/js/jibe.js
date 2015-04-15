@@ -193,6 +193,10 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
         }
       });
 
+      chat.socket.on('active', function(data) {
+        console.log(data);
+      });
+
       /*
        *  Updates the Preview panel.
        */

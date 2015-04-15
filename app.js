@@ -63,16 +63,12 @@ function attachSockets(io) {
   var stamps = io.of('/stamps');
 
   chat.on('connection', function(socket) {
-    console.info ("Someone has connected");
-
-    // is this necessary to have out here?
-    var room;
 
     socket.on('message', function(message) {
       console.log("message", message);
       if (message.pad_id) {
         // Sets the pad the sender is in
-        room = rooms.getOrCreate(message.pad_id);
+        var room = rooms.getOrCreate(message.pad_id);
 
         // Processes color assignment for the user
         message.color = authors.getOrCreate(message.client).color;
@@ -94,15 +90,12 @@ function attachSockets(io) {
 
     // Re-broadcast typing data to everyone else
     socket.on('active', function(data) {
-      console.log("active", data);
-      room = rooms.getOrCreate(data.pad_id);
+      var room = rooms.getOrCreate(data.pad_id);
       var author = authors.getOrCreate(data.client);
-
       var found = false;
       for (var i = 0; i < room.lines.length; i++) {
-        console.log('active_lines', i, room.lines[i]);
-        if (room.lines[i].line === data.line) {
-          room.lines[i].line.author = author;
+        if (room.lines[i].linenumber === data.line) {
+          room.lines[i].author = author;
           found = true;
           break;
         }
@@ -111,6 +104,9 @@ function attachSockets(io) {
       if (!found) {
         room.appendLine(author, data.line);
       }
+
+      // send all room members the line information now
+      socket.to(room.id).emit('active', room.lines);
     });
 
     // Puts the socket in the room for the pad the users are on
