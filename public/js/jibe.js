@@ -182,6 +182,9 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        * Subscribe to editor change events.
        */
       editor_io.emit('subscribe', room);
+      editor_io.on('connected', function(data) {
+        console.log('connected', data);
+      });
 
       /*
        *  Fires whenever the user finished typing a characters --
