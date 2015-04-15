@@ -19,7 +19,8 @@
 //  limitations under the License.
 //
 
-var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
+var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Chat) {
+
   /*
    *  Returns location string based on URL hash; else default to The Dark Side.
    */
@@ -76,8 +77,9 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
    *  Instantiates the timestamps handler --
    *  -- leverages timestamps.js.
    */
-  function setTimestamps (editor) {
+  function setTimestamps (editor, client) {
     return new Timestamps ({
+      client     : client,
       container  : '#timestamps-container',
       codemirror : editor,
       format     : 'YYYY-MM-DD HH:MI:SS'
@@ -90,6 +92,14 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
    */
   function setTextFormat (editor) {
     return new TextFormat ({ codemirror: editor });
+  }
+
+  /*
+   *  Instantiates the chat handler --
+   *  -- leverages chat.js.
+   */
+  function setChat (components) {
+    return new Chat (components);
   }
 
   /*
@@ -127,8 +137,21 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
       var editor_bc  = setSocket ('bc', null, 'jibe', room);
       var editor     = setCodeMirror ();
       var converter  = new Showdown.converter ();
-      var timestamps = setTimestamps (editor);
+      var timestamps = setTimestamps (editor, client);
       var textformat = setTextFormat (editor);
+
+      /*
+       *  Set up chat components and fire chat --
+       *  -- updates timestamps.
+       */
+      var chat_components = {
+        'client' : client,
+        'room'   : room,
+        'socket' : null
+      }
+      chat_components.socket = setSocket ('io', chat_components.socket, '/chat', chat_components.room);
+      var chat = setChat (chat_components);
+      chat.listen ();
 
       $('#format-bold'  ).click (function () { textformat.bold      (); });
 			$('#format-code'  ).click (function () { textformat.monospace (); });
@@ -151,9 +174,9 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
        *  -- updates timestamps.
        */
       editor.on ("change", function (event) {
-				timestamps.draw ();
-				updatePreview (editor, converter);
-			});
+        timestamps.draw ();
+        updatePreview (editor, converter);
+      });
 
       /*
        *  Fires whenever the user finished typing a characters --
@@ -172,7 +195,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
           //   line: cursor.line
           // });
         }
-			});
+      });
 
       /*
        *  Updates the Preview panel.
@@ -180,7 +203,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
       updatePreview (editor, converter);
     }
   }
-})(BCSocket, CodeMirror, Showdown, Timestamps, TextFormat);
+})(BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Chat);
 
 /*
  *  Sets up scope and protects the jQuery $ sign --
@@ -190,7 +213,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
  *  ... you're welcome :-)
  */
 (function ($, Jibe) {
-	$.fn.jibe = function () {
+  $.fn.jibe = function () {
     var jibe_container = this; // e.g. #jibe-container
     /*
      *	Downloads required HTML for firing Jibe into the coolest jibe you'll ever jibe.
@@ -200,11 +223,11 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat) {
     	type: "GET",
     	success: function (data) {
         // Replaces container div with Jibe HTML
-    		$(jibe_container).html (data);
+        $(jibe_container).html (data);
         // Jibe!
         Jibe.agree ();
-    	},
+      },
       async: false
     });
-	};
+  };
 }(jQuery, Jibe));

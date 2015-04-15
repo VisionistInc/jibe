@@ -20,6 +20,7 @@
 //
 
 function Timestamps (data) {
+  this.client     = data.client;
   this.container  = data.container;
   this.codemirror = data.codemirror;
   this.format     = typeof data.format !== 'undefined' ? data.format : 'YYYY-MM-DD';
@@ -94,7 +95,7 @@ function Timestamps (data) {
 					height    : line.height,
 					text      : line.text,
 					timestamp : cursor.line === number ? instance.newDate () : instance.getTimestamp (line.text),
-					author    : clientID
+					author    : this.client
 				});
         number++;
       }
