@@ -185,15 +185,11 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       editor.on ('keyup', function (event) {
         var cursor = editor.getCursor ();
         if (editor.getLine (cursor.line) !== '') {
-          //
-          // Ignore the following.
-          // This will be fixed as soon as chat becomes modulated into chat.js.
-          //
-          // window.chat.emit ('active', {
-          //   pad_id: window.pad_id,
-          //   client: clientID,
-          //   line: cursor.line
-          // });
+          chat.socket.emit ('active', {
+            pad_id: room,
+            client: client,
+            line: cursor.line
+          });
         }
       });
 
