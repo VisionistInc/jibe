@@ -39,14 +39,14 @@ function Chat (data) {
    *  Shows a desktop notification to the user if enabled.
    */
   this.sendNotification = function (message) {
-  	var title        = "Message from " + message.client;
-  	var options      = { body: message.message };
-  	var notification = new Notification (title, options);
+    var title        = "Message from " + message.client;
+    var options      = { body: message.message };
+    var notification = new Notification (title, options);
 
     /*
      *  Set a timeout of 3 seconds to automatically close the shown desktop notification.
      */
-  	setTimeout (instance.closeNotification (notification), 3000);
+    setTimeout (instance.closeNotification (notification), 3000);
   }
 
   /*
@@ -54,9 +54,9 @@ function Chat (data) {
    *  -- called after timeout on sendNotification ().
    */
   this.closeNotification = function (notification) {
-  	return function () {
-  		notification.close ();
-  	}
+    return function () {
+      notification.close ();
+    }
   }
 
   /*
@@ -64,44 +64,44 @@ function Chat (data) {
    *  -- can prepend to container as well as append.
    */
   this.addMessage = function (message, prepend) {
-  	this.count++;
+    this.count++;
 
-  	$("#typing-" + message.client).remove ();
-  	var classes = "chat-message";
+    $("#typing-" + message.client).remove ();
+    var classes = "chat-message";
 
-  	if (message.client == instance.client) {
-  		classes += " bubble-mine animated bounceIn";
-  		chatdiv  = $('<div>').addClass (classes).text (message.message);
-  	} else {
-  		if (!prepend) {
-  			instance.sendNotification (message);
-  		}
-  		classes += " bubble-other animated bounceIn";
-  		chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
+    if (message.client == instance.client) {
+      classes += " bubble-mine animated bounceIn";
+      chatdiv  = $('<div>').addClass (classes).text (message.message);
+    } else {
+      if (!prepend) {
+        instance.sendNotification (message);
+      }
+      classes += " bubble-other animated bounceIn";
+      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
   	}
 
     /*
      *  Get the chat pane container.
      */
-  	var chatpane = document.getElementById ('chat-pane');
+    var chatpane = document.getElementById ('chat-pane');
 
     /*
      *  Stash the height difference.
      */
-  	var shouldScroll = Math.abs (chatpane.scrollHeight - ($(chatpane).scrollTop () + $(chatpane).height ()));
+    var shouldScroll = Math.abs (chatpane.scrollHeight - ($(chatpane).scrollTop () + $(chatpane).height ()));
 
-  	if (prepend) {
-  		$('#chat-pane').prepend (chatdiv);
-  	} else {
-  		$('#chat-pane').append (chatdiv);
-  	}
+    if (prepend) {
+      $('#chat-pane').prepend (chatdiv);
+    } else {
+      $('#chat-pane').append (chatdiv);
+    }
 
     /*
      *  Decide whether to scroll or not.
      */
-  	shouldScroll = shouldScroll < $(chatdiv).height () * 2 + 20
+    shouldScroll = shouldScroll < $(chatdiv).height () * 2 + 20
 
-  	if (shouldScroll) {
+    if (shouldScroll) {
       $(chatpane).scrollTop (chatpane.scrollHeight);
     }
   }
@@ -123,23 +123,23 @@ function Chat (data) {
         if (callback) {
           callback ();
         }
-  		});
-  	}
+      });
+    }
   }
 
   /*
    *  Displays notification for when a specific user is typing.
    */
   this.addTyping = function (data) {
-  	// $("#typing-" + data.client).remove();
-  	$("#typing-notify").empty ();
+    // $("#typing-" + data.client).remove();
+    $("#typing-notify").empty ();
 
-  	if (data.value == 1) {
-  		var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " is typing...");
-  		$('#typing-notify').html(typing);
-  	} else if (data.value == 2) { var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " has entered text");
-  		$('#typing-notify').html(typing);
-  	}
+    if (data.value == 1) {
+      var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " is typing...");
+      $('#typing-notify').html(typing);
+    } else if (data.value == 2) { var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " has entered text");
+      $('#typing-notify').html(typing);
+    }
   }
 
   /*
@@ -147,15 +147,15 @@ function Chat (data) {
    */
   this.clearTyping = function () {
     var value = $('#chat-message').val ();
-  	if (instance.typing == 1) {
-  		if (value === "") {
+    if (instance.typing == 1) {
+      if (value === "") {
         instance.typing = 0;
-  		} else {
+      } else {
         instance.typing = 2;
-  		}
+      }
 
       instance.sendTyping ();
-  	}
+    }
   }
 
   /*
@@ -163,10 +163,10 @@ function Chat (data) {
    */
   this.sendTyping = function () {
     instance.socket.emit ('typing', {
-  		pad_id : instance.room,
-  		client : instance.client,
-  		value  : instance.typing,
-  	});
+      pad_id : instance.room,
+      client : instance.client,
+      value  : instance.typing,
+    });
   }
 
   /*
@@ -190,15 +190,15 @@ function Chat (data) {
      *  -- chat bubbles container.
      */
     $('#chat-pane').scroll (function () {
-    	if ($('#chat-pane').scrollTop () < 250) {
-    		var old_height   = document.getElementById ('chat-pane').scrollHeight;
-    		var old_position = $('#chat-pane').scrollTop ();
+      if ($('#chat-pane').scrollTop () < 250) {
+        var old_height   = document.getElementById ('chat-pane').scrollHeight;
+        var old_position = $('#chat-pane').scrollTop ();
 
         instance.getMoreMessages (function () {
-    			var new_height = document.getElementById ('chat-pane').scrollHeight;
-    			$('#chat-pane').scrollTop (new_height - old_height + old_position);
-    		});
-    	}
+          var new_height = document.getElementById ('chat-pane').scrollHeight;
+          $('#chat-pane').scrollTop (new_height - old_height + old_position);
+        });
+      }
     });
 
     /*
@@ -207,7 +207,7 @@ function Chat (data) {
      */
     $('#chat-message').keyup (function (event) {
     	if ($(this).val () === '') {
-    		setTimeout (instance.clearTyping, 1000);
+        setTimeout (instance.clearTyping, 1000);
     	}
     });
 
@@ -217,23 +217,23 @@ function Chat (data) {
      */
     $('#chat-message').keypress (function (event) {
       if (event.keyCode == 13) {
-    		message = $('#chat-message').val ();
-    		if (message !== "") {
-    			message = {
-    				pad_id  : instance.room,
-    				client  : instance.client,
-    				message : message,
+        message = $('#chat-message').val ();
+        if (message !== "") {
+          message = {
+            pad_id  : instance.room,
+            client  : instance.client,
+            message : message,
             timestamp: new Date ()
-    			};
+          };
 
           instance.socket.emit ('message', message);
           instance.addMessage (message);
 
-    			$('#chat-message').val ('');
-    			setTimeout (instance.clearTyping, 1000);
-    		}
-    		return false;
-    	}
+          $('#chat-message').val ('');
+          setTimeout (instance.clearTyping, 1000);
+        }
+        return false;
+      }
     });
 
     /*
@@ -241,18 +241,18 @@ function Chat (data) {
      *  -- not sure why :-S
      */
     $('#chat-message').on('keyup change', function(event) {
-    	if (event.which !== 13) {
-    		if (instance.typing !== 1) {
+      if (event.which !== 13) {
+        if (instance.typing !== 1) {
           instance.typing = 1;
           instance.sendTyping ();
 
           instance.timeout = setTimeout (instance.clearTyping, 2000);
-    		} else {
-    			clearTimeout (instance.timeout);
+        } else {
+          clearTimeout (instance.timeout);
           instance.timeout = setTimeout (instance.clearTyping, 2000);
-    		}
-    	}
-    	clearTimeout (instance.timeout);
+        }
+      }
+      clearTimeout (instance.timeout);
     });
 
     /*
