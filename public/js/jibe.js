@@ -133,7 +133,6 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
     agree : function (string) {
       var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
       var room       = getLocation ();
-      var stamps_io  = setSocket ('io', stamps_io, '/stamps', room);
       var editor_io  = setSocket ('io', editor_io, '/editor', room);
       var editor_bc  = setSocket ('bc', null, 'jibe', room);
       var editor     = setCodeMirror ();

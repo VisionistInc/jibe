@@ -61,7 +61,6 @@ function attachSockets(io) {
    */
   var chat   = io.of('/chat');
   var editor = io.of('/editor');
-  var stamps = io.of('/stamps');
 
   chat.on('connection', function(socket) {
 
@@ -130,20 +129,6 @@ function attachSockets(io) {
         room.appendLine(author, data.line);
         socket.to(room.id).emit('change', room.lines[room.lines.length-1]);
       }
-    });
-
-    socket.on('subscribe', function(roomId) {
-      socket.join(roomId);
-    });
-  });
-
-  stamps.on('connection', function(socket) {
-    console.log('Someone\'s about to edit the pad (stamps)');
-
-    socket.on('stamps', function(data) {
-      socket.broadcast.to(data.pad_id).emit('stamps', data);
-      //TODO create model
-      //TODO can we integrate this with active_lines stuff?
     });
 
     socket.on('subscribe', function(roomId) {
