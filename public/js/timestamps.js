@@ -30,8 +30,9 @@ function Timestamps (data) {
    *  Draws the timestamps into the given container.
    */
   this.draw = function () {
-    var lines = processEditorLines (this);
-    this.generateTimestamps (lines);
+    processEditorLines (this, function (instance, lines) {
+      instance.generateTimestamps (lines);
+    });
   }
 
   /*
@@ -78,29 +79,32 @@ function Timestamps (data) {
     return new Date ().toFormat (this.format);
   }
 
+  this.setTimestampAuthorColor = function () {
+
+  }
+
   /*
    *  Parses out line-specific CodeMirror data.
    */
-  function processEditorLines (instance) {
+  function processEditorLines (instance, callback) {
     var cursor = instance.codemirror.getCursor ();
     var lines  = [];
-    var array  = [];
     var number = 0;
 
-    for (var i = 0; i < instance.codemirror.doc.children.length; i++) {
-      for (var j = 0; j < instance.codemirror.doc.children[i].lines.length; j++) {
-        var line = instance.codemirror.doc.children[i].lines[j];
+    instance.codemirror.eachLine (function (line) {
+      setTimeout (function () {
         lines.push ({
-					line      : number,
-					height    : line.height,
-					text      : line.text,
-					timestamp : cursor.line === number ? instance.newDate () : instance.getTimestamp (line.text),
-					author    : this.client
-				});
-        number++;
-      }
-    }
-    return lines;
-  }
+          line      : number,
+          height    : line.height,
+          text      : line.text,
+          timestamp : cursor.line === number ? instance.newDate () : instance.getTimestamp (line.text),
+          author    : instance.client
+        });
+      }, 1);
+    });
 
+    setTimeout (function () {
+      callback (instance, lines);
+    }, 1);
+  }
 }
