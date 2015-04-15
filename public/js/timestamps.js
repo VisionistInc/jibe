@@ -91,6 +91,10 @@ function Timestamps (data) {
     var lines  = [];
     var number = 0;
 
+    /*
+     *  From the CodeMirror API --
+     *  -- iterates through entire document, line by line..
+     */
     instance.codemirror.eachLine (function (line) {
       setTimeout (function () {
         lines.push ({
@@ -103,6 +107,9 @@ function Timestamps (data) {
       }, 1);
     });
 
+    /*
+     *  Don't ask.
+     */
     setTimeout (function () {
       callback (instance, lines);
     }, 1);
