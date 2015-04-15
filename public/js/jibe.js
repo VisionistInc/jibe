@@ -180,6 +180,11 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       });
 
       /*
+       * Subscribe to editor change events.
+       */
+      editor_io.emit('subscribe', room);
+
+      /*
        *  Fires whenever the user finished typing a characters --
        *  -- sends current line and author to server to timestamp author color coding.
        */

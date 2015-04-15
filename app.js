@@ -60,6 +60,7 @@ function attachSockets(io) {
    *  Everything chat related
    */
   var chat   = io.of('/chat');
+  var editor = io.of('/editor');
   var stamps = io.of('/stamps');
 
   chat.on('connection', function(socket) {
@@ -88,35 +89,9 @@ function attachSockets(io) {
       }
     });
 
-    // Re-broadcast typing data to everyone else
-    socket.on('active', function(data) {
-      var room = rooms.getOrCreate(data.pad_id);
-      var author = authors.getOrCreate(data.client);
-      var found = false;
-      for (var i = 0; i < room.lines.length; i++) {
-        if (room.lines[i].linenumber === data.line) {
-
-          // if author changed, let other users know
-          if (room.lines[i].author !== author) {
-            room.lines[i].author = author;
-            socket.to(room.id).emit('active', room.lines[i]);
-          }
-
-          found = true;
-          break;
-        }
-      }
-
-      // append the new line, then inform other users in the room
-      if (!found) {
-        room.appendLine(author, data.line);
-        socket.to(room.id).emit('active', room.lines[room.lines.length-1]);
-      }
-    });
-
     // Puts the socket in the room for the pad the users are on
-    socket.on('subscribe', function(pad) {
-      socket.join(pad);
+    socket.on('subscribe', function(roomId) {
+      socket.join(roomId);
     });
 
     socket.on('content', function (data) {});
@@ -128,16 +103,51 @@ function attachSockets(io) {
     });
   });
 
+  editor.on('connection', function(socket) {
+    console.log(socket, "made connection to /editor");
+
+    // change to editor content, update author information
+    socket.on('change', function(data) {
+      var room = rooms.getOrCreate(data.pad_id),
+          author = authors.getOrCreate(data.client),
+          found = false;
+      for (var i = 0; i < room.lines.length; i++) {
+        if (room.lines[i].linenumber === data.line) {
+
+          // if author changed, let other users know
+          if (room.lines[i].author !== author) {
+            room.lines[i].author = author;
+            socket.to(room.id).emit('change', room.lines[i]);
+          }
+
+          found = true;
+          break;
+        }
+      }
+
+      // append the new line, then inform other users in the room
+      if (!found) {
+        room.appendLine(author, data.line);
+        socket.to(room.id).emit('change', room.lines[room.lines.length-1]);
+      }
+    });
+
+    socket.on('subscribe', function(roomId) {
+      socket.join(roomId);
+    });
+  });
+
   stamps.on('connection', function(socket) {
     console.log('Someone\'s about to edit the pad (stamps)');
 
     socket.on('stamps', function(data) {
       socket.broadcast.to(data.pad_id).emit('stamps', data);
-      //TODO store the data in elasticsearch
+      //TODO create model
+      //TODO can we integrate this with active_lines stuff?
     });
 
-    socket.on('subscribe', function(pad) {
-      socket.join(pad);
+    socket.on('subscribe', function(roomId) {
+      socket.join(roomId);
     });
   });
 }
