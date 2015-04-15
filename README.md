@@ -24,4 +24,4 @@ Jibe: be in accord; agree. A modern, lightweight, collaborative editing environm
             console.info ('Server listening at port 3000');
         });
 
-* Visit [http://localhost:3000/path/to/jibe](http//localhost:3000/path/to/jibe)!
+* Visit [http://localhost:3000/path/to/jibe](http://localhost:3000/path/to/jibe)!
