@@ -4,6 +4,7 @@ var es_client       = new es.Client({host: 'localhost:9200', log: 'trace'});
 var sassMiddleware  = require('node-sass-middleware');
 var path            = require('path');
 var authors         = require('./lib/models/Author.js');
+var rooms           = require('./lib/models/Room.js');
 var chatRoutes      = require('./lib/routes/chat.js');
 var browserChannelMiddleware = require('./lib/middleware/browserchannel.js');
 var router = express.Router();
@@ -61,62 +62,26 @@ function attachSockets(io) {
   var chat   = io.of('/chat');
   var stamps = io.of('/stamps');
 
-  var Pad = Pad || {};
-  Pad.active_lines = {};
-
   chat.on('connection', function(socket) {
     console.info ("Someone has connected");
-    Pad.pad_id = '';
 
-    // Sets the pad the user is in before doing anything
-    Pad.setPad = function (data, callback) {
-      if (typeof data.pad_id !== 'undefined') {
-        Pad.pad_id = data.pad_id;
-        if (!(data.pad_id in Pad.active_lines)) {
-          Pad.active_lines[data.pad_id] = [];
-        }
-        callback (data);
-      }
-    };
-
-    Pad.refreshActiveLines = function (data, author) {
-      if (Pad.active_lines[Pad.pad_id].length !== 0) {
-        var found = false;
-        for (var i = 0; i < Pad.active_lines[Pad.pad_id].length; i++) {
-          if (Pad.active_lines[Pad.pad_id][i].line === data.line) {
-            Pad.active_lines[Pad.pad_id][i].client = author.id;
-            Pad.active_lines[Pad.pad_id][i].color = author.color;
-
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          Pad.active_lines[Pad.pad_id].push ({
-            client : author.id,
-            line   : data.line,
-            color  : author.color
-          });
-        }
-      } else {
-        Pad.active_lines[Pad.pad_id].push ({
-          client : author.id,
-          line   : data.line,
-          color  : author.color
-        });
-      }
-    };
+    // is this necessary to have out here?
+    var room;
 
     socket.on('message', function(message) {
-      // Sets the pad the sender is in
-      Pad.setPad (message, function (message) {
+      console.log("message", message);
+      if (message.pad_id) {
+        // Sets the pad the sender is in
+        room = rooms.getOrCreate(message.pad_id);
+
         // Processes color assignment for the user
-        var author = authors.getOrCreate(message.client);
-        message.color = author.color;
+        message.color = authors.getOrCreate(message.client).color;
+
+        // TODO would this be more helpful at client?
+        // message.author = author;
 
         // Sends the message to everyone except the sender
-        socket.broadcast.to(Pad.pad_id).emit('message', message);
+        socket.broadcast.to(room.id).emit('message', message);
 
         // Adds the message to ElasticSearch
         es_client.create({
@@ -124,35 +89,41 @@ function attachSockets(io) {
           type:  'chat',
           body:  message
         });
-      });
-    });
-
-    socket.on ('content', function (data) {
-
-    });
-
-    // Remove the user from the list of active colors on disconnects
-    socket.on('disconnect', function (disconnect) {
-      //Pad.setPad (disconnect, Pad.removeUser);
-    });
-
-    socket.on('typing', function(data) {
-      socket.broadcast.to(data.pad_id).emit('typing', data);
-      console.log(data.client + " is typing on pad " + data.pad_id + ": " + data.value);
+      }
     });
 
     // Re-broadcast typing data to everyone else
     socket.on('active', function(data) {
-      Pad.setPad (data, function (data) {
-        var author = authors.getOrCreate(data.client);
-        Pad.refreshActiveLines (data, author);
-        console.info (Pad.active_lines);
-      });
+      console.log("active", data);
+      room = rooms.getOrCreate(data.pad_id);
+      var author = authors.getOrCreate(data.client);
+
+      var found = false;
+      for (var i = 0; i < room.lines.length; i++) {
+        console.log('active_lines', i, room.lines[i]);
+        if (room.lines[i].line === data.line) {
+          room.lines[i].line.author = author;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        room.appendLine(author, data.line);
+      }
     });
 
     // Puts the socket in the room for the pad the users are on
     socket.on('subscribe', function(pad) {
       socket.join(pad);
+    });
+
+    socket.on('content', function (data) {});
+    socket.on('disconnect', function (disconnect) {});
+
+    socket.on('typing', function(data) {
+      socket.broadcast.to(data.pad_id).emit('typing', data);
+      //console.log(data.client + " is typing on pad " + data.pad_id + ": " + data.value);
     });
   });
 
