@@ -141,8 +141,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       var textformat = setTextFormat (editor);
 
       /*
-       *  Set up chat components and fire chat --
-       *  -- updates timestamps.
+       *  Set up chat components and fire chat.
        */
       var chat_components = {
         'client' : client,
@@ -158,8 +157,8 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
 			$('#format-italic').click (function () { textformat.italic    (); });
 
       /*
-       *  Subscribes to BrowserChannel connection and attaches CodeMirror editor --
-       *  -- using sharejs for all of the OT tasking.
+       *  Subscribes to BrowserChannel connection and attaches the CodeMirror editor --
+       *  -- uses sharejs for all of the OT tasking.
        */
       editor_bc.subscribe ();
       editor_bc.whenReady (function () {
@@ -170,53 +169,56 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       });
 
       /*
+       *  Subscribe to editor change events.
+       */
+      editor_io.emit ('subscribe', room);
+
+      /*
+       *  Loads the saved timestamps..
+       */
+      editor_io.on('connected', function (data) {
+        if (data.lines.length > 0) {
+          setTimeout (function () {
+            for (var i = 0; i < data.lines.length; i++) {
+              timestamps.setTimestamp (data.lines[i].linenumber, data.lines[i].timestamp);
+              timestamps.draw ();
+            }
+          }, 20);
+        }
+      });
+
+      /*
+       *  Fires whenever the user finishes typing a character --
+       *  -- sends current line and author to server for synchronizing timestamp author color codings.
+       */
+      editor.on ('keyup', function (event) {
+        var line = editor.getCursor ().line;
+        editor_io.emit ('change', {
+          room       : room,
+          client     : client,
+          line       : line,
+          height     : editor.getLineHandle (line).height,
+          text       : editor.getLineHandle (line).text,
+          timestamp  : editor.getLineHandle (line).timestamp,
+          line_count : editor.lineCount ()
+        });
+      });
+
+      /*
        *  Fires whenever the editor changes --
        *  -- updates timestamps.
        */
       editor.on ("change", function (event) {
+        var line = editor.getCursor ().line;
+        if (editor.getLine (line) !== '') {
+          timestamps.setTimestamp (line, timestamps.newDate ());
+        }
         timestamps.draw ();
         updatePreview (editor, converter);
       });
 
-      /*
-       *  Subscribe to editor change events.
-       */
-      editor_io.emit('subscribe', room);
-      editor_io.on('connected', function(data) {
-        console.log('connected', data);
-      });
-
-      /*
-       *  Fires whenever the user finished typing a characters --
-       *  -- sends current line and author to server to timestamp author color coding.
-       */
-      editor.on ('keyup', function (event) {
-        var cursor = editor.getCursor ();
-        var value  = editor.getLine (cursor.line);
-        var height = function () {
-          var number = 0;
-          for (var i = 0; i < editor.doc.children.length; i++) {
-            for (var j = 0; j < editor.doc.children[i].lines.length; j++) {
-              var line = editor.doc.children[i].lines[j];
-              if (cursor.line === number) {
-                return line.height;
-              }
-              number++;
-            }
-          }
-        };
-
-        editor_io.emit ('change', {
-          room   : room,
-          client : client,
-          line   : cursor.line,
-          height : height(),
-          text   : value === '' ? null : value
-        });
-      });
-
-      editor_io.on ('change', function(data) {
-        console.log (data);
+      editor_io.on ('change', function (data) {
+        timestamps.setAuthorColorCoding (data);
       });
 
       /*
@@ -253,3 +255,22 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
     });
   };
 }(jQuery, Jibe));
+
+
+
+var A = [
+  { title: "A" },
+  { title: "B" },
+  { title: "C" }
+];
+
+var B = [
+  { title: "A" },
+  { title: "C" }
+];
+
+var patch = jsondiff.diff(A, B);
+jsonpatch.apply(A, patch);
+
+console.info (A);
+console.info (B);
