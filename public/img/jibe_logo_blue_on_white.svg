@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="340pt"
+   height="340pt"
+   viewBox="0 0 340 340"
+   id="svg3360"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="jibe_logo_blue_on_white.svg"
+   inkscape:export-filename="/Users/josh/jibe/public/img/jibe_logo_blue_on_white.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
+  <defs
+     id="defs3362">
+    <linearGradient
+       id="linearGradient4139"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4141" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.6"
+     inkscape:cx="209.52722"
+     inkscape:cy="210.1829"
+     inkscape:document-units="pt"
+     inkscape:current-layer="layer4"
+     id="namedview3364"
+     showgrid="false"
+     inkscape:window-width="1676"
+     inkscape:window-height="1005"
+     inkscape:window-x="4"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3366">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Layer 2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:57.26937103px;line-height:125%;font-family:'Letter Gothic Std';-inkscape-font-specification:'Letter Gothic Std Bold';letter-spacing:0px;word-spacing:0px;fill:#1c75bc;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       x="12.115685"
+       y="158.51552"
+       id="text4169"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="12.115685"
+         y="158.51552"
+         id="tspan4173">&gt;jibe</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4198"
+       y="190.40213"
+       x="86.148773"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:19.92811394px;line-height:125%;font-family:'Letter Gothic Std';-inkscape-font-specification:'Letter Gothic Std Bold';letter-spacing:0px;word-spacing:0px;fill:#1c75bc;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       xml:space="preserve"><tspan
+         id="tspan4200"
+         y="190.40213"
+         x="86.148773"
+         sodipodi:role="line">(be in accord; agree)</tspan></text>
+  </g>
+</svg>
