@@ -118,6 +118,10 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
     }
   }
 
+  function generateDiff (prior, after, callback) {
+    return jsondiff.diff (prior, after);
+  }
+
   /*
    *  Updates the Jibe preview tab --
    *  -- works in real time (updates while other type).
@@ -138,6 +142,13 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       var converter  = new Showdown.converter ();
       var timestamps = setTimestamps (editor, client);
       var textformat = setTextFormat (editor);
+
+      /*
+       *  Used to create the diff sent to server.
+       */
+      var prior = [];
+      var after = [];
+      var diff  = null;
 
       /*
        *  Set up chat components and fire chat.
@@ -177,6 +188,8 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  Loads the saved timestamps..
        */
       editor_io.on('connected', function (data) {
+        prior = data.lines;
+        console.info (prior);
         if (data.lines.length > 0) {
           setTimeout (function () {
             for (var i = 0; i < data.lines.length; i++) {
@@ -192,16 +205,24 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  -- sends current line and author to server for synchronizing timestamp author color codings.
        */
       editor.on ('keyup', function (event) {
-        var line = editor.getCursor ().line;
-        editor_io.emit ('change', {
-          room       : room,
-          client     : client,
-          line       : line,
-          height     : editor.getLineHandle (line).height,
-          text       : editor.getLineHandle (line).text,
-          timestamp  : editor.getLineHandle (line).timestamp,
-          line_count : editor.lineCount ()
+        after = [];
+        editor.eachLine (function (line) {
+          after.push ({
+            room       : room,
+            client     : client,
+            linenumber : editor.getLineNumber (line),
+            height     : line.height,
+            text       : line.text,
+            timestamp  : line.timestamp
+          });
         });
+
+        editor_io.emit ('change', {
+          room  : room,
+          after : after
+        });
+
+        prior = after;
       });
 
       /*
@@ -210,11 +231,12 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        */
       editor.on ("change", function (event) {
         var line = editor.getCursor ().line;
-        if (editor.getLine (line) !== '') {
-          timestamps.setTimestamp (line, timestamps.newDate ());
-        }
-        timestamps.draw ();
+        var date = timestamps.newDate ();
+
+        timestamps.setTimestamp (line, date);
+
         updatePreview (editor, converter);
+        timestamps.draw ();
       });
 
       editor_io.on ('change', function (data) {
@@ -255,22 +277,3 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
     });
   };
 }(jQuery, Jibe));
-
-
-
-var A = [
-  { title: "A" },
-  { title: "B" },
-  { title: "C" }
-];
-
-var B = [
-  { title: "A" },
-  { title: "C" }
-];
-
-var patch = jsondiff.diff(A, B);
-jsonpatch.apply(A, patch);
-
-console.info (A);
-console.info (B);
