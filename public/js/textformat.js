@@ -20,35 +20,35 @@
 //
 
 function TextFormat (data) {
-  this.codemirror = data.codemirror,
+  this.codemirror = data.codemirror;
 
   /*
    *  Replaces current text to the formatted text.
    */
   this.replace = function (replacement) {
   	this.codemirror.replaceSelection (replacement);
-  }
+  };
 
   /*
    *  Tells the wrapper function to add the bold markdown characters.
    */
   this.bold = function () {
     this.replace (this.wrapper ('**'));
-  }
+  };
 
   /*
    *  Tells the wrapper function to add the italic markdown characters.
    */
   this.italic = function () {
     this.replace (this.wrapper ('_'));
-  }
+  };
 
   /*
    *  Tells the wrapper function to add the monospace markdown characters.
    */
   this.monospace = function () {
     this.replace (this.mlWrapper ('`', '```'));
-  }
+  };
 
   /*
    *  Wraps the selection in the characters specified.
@@ -70,7 +70,7 @@ function TextFormat (data) {
       this.codemirror.replaceSelection (characters + characters);
       this.codemirror.setCursor (this.codemirror.posFromIndex (index + 2));
   	}
-  }
+  };
 
   /*
    *  Returns a function that wraps the text in the characters specified.
@@ -90,8 +90,8 @@ function TextFormat (data) {
   		} else {
   			return (characters + selection + characters);
   		}
-  	}
-  }
+  	};
+  };
 
   /*
    * Multiline wrapper.
@@ -112,7 +112,7 @@ function TextFormat (data) {
   			return this.wrapper (characters);
   		}
   	}
-  }
+  };
 
   /*
    *  Ripped out of a StackOverflow thread --

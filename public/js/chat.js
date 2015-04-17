@@ -47,7 +47,7 @@ function Chat (data) {
      *  Set a timeout of 3 seconds to automatically close the shown desktop notification.
      */
     setTimeout (instance.closeNotification (notification), 3000);
-  }
+  };
 
   /*
    *  Closes desktop notification --
@@ -56,8 +56,8 @@ function Chat (data) {
   this.closeNotification = function (notification) {
     return function () {
       notification.close ();
-    }
-  }
+    };
+  };
 
   /*
    *  Adds given message to chat container --
@@ -99,12 +99,12 @@ function Chat (data) {
     /*
      *  Decide whether to scroll or not.
      */
-    shouldScroll = shouldScroll < $(chatdiv).height () * 2 + 20
+    shouldScroll = shouldScroll < $(chatdiv).height () * 2 + 20;
 
     if (shouldScroll) {
       $(chatpane).scrollTop (chatpane.scrollHeight);
     }
-  }
+  };
 
   /*
    *  Loads more chat messages from the server, prepending them to the already loaded messages.
@@ -125,7 +125,7 @@ function Chat (data) {
         }
       });
     }
-  }
+  };
 
   /*
    *  Displays notification for when a specific user is typing.
@@ -134,13 +134,22 @@ function Chat (data) {
     // $("#typing-" + data.client).remove();
     $("#typing-notify").empty ();
 
+    var typing;
+
     if (data.value == 1) {
-      var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " is typing...");
+      typing = $('<div>')
+        .addClass('typing-notify')
+        .attr('id', 'typing-' + data.client)
+        .text(data.client + " is typing...");
       $('#typing-notify').html(typing);
-    } else if (data.value == 2) { var typing = $('<div>').addClass('typing-notify').attr('id', 'typing-' + data.client).text(data.client + " has entered text");
+    } else if (data.value == 2) {
+      typing = $('<div>')
+        .addClass('typing-notify')
+        .attr('id', 'typing-' + data.client)
+        .text(data.client + " has entered text");
       $('#typing-notify').html(typing);
     }
-  }
+  };
 
   /*
    *  Removes the typing notification from the container.
@@ -156,7 +165,7 @@ function Chat (data) {
 
       instance.sendTyping ();
     }
-  }
+  };
 
   /*
    *  Send to the server the typing value.
@@ -167,7 +176,7 @@ function Chat (data) {
       client : instance.client,
       value  : instance.typing,
     });
-  }
+  };
 
   /*
    *  Initializes all listeners for chat.
@@ -259,5 +268,5 @@ function Chat (data) {
      *  Requests permission to display desktop notifications.
      */
     Notification.requestPermission ();
-  }
+  };
 }

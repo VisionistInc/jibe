@@ -40,7 +40,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
         while (cookie.charAt(0) == ' ') {
           cookie = cookie.substring (1, cookie.length);
         }
-        if (cookie.indexOf (nameEQ) == 0) {
+        if (cookie.indexOf (nameEQ) === 0) {
           return cookie.substring (nameEQ.length, cookie.length);
         }
     }
@@ -56,8 +56,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       	socket.emit ('subscribe', room);
       });
     } else {
-      var socket = new BCSocket (null, { reconnect: true });
-      var share  = new window.sharejs.Connection (socket);
+      var share  = new window.sharejs.Connection (new BCSocket (null, { reconnect: true }));
       return share.get (channel, room);
     }
   }
@@ -147,7 +146,8 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
         'client' : client,
         'room'   : room,
         'socket' : null
-      }
+      };
+
       chat_components.socket = setSocket ('io', chat_components.socket, '/chat', chat_components.room);
       var chat = setChat (chat_components);
       chat.listen ();
@@ -226,7 +226,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        */
       updatePreview (editor, converter);
     }
-  }
+  };
 })(BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Chat);
 
 /*

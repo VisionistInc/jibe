@@ -30,21 +30,21 @@ function Timestamps (data) {
    */
   this.draw = function () {
     this.generateTimestamps (this);
-  }
+  };
 
   /*
    *  Searches for the timestamp attached to the line handle based on line number (index).
    */
   this.getTimestamp = function (index) {
     return this.codemirror.getLineHandle (index).timestamp;
-  }
+  };
 
   /*
    *  Sets the timestamp for a specific line handle.
    */
   this.setTimestamp = function (index, timestamp) {
     this.codemirror.getLineHandle (index).timestamp = timestamp;
-  }
+  };
 
   /*
    *  Draws the timestamps into its given container.
@@ -65,19 +65,19 @@ function Timestamps (data) {
     setTimeout (function () {
       $(instance.container).html (content);
     }, 1);
-  }
+  };
 
   /*
    *  Returns a timestamp string based on the format.
    */
   this.newDate = function () {
     return new Date ().toFormat (this.format);
-  }
+  };
 
   /*
    *  Looks up the timestamp div and sets the color for the specific author.
    */
   this.setAuthorColorCoding = function (data) {
     console.info (data);
-  }
+  };
 }
