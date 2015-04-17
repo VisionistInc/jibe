@@ -43,7 +43,12 @@
     "browserify": "~9.0.8",
     "json-diff-patch": "0.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-csslint": "^0.1.5",
+    "gulp-jshint": "^1.10.0",
+    "jshint-stylish": "^1.0.1"
+  },
   "scripts": {
     "start": "node bin/standalone.js"
   }
