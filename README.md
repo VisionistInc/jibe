@@ -1,5 +1,7 @@
 # jibe
-Jibe: be in accord; agree. A modern, lightweight, collaborative editing environment.
+
+![Jibe: be in accord; agree.](https://raw.githubusercontent.com/VisionistInc/jibe/master/public/img/jibe_logo.png)
+A modern, lightweight, collaborative editing environment.
 
 ## Installation
 * `npm install`
