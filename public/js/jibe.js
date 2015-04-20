@@ -149,17 +149,21 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       var prior = [];
       var after = [];
       var diff  = null;
+      var send  = false;
 
       /*
-       *  Set up chat components and fire chat.
+       *  Set up chat components.
        */
       var chat_components = {
         'client' : client,
         'room'   : room,
         'socket' : null
       };
-
       chat_components.socket = setSocket ('io', chat_components.socket, '/chat', chat_components.room);
+
+      /*
+       *  Initialize chat.
+       */
       var chat = setChat (chat_components);
       chat.listen ();
 
@@ -189,14 +193,8 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        */
       editor_io.on('connected', function (data) {
         prior = data.lines;
-        console.info (prior);
         if (data.lines.length > 0) {
-          setTimeout (function () {
-            for (var i = 0; i < data.lines.length; i++) {
-              timestamps.setTimestamp (data.lines[i].linenumber, data.lines[i].timestamp);
-              timestamps.draw ();
-            }
-          }, 20);
+          timestamps.load (data.lines);
         }
       });
 
@@ -205,24 +203,26 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  -- sends current line and author to server for synchronizing timestamp author color codings.
        */
       editor.on ('keyup', function (event) {
-        after = [];
-        editor.eachLine (function (line) {
-          after.push ({
-            room       : room,
-            client     : client,
-            linenumber : editor.getLineNumber (line),
-            height     : line.height,
-            text       : line.text,
-            timestamp  : line.timestamp
+        if (send) {
+          after = [];
+          editor.eachLine (function (line) {
+            after.push ({
+              room       : room,
+              linenumber : editor.getLineNumber (line),
+              height     : line.height,
+              text       : line.text,
+              timestamp  : typeof line.timestamp !== 'undefined' ? line.timestamp : null,
+              client     : typeof line.client !== 'undefined' ? line.client : client
+            });
           });
-        });
 
-        editor_io.emit ('change', {
-          room  : room,
-          after : after
-        });
+          editor_io.emit ('change', {
+            room : room,
+            diff : jsondiff.diff (prior, after)
+          });
 
-        prior = after;
+          send = false;
+        }
       });
 
       /*
@@ -233,14 +233,24 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
         var line = editor.getCursor ().line;
         var date = timestamps.newDate ();
 
-        timestamps.setTimestamp (line, date);
-
         updatePreview (editor, converter);
+
+        timestamps.setTimestamp (line, date);
+        timestamps.setAuthor (line, client);
+
         timestamps.draw ();
+
+        /*
+         *  Provides a helping hand to the keyup function --
+         *  -- won't send a diff to server unless a significant change is seen on the editor.
+         *  (Also helps not send data when hitting alt, ctrl, enter, shift, among other keys, etc.)
+         */
+        send = true;
       });
 
       editor_io.on ('change', function (data) {
-        timestamps.setAuthorColorCoding (data);
+        timestamps.load (data.payload);
+        prior = data.payload;
       });
 
       /*
@@ -251,11 +261,12 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
   };
 })(BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Chat);
 
+
 /*
  *  Sets up scope and protects the jQuery $ sign --
  *  -- plays nice with other jQuery plugins.
  *
- *  Utilization: $('div').jibe () ...
+ *  Utilization: $('#bae').jibe () ...
  *  ... you're welcome :-)
  */
 (function ($, Jibe) {

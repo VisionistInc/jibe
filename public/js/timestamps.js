@@ -47,6 +47,27 @@ function Timestamps (data) {
   };
 
   /*
+   *  Looks up the timestamp div and sets the color for the specific author.
+   */
+  this.setAuthor = function (index, client) {
+    this.codemirror.getLineHandle (index).client = client;
+  };
+
+  /*
+   *  Looks up the timestamp div and sets the color for the specific author.
+   */
+   this.load = function (data) {
+    var instance = this;
+    setTimeout (function () {
+      for (var i = 0; i < data.length; i++) {
+        instance.setTimestamp (data[i].linenumber, data[i].timestamp);
+        instance.setAuthor (data[i].linenumber, data[i].client);
+      }
+      instance.draw ();
+    }, 25);
+  }
+
+  /*
    *  Draws the timestamps into its given container.
    */
   this.generateTimestamps = function (instance) {
@@ -72,12 +93,5 @@ function Timestamps (data) {
    */
   this.newDate = function () {
     return new Date ().toFormat (this.format);
-  };
-
-  /*
-   *  Looks up the timestamp div and sets the color for the specific author.
-   */
-  this.setAuthorColorCoding = function (data) {
-    console.info (data);
   };
 }
