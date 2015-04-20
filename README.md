@@ -9,6 +9,18 @@ A modern, lightweight, collaborative editing environment.
 * `npm start`
 * Go to [http://localhost:3000](http://localhost:3000)
 
+## Database setup
+Jibe requires [RethinkDB](http://www.rethinkdb.com/) for data persistance.
+
+If you do not have a RethinkDB server available, you can use  [Docker](https://www.docker.com/) to quickly have one running:
+
+```
+docker pull rethinkdb
+docker run -d -p 8080:8080 -p 28015:28015 -p 29015:29015 rethinkdb
+```
+
+Now, browse to [RethinkDB's Tables tab](http://localhost:8080/#tables) and create a new database called 'jibe'.
+
 ## Integrating with your application via npm
 * `npm install --save VisionistInc/jibe`
 * Require jibe within your express app.
