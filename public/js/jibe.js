@@ -177,8 +177,18 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        */
       editor_bc.subscribe ();
       editor_bc.whenReady (function () {
-        if (!editor_bc.type) editor_bc.create ('text');
-      	if (editor_bc.type && editor_bc.type.name === 'text') {
+        if (!editor_bc.type) {
+          editor_bc.create ('json0');
+          editor_bc.submitOp({
+            p: [], // root path
+            od: null,
+            oi: {
+              text: '',
+              lines: []
+            }
+          });
+      	}
+        if (editor_bc.type && editor_bc.type.name === 'json0') {
           editor_bc.attachCodeMirror (editor);
         }
       });
