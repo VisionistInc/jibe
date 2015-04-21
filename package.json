@@ -48,9 +48,12 @@
     "gulp": "^3.8.11",
     "gulp-csslint": "^0.1.5",
     "gulp-jshint": "^1.10.0",
-    "jshint-stylish": "^1.0.1"
+    "jshint-stylish": "^1.0.1",
+    "log4js": "0.6.22",
+    "mocha": "^2.2.4"
   },
   "scripts": {
-    "start": "node bin/standalone.js"
+    "start": "node bin/standalone.js",
+    "test": "NODE_ENV=test mocha"
   }
 }

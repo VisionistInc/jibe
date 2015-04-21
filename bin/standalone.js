@@ -21,7 +21,11 @@
 var app = require('express')(),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
-    jibe = require('../app.js');
+    jibe = require('../app.js'),
+    log4js = require("log4js");
+
+// logging
+log4js.replaceConsole();
 
 // initialize jibe
 app.use(jibe.router(io));
