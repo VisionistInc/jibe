@@ -1,3 +1,6 @@
+// big thank you to share-codemirror
+// this is as much as possible copied from there
+
 (function () {
   'use strict';
 
@@ -10,37 +13,50 @@
 
     var suppress = false;
 
-    console.log(ctx);
-
-    // TODO fetch from share
-    var doc = ctx.get() || {
-      text: '',
-      lines: []
-    };
+    // fetch initial document from sharejs
+    var doc = ctx.get();
 
     cm.setValue(doc.text);
     check();
 
-    ctx.addListener('insert', onInsert);
-    ctx.addListener('remove', onRemove);
+    var textListenerPath = ['text'];
+    var textInsertHandler = function(startPos, insertedText) {
+      //console.log('text listener insert', startPos, insertedText);
 
-    var onInsert = function(pos, doc) {
-      console.log("onInsert", pos, doc);
+      // suppress changes until this op has been incorporated
       suppress = true;
-      cm.replaceRange(doc.text, cm.posFromIndex(pos));
+
+      // add in the inserted text we received from the sharejs context
+      cm.replaceRange(insertedText, cm.posFromIndex(startPos));
       suppress = false;
+
+      // now, make sure we are in sync with remote document
       check();
     };
 
-    var onRemove = function (pos, length) {
-      console.log("onRemove", pos, length);
+    // on remote inserts to the 'text' attribute of our document,
+    // run the textInsertHandler function
+    var textInsertListener = ctx.addListener(
+      textListenerPath,
+      'insert',
+      textInsertHandler
+    );
+
+    var textDeleteHandler = function(startPos, deletedText) {
+      //console.log('text listener delete', startPos, deletedText);
       suppress = true;
-      var from = cm.posFromIndex(pos);
-      var to = cm.posFromIndex(pos + length);
+      var from = cm.posFromIndex(startPos);
+      var to = cm.posFromIndex(startPos + deletedText.length);
       cm.replaceRange('', from, to);
       suppress = false;
       check();
     };
+
+    var textDeleteListener = ctx.addListener(
+      textListenerPath,
+      'delete',
+      textDeleteHandler
+    );
 
     cm.on('change', onLocalChange);
 
@@ -51,8 +67,8 @@
     }
 
     cm.detachShareJsDoc = function () {
-      ctx.onRemove = null;
-      ctx.onInsert = null;
+      ctx.removeListener(textInsertListener);
+      ctx.removeListener(textDeleteListener);
       cm.off('change', onLocalChange);
     };
 
@@ -73,54 +89,55 @@
 
       startPos += change.from.ch;
 
+      // sharejs json path to the location of the change
+      var path = ['text', startPos];
+
       if (change.to.line == change.from.line && change.to.ch == change.from.ch) {
         // nothing was removed.
       } else {
+
         // delete.removed contains an array of removed lines as strings, so this adds
         // all the lengths. Later change.removed.length - 1 is added for the \n-chars
         // (-1 because the linebreak on the last line won't get deleted)
-        /*var delLen = 0;
+        var delLen = 0;
         for (var rm = 0; rm < change.removed.length; rm++) {
           delLen += change.removed[rm].length;
         }
         delLen += change.removed.length - 1;
-*/
-        var deletedText = '';
-        for (var rm = 0; rm < change.removed.length; rm++) {
-          deletedText += change.removed[rm];
-        }
-        console.log("change", change);
-        console.log("deletedTExt", deletedText);
-        //TODO update for json
-        ctx.submitOp({p:['text', startPos], sd: deletedText});
-        //ctx.remove(startPos, delLen);
-      }
-      if (change.text) {
-        //TODO update for json
 
-        ctx.submitOp({p:['text', startPos], si: change.text.join('\n')});
-        //ctx.insert(startPos, change.text.join('\n'));
+        // this is the changed text
+        //change.removed.join('\n')
+
+        ctx.remove(path, delLen, function(error, appliedOp) {
+          //console.info('delete callback', error, appliedOp);
+        });
       }
+
+      if (change.text) {
+        
+        ctx.insert(path, change.text.join('\n'), function(error, appliedOp) {
+          //console.info('insert callback', error, appliedOp);
+        });
+      }
+
+      // call the function again on the next change, if there is one
       if (change.next) {
         applyToShareJS(cm, change.next);
       }
     }
 
-
+    // TODO some infinite loop issue happening here
     function check() {
       setTimeout(function () {
         var cmText = cm.getValue();
-        var otDoc = ctx.get() || {
-          text: '',
-          lines: []
-        };
+        var otDoc = ctx.get();
 
         if (cmText !== otDoc.text) {
           console.error("Text does not match!");
           console.error("cm: " + cmText);
           console.error("ot: " + otDoc.text);
           // Replace the editor text with the ctx snapshot.
-          cm.setValue(ctx.get().text || '');
+          cm.setValue(ctx.get().text);
         }
       }, 0);
     }
