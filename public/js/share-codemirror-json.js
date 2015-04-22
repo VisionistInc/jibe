@@ -7,8 +7,9 @@
   /**
    * @param cm - CodeMirror instance
    * @param ctx - Share context
+   * @param timestamps.client - unique identifier for timestamps.client
    */
-  function shareCodeMirror(cm, ctx) {
+  function shareCodeMirror(cm, ctx, timestamps) {
     if (!ctx.provides.json) throw new Error('Cannot attach to non-json document');
 
     var suppress = false;
@@ -17,6 +18,7 @@
     var doc = ctx.get();
 
     cm.setValue(doc.text);
+
     check();
 
     var textListenerPath = ['text'];
@@ -49,6 +51,8 @@
       var to = cm.posFromIndex(startPos + deletedText.length);
       cm.replaceRange('', from, to);
       suppress = false;
+
+      // check to make sure document is in sync, draw updated timestamps
       check();
     };
 
@@ -63,6 +67,8 @@
     function onLocalChange(cm, change) {
       if (suppress) return;
       applyToShareJS(cm, change);
+
+      // check to make sure document in sync, update timestampss
       check();
     }
 
@@ -85,12 +91,16 @@
         i++;
       }
 
-      //TODO incorporate timestamp changes
-
       startPos += change.from.ch;
 
       // sharejs json path to the location of the change
-      var path = ['text', startPos];
+      var textPath = ['text', startPos];
+
+      // array of operations that will be submitted
+      var ops = [];
+
+      // get an updated document
+      var doc = ctx.get();
 
       if (change.to.line == change.from.line && change.to.ch == change.from.ch) {
         // nothing was removed.
@@ -108,17 +118,66 @@
         // this is the changed text
         //change.removed.join('\n')
 
-        ctx.remove(path, delLen, function(error, appliedOp) {
+        for (i = change.to.line; i > change.from.line; i--) {
+          ops.push({p:['lines', i], ld: doc.lines[i]});
+        }
+
+        ops.push({p:textPath, sd: change.removed.join('\n')});
+
+        // submit all of these with the insertions later
+        //ctx.remove(textPath, delLen, function(error, appliedOp) {
           //console.info('delete callback', error, appliedOp);
-        });
+        //});
       }
 
       if (change.text) {
-        
-        ctx.insert(path, change.text.join('\n'), function(error, appliedOp) {
-          //console.info('insert callback', error, appliedOp);
-        });
+
+        // insert op
+        ops.push({p:textPath, si: change.text.join('\n')});
+
+        // update timestamps
+        for (i = change.from.line; i <= change.to.line; i++) {
+          if (doc.lines[i]) {
+
+            var newTimestamp = timestamps.newDate();
+
+            if (newTimestamp !== doc.lines[i].timestamp ||
+                timestamps.client !== doc.lines[i].client) {
+
+                // replace (delete and insert) the line with updated values
+                ops.push({p:['lines', i], ld: doc.lines[i], li: {
+                  client: timestamps.client,
+                  timestamp: timestamps.newDate()
+                }});
+            }
+
+            // figure out if there should also be an included line insertion
+            // // if the change was just to add a new line character, do a replace
+            // // on that line and then do an insert for the next
+            if (change.text.join('\n') === '\n') {
+              ops.push({p:['lines', i+1], li: {
+                client: timestamps.client,
+                timestamp: timestamps.newDate()
+              }});
+            }
+
+          } else {
+            // insert a new line
+            ops.push({p:['lines', i], li: {
+              client: timestamps.client,
+              timestamp: timestamps.newDate()
+            }});
+          }
+        }
+
+        // use this os that we can submit an array of ops that includes
+        // both the changes to the text and to the line information
+        //ctx.submitOp(ops);
+
+        //ctx.insert(textPath, change.text.join('\n'));
       }
+
+      ctx.submitOp(ops);
 
       // call the function again on the next change, if there is one
       if (change.next) {
@@ -126,8 +185,8 @@
       }
     }
 
-    // TODO some infinite loop issue happening here
     function check() {
+      // magic, no touchy
       setTimeout(function () {
         var cmText = cm.getValue();
         var otDoc = ctx.get();
@@ -139,6 +198,9 @@
           // Replace the editor text with the ctx snapshot.
           cm.setValue(ctx.get().text);
         }
+
+        // just draw whatever the server tells us to
+        timestamps.draw(otDoc.lines);
       }, 0);
     }
 
@@ -157,9 +219,9 @@
       });
     } else {
       // Browser, no AMD
-      window.sharejs.Doc.prototype.attachCodeMirror = function (cm, ctx) {
+      window.sharejs.Doc.prototype.attachCodeMirror = function (cm, ctx, timestamps) {
         if (!ctx) ctx = this.createContext();
-        shareCodeMirror(cm, ctx);
+        shareCodeMirror(cm, ctx, timestamps);
       };
     }
   }

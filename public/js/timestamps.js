@@ -28,64 +28,28 @@ function Timestamps (data) {
   /*
    *  Draws the timestamps into the given container.
    */
-  this.draw = function () {
-    this.generateTimestamps (this);
+  this.draw = function (lines) {
+    this.generateTimestamps (lines);
   };
-
-  /*
-   *  Searches for the timestamp attached to the line handle based on line number (index).
-   */
-  this.getTimestamp = function (index) {
-    return this.codemirror.getLineHandle (index).timestamp;
-  };
-
-  /*
-   *  Sets the timestamp for a specific line handle.
-   */
-  this.setTimestamp = function (index, timestamp) {
-    this.codemirror.getLineHandle (index).timestamp = timestamp;
-  };
-
-  /*
-   *  Looks up the timestamp div and sets the color for the specific author.
-   */
-  this.setAuthor = function (index, client) {
-    this.codemirror.getLineHandle (index).client = client;
-  };
-
-  /*
-   *  Looks up the timestamp div and sets the color for the specific author.
-   */
-   this.load = function (data) {
-    var instance = this;
-    setTimeout (function () {
-      for (var i = 0; i < data.length; i++) {
-        instance.setTimestamp (data[i].linenumber, data[i].timestamp);
-        instance.setAuthor (data[i].linenumber, data[i].client);
-      }
-      instance.draw ();
-    }, 25);
-  }
 
   /*
    *  Draws the timestamps into its given container.
    */
-  this.generateTimestamps = function (instance) {
+  this.generateTimestamps = function (lines) {
     var content = '';
-    instance.codemirror.eachLine (function (line) {
-      setTimeout (function () {
-        if (line.text !== '') {
-          content += '<div class="timestamp-mine" style="height: ' + line.height + 'px;" data-line="' + instance.codemirror.getLineNumber (line) + '">';
-          content += '<p>' + line.timestamp + '</p>';
-          content += '</div>';
-        } else {
-          content += '<div class="blank-div" style="height: ' + line.height + 'px;"></div>';
-        }
-      }, 1);
-    });
-    setTimeout (function () {
-      $(instance.container).html (content);
-    }, 1);
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = this.codemirror.getLineHandle(i);
+      if (line.text !== '') {
+        content += '<div class="timestamp-mine" style="height: ' + line.height + 'px;" data-line="' + i + '">';
+        content += '<p>' + lines[i].timestamp + '</p>';
+        content += '</div>';
+      } else {
+        content += '<div class="blank-div" style="height: ' + line.height + 'px;"></div>';
+      }
+    }
+
+    $(this.container).html(content);
   };
 
   /*
