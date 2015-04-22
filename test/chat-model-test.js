@@ -1,0 +1,159 @@
+var Chat = require('../lib/models/Chat'),
+    expect = require('expect.js');
+
+describe('jibe (Chat model)', function() {
+
+  var chat;
+
+  var sampleData = {
+    id: 'chat1',
+    roomId: 'Testing',
+    authorId: 'Tester',
+    message: 'Testing testing 1, 2, 3',
+    timestamp: new Date(),
+    color: '#123456'
+  };
+
+  afterEach(function(done) {
+    // clear chat table after each test
+    Chat.delete().then(function(result) {
+      done();
+    });
+  });
+
+  describe('#new', function() {
+    it('creates an id if one is not supplied', function(done) {
+      chat = new Chat({
+        roomId: sampleData.roomId,
+        authorId: sampleData.authorId,
+        message: sampleData.message,
+        color: sampleData.color
+      });
+
+      expect(chat.id).to.not.be(null);
+
+      chat.save().then(function(result) {
+        expect(result.id).to.not.be(null);
+        done();
+      }).error(function(error) {
+        expect().fail('error on save');
+      });
+    });
+
+    it('uses the given id when one is supplied', function(done) {
+      chat = new Chat({
+        id: sampleData.id,
+        roomId: sampleData.roomId,
+        authorId: sampleData.authorId,
+        message: sampleData.message,
+        color: sampleData.color
+      });
+
+      expect(chat.id).to.eql(sampleData.id);
+
+      chat.save().then(function(result) {
+        expect(result.id).to.eql(sampleData.id);
+        done();
+      }).error(function(error) {
+        expect().fail('error on save');
+      });
+    });
+
+    it('requires a roomId', function(done) {
+      chat = new Chat({
+        authorId: sampleData.authorId,
+        message: sampleData.message,
+        color: sampleData.color
+      });
+
+      chat.save().then(function(result) {
+        expect().fail('expected error on save, but got result', result);
+      }).error(function(error) {
+        expect(error.message).to.eql('Value for [roomId] must be defined.');
+        done();
+      });
+    });
+
+    it('requires an authorId', function(done) {
+      chat = new Chat({
+        roomId: sampleData.roomId,
+        message: sampleData.message,
+        color: sampleData.color
+      });
+
+      chat.save().then(function(result) {
+        expect().fail('expected error on save, but got result', result);
+      }).error(function(error) {
+        expect(error.message).to.eql('Value for [authorId] must be defined.');
+        done();
+      });
+    });
+
+    it('requires a message', function(done) {
+      chat = new Chat({
+        roomId: sampleData.roomId,
+        authorId: sampleData.authorId,
+        color: sampleData.color
+      });
+
+      chat.save().then(function(result) {
+        expect().fail('expected error on save, but got result', result);
+      }).error(function(error) {
+        expect(error.message).to.eql('Value for [message] must be defined.');
+        done();
+      });
+    });
+
+    it('requires a color', function(done) {
+      chat = new Chat({
+        roomId: sampleData.roomId,
+        authorId: sampleData.authorId,
+        message: sampleData.message
+      });
+
+      chat.save().then(function(result) {
+        expect().fail('expected error on save, but got result', result);
+      }).error(function(error) {
+        expect(error.message).to.eql('Value for [color] must be defined.');
+        done();
+      });
+    });
+
+    it('creates a timestamp if one is not supplied', function(done) {
+      chat = new Chat({
+        roomId: sampleData.roomId,
+        authorId: sampleData.authorId,
+        message: sampleData.message,
+        color: sampleData.color
+      });
+
+      expect(chat.timestamp).to.not.be(null);
+
+      chat.save().then(function(result) {
+        expect(result.timestamp).to.not.be(null);
+        done();
+      }).error(function(error) {
+        expect().fail('error on save', result);
+      });
+    });
+
+    it('uses the given timestamp when one is supplied', function(done) {
+      chat = new Chat({
+        roomId: sampleData.roomId,
+        authorId: sampleData.authorId,
+        message: sampleData.message,
+        timestamp: sampleData.timestamp,
+        color: sampleData.color
+      });
+
+      expect(chat.timestamp).to.eql(sampleData.timestamp);
+
+      chat.save().then(function(result) {
+        expect(result.timestamp).to.eql(sampleData.timestamp);
+        done();
+      }).error(function(error) {
+        expect().fail('error on save', result);
+      });
+    });
+  });
+});
