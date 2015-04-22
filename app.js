@@ -24,7 +24,6 @@ var sassMiddleware  = require('node-sass-middleware');
 var path            = require('path');
 var chatRoutes      = require('./lib/routes/chat.js');
 var chatHandler     = require('./lib/sockets/chat.js');
-var editorHandler   = require('./lib/sockets/editor.js');
 var browserChannelMiddleware = require('./lib/middleware/browserchannel.js');
 var router = express.Router();
 
@@ -60,7 +59,6 @@ exports.router = function(io) {
 
   if(io) {
     io.of('/chat').on('connection', chatHandler);
-    io.of('/editor').on('connection', editorHandler);
   }
 
   router.use('/lib', express.static(path.join(__dirname, '/node_modules')));

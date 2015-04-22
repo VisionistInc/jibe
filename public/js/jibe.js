@@ -136,7 +136,6 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
     agree : function (string) {
       var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
       var room       = getLocation ();
-      var editor_io  = setSocket ('io', editor_io, '/editor', room);
       var editor_bc  = setSocket ('bc', null, 'jibe', room);
       var editor     = setCodeMirror ();
       var converter  = new Showdown.converter ();
@@ -189,78 +188,13 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
           });
       	}
         if (editor_bc.type && editor_bc.type.name === 'json0') {
-          editor_bc.attachCodeMirror (editor);
+          editor_bc.attachCodeMirror (editor, null, timestamps);
         }
       });
 
-      /*
-       *  Subscribe to editor change events.
-       */
-      editor_io.emit ('subscribe', room);
-
-      /*
-       *  Loads the saved timestamps..
-       */
-      editor_io.on('connected', function (data) {
-        prior = data.lines;
-        if (data.lines.length > 0) {
-          timestamps.load (data.lines);
-        }
-      });
-
-      /*
-       *  Fires whenever the user finishes typing a character --
-       *  -- sends current line and author to server for synchronizing timestamp author color codings.
-       */
-      editor.on ('keyup', function (event) {
-        if (send) {
-          after = [];
-          editor.eachLine (function (line) {
-            after.push ({
-              room       : room,
-              linenumber : editor.getLineNumber (line),
-              height     : line.height,
-              text       : line.text,
-              timestamp  : typeof line.timestamp !== 'undefined' ? line.timestamp : null,
-              client     : typeof line.client !== 'undefined' ? line.client : client
-            });
-          });
-
-          editor_io.emit ('change', {
-            room : room,
-            diff : jsondiff.diff (prior, after)
-          });
-
-          send = false;
-        }
-      });
-
-      /*
-       *  Fires whenever the editor changes --
-       *  -- updates timestamps.
-       */
-      editor.on ("change", function (event) {
-        var line = editor.getCursor ().line;
-        var date = timestamps.newDate ();
-
-        updatePreview (editor, converter);
-
-        timestamps.setTimestamp (line, date);
-        timestamps.setAuthor (line, client);
-
-        timestamps.draw ();
-
-        /*
-         *  Provides a helping hand to the keyup function --
-         *  -- won't send a diff to server unless a significant change is seen on the editor.
-         *  (Also helps not send data when hitting alt, ctrl, enter, shift, among other keys, etc.)
-         */
-        send = true;
-      });
-
-      editor_io.on ('change', function (data) {
-        timestamps.load (data.payload);
-        prior = data.payload;
+      // whenever the codemirror editor gets an update, update the markdown preview
+      editor.on('change', function() {
+        updatePreview(editor, converter);
       });
 
       /*
