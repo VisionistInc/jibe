@@ -5,14 +5,13 @@ A modern, lightweight, collaborative editing environment.
 
 ## Installation
 * `npm install`
-* Start [Elasticsearch 1.4+](https://www.elastic.co/downloads/elasticsearch) with default settings
 * `npm start`
 * Go to [http://localhost:3000](http://localhost:3000)
 
 ## Database setup
 Jibe requires [RethinkDB](http://www.rethinkdb.com/) for data persistance.
 
-If you do not have a RethinkDB server available, you can use  [Docker](https://www.docker.com/) to quickly have one running:
+If you do not have a RethinkDB server available, you can easily [install it locally](http://rethinkdb.com/docs/install/) or use the [Docker](https://www.docker.com/) image:
 
 ```
 docker pull rethinkdb

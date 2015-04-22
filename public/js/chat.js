@@ -39,7 +39,7 @@ function Chat (data) {
    *  Shows a desktop notification to the user if enabled.
    */
   this.sendNotification = function (message) {
-    var title        = "Message from " + message.client;
+    var title        = "Message from " + message.authorId;
     var options      = { body: message.message };
     var notification = new Notification (title, options);
 
@@ -66,10 +66,10 @@ function Chat (data) {
   this.addMessage = function (message, prepend) {
     this.count++;
 
-    $("#typing-" + message.client).remove ();
+    $("#typing-" + message.authorId).remove ();
     var classes = "chat-message";
 
-    if (message.client == instance.client) {
+    if (message.authorId == instance.client) {
       classes += " bubble-mine animated bounceIn";
       chatdiv  = $('<div>').addClass (classes).text (message.message);
     } else {
@@ -117,7 +117,7 @@ function Chat (data) {
           instance.allMessages = true;
         }
         for (var ii = 0; ii < data.length; ii++) {
-          instance.addMessage (data[ii]._source, true);
+          instance.addMessage (data[ii], true);
         }
         instance.fetchInProgress = false;
         if (callback) {
@@ -172,9 +172,9 @@ function Chat (data) {
    */
   this.sendTyping = function () {
     instance.socket.emit ('typing', {
-      pad_id : instance.room,
-      client : instance.client,
-      value  : instance.typing,
+      roomId   : instance.room,
+      authorId : instance.client,
+      value    : instance.typing,
     });
   };
 
@@ -229,8 +229,8 @@ function Chat (data) {
         message = $('#chat-message').val ();
         if (message !== "") {
           message = {
-            pad_id  : instance.room,
-            client  : instance.client,
+            roomId  : instance.room,
+            authorId: instance.client,
             message : message,
             timestamp: new Date ()
           };
