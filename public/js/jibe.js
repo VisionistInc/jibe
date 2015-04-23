@@ -52,9 +52,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
    */
   function setSocket (tool, socket, channel, room) {
     if (tool === 'io') {
-      return io (window.location.host + channel, function () {
-      	socket.emit ('subscribe', room);
-      });
+      return io (window.location.host + channel);
     } else {
       var share  = new window.sharejs.Connection (new BCSocket (null, { reconnect: true }));
       return share.get (channel, room);
