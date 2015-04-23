@@ -33,29 +33,29 @@ function Timestamps (data) {
   };
 
   /*
+   *  Returns a timestamp string based on the format.
+   */
+  this.getMoment = function (timestamp) {
+    return moment (timestamp).format (this.format);
+  };
+
+  /*
    *  Draws the timestamps into its given container.
    */
   this.generateTimestamps = function (lines) {
     var content = '';
-
     for (var i = 0; i < lines.length; i++) {
       var line = this.codemirror.getLineHandle(i);
+
       if (line.text !== '') {
         content += '<div class="timestamp-mine" style="height: ' + line.height + 'px;" data-line="' + i + '">';
-        content += '<p>' + lines[i].timestamp + '</p>';
+        content += '<p>' + this.getMoment (lines[i].timestamp) + '</p>';
         content += '</div>';
       } else {
         content += '<div class="blank-div" style="height: ' + line.height + 'px;"></div>';
       }
     }
 
-    $(this.container).html(content);
-  };
-
-  /*
-   *  Returns a timestamp string based on the format.
-   */
-  this.newDate = function () {
-    return new Date ().toFormat (this.format);
+    $(this.container).html (content);
   };
 }

@@ -81,7 +81,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       client     : client,
       container  : '#timestamps-container',
       codemirror : editor,
-      format     : 'YYYY-MM-DD HH:MI:SS'
+      format     : 'YYYY-MM-DD HH:mm:ss'
     });
   }
 
