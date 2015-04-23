@@ -154,7 +154,7 @@
           if (change.text.join('\n') === '\n') {
             ops.push({p:['lines', change.from.line+1], li: {
               client: timestamps.client,
-              timestamp: timestamps.getMoment()
+              timestamp: new Date ()
             }});
           } else {
             if (change.origin !== 'paste') {
@@ -167,14 +167,14 @@
                 // replace (delete and insert) the line with updated values
                 ops.push({p:['lines', change.from.line], ld: doc.lines[change.from.line], li: {
                   client: timestamps.client,
-                  timestamp: timestamps.getMoment()
+                  timestamp: new Date ()
                 }});
               }
 
               for (i = 1; i < change.text.length; i++) {
                 ops.push({p:['lines', change.from.line+1], li: {
                   client: timestamps.client,
-                  timestamp: timestamps.getMoment()
+                  timestamp: new Date ()
                 }});
               }
             }
@@ -194,7 +194,7 @@
                 continue;
               }
 
-              var newTimestamp = timestamps.getMoment();
+              var newTimestamp = new Date ();
 
               // the line metadata has changed (new author or new date)
               if (newTimestamp !== doc.lines[lineIndex].timestamp ||
@@ -212,7 +212,7 @@
               // the line doesn't currently exist, so insert a new line
               ops.push({p:['lines', lineIndex], li: {
                 client: timestamps.client,
-                timestamp: timestamps.getMoment()
+                timestamp: new Date ()
               }});
             }
           }

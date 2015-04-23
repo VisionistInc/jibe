@@ -46,6 +46,7 @@ div#tabs-container {
   text-overflow: ellipsis;
   word-break: break-all;
   word-wrap: break-word;
+  cursor: default;
 }
 
 .timestamp-mine {
@@ -55,6 +56,7 @@ div#tabs-container {
 
 .timestamp-other {
   @extend .timestamp;
+  border-right: 2.75px solid #57b6ff;
 }
 
 .timestamp > p {
@@ -133,7 +135,7 @@ div.chat-message {
 }
 
 .bubble-other {
-  background: #ff2d2d;
+  // background: #ff2d2d;
   float: left;
   clear: both;
 }

@@ -24,6 +24,7 @@ function Timestamps (data) {
   this.container  = data.container;
   this.codemirror = data.codemirror;
   this.format     = typeof data.format !== 'undefined' ? data.format : 'YYYY-MM-DD';
+  this.colors     = [];
 
   /*
    *  Draws the timestamps into the given container.
@@ -44,18 +45,40 @@ function Timestamps (data) {
    */
   this.generateTimestamps = function (lines) {
     var content = '';
+    var timestamps = [];
+    var compare_date  = '';
+
     for (var i = 0; i < lines.length; i++) {
-      var line = this.codemirror.getLineHandle(i);
+      var timestamp = $('<div>');
+
+      var line = this.codemirror.getLineHandle (i);
+      var date = this.getMoment (lines[i].timestamp);
 
       if (line.text !== '') {
-        content += '<div class="timestamp-mine" style="height: ' + line.height + 'px;" data-line="' + i + '">';
-        content += '<p>' + this.getMoment (lines[i].timestamp) + '</p>';
+        content += '<div class="timestamp" style="height: ' + line.height + 'px; border-right: 2.75px solid ' + this.colors[lines[i].client] + '" data-line="' + i + '" data-author="' + lines[i].client + '">';
+        if (date !== compare_date) {
+          content += '<p>' + date + '</p>';
+          compare_date = date;
+        }
         content += '</div>';
       } else {
         content += '<div class="blank-div" style="height: ' + line.height + 'px;"></div>';
+        compare_date = '';
       }
+
+      $(this.container).html (content);
     }
 
-    $(this.container).html (content);
+    this.activateTooltips ();
+  };
+
+  this.activateTooltips = function () {
+    $('.timestamp')
+      .mouseenter (function () {
+        console.info ($(this).data ('author'));
+      })
+      .mouseleave (function () {
+        // console.info ("Not hovering!");
+      });
   };
 }

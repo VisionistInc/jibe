@@ -28,6 +28,7 @@ function Chat (data) {
   this.timeout         = {};
   this.allMessages     = false;
   this.fetchInProgress = false;
+  this.colors          = {};
 
   /*
    *  NOTICE: this instance object is used throughout the following code --
@@ -71,13 +72,13 @@ function Chat (data) {
 
     if (message.authorId == instance.client) {
       classes += " bubble-mine animated bounceIn";
-      chatdiv  = $('<div>').addClass (classes).text (message.message);
+      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.colors[message.authorId]);
     } else {
       if (!prepend) {
         instance.sendNotification (message);
       }
       classes += " bubble-other animated bounceIn";
-      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
+      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.colors[message.authorId]);
   	}
 
     /*
@@ -178,15 +179,18 @@ function Chat (data) {
     });
   };
 
+  this.processAuthorColorCoding = function (authors) {
+    for (var i = 0; i < authors.length; i++) {
+      if (!(authors[i].id in instance.colors)) {
+        instance.colors[authors[i].id] = authors[i].color;
+      }
+    }
+  };
+
   /*
    *  Initializes all listeners for chat.
    */
   this.listen = function () {
-    /*
-     *  Load latest messages if any.
-     */
-     instance.getMoreMessages ();
-
     /*
      *  Subscript to room and set up socket listeners.
      */
@@ -196,17 +200,6 @@ function Chat (data) {
     });
     instance.socket.on ('message', instance.addMessage);
     instance.socket.on ('typing' , instance.addTyping );
-    instance.socket.on ('authorJoined', function(author) {
-      console.log('authorJoined!', author);
-      // TODO handle this
-    });
-    instance.socket.on ('lineAuthors', function(authors) {
-      console.log('lineAuthors', authors);
-      // TODO handle this
-    });
-    instance.socket.on('authorLeft', function(data) {
-      console.log('authorLeft', data);
-    });
 
     /*
      *  Detects scrolling inside the chat pane --
@@ -282,5 +275,12 @@ function Chat (data) {
      *  Requests permission to display desktop notifications.
      */
     Notification.requestPermission ();
+
+    /*
+     *  Load latest messages if any.
+     */
+    setTimeout (function () {
+      instance.getMoreMessages ();
+    }, 50);
   };
 }

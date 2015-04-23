@@ -79,7 +79,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       client     : client,
       container  : '#timestamps-container',
       codemirror : editor,
-      format     : 'YYYY-MM-DD HH:mm:ss'
+      format     : 'YYYY-MM-DD HH:mm'
     });
   }
 
@@ -164,6 +164,38 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       var chat = setChat (chat_components);
       chat.listen ();
 
+      /*
+       *  Whenever a new client joins, they are added to the local active users array --
+       *  -- users currently in the room.
+       */
+      chat.socket.on ('authorJoined', function (author) {
+        if (!(author.id in chat.colors)) {
+          chat.colors[author.id] = author.color;
+        }
+        timestamps.colors = chat.colors;
+      });
+
+      /*
+       *  Retrieves every conected client in the room.
+       */
+      chat.socket.on ('lineAuthors', function (authors) {
+        chat.processAuthorColorCoding (authors);
+        timestamps.colors = chat.colors;
+      });
+
+      /*
+       *  Removes the client that just closed the connection --
+       *  -- closed the window, tab, etc.
+       */
+      chat.socket.on ('authorLeft', function (author) {
+        delete chat.colors[author.id];
+        timestamps.colors = chat.colors;
+      });
+
+      /*
+       *  Text formatting within editor --
+       *  -- bold, italic, monospace.
+       */
       $('#format-bold'  ).click (function () { textformat.bold      (); });
 			$('#format-code'  ).click (function () { textformat.monospace (); });
 			$('#format-italic').click (function () { textformat.italic    (); });
@@ -190,7 +222,9 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
         }
       });
 
-      // whenever the codemirror editor gets an update, update the markdown preview
+      /*
+       *  Whenever the codemirror editor gets an update, update the markdown preview.
+       */
       editor.on('change', function() {
         updatePreview(editor, converter);
       });
