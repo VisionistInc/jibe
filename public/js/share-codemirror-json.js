@@ -157,7 +157,7 @@
               timestamp: new Date ()
             }});
           } else {
-            if (change.origin !== 'paste') {
+            if (change.origin !== 'paste' && change.origin !== 'redo') {
               console.warn('not sure what to do in this case', change);
             } else {
 
