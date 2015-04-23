@@ -1,5 +1,26 @@
-// big thank you to share-codemirror
-// this is as much as possible copied from there
+
+//
+//  share-codemirror-json.js
+//
+//  - Synchronizes JSON documents between ShareJS and CodeMirror
+//
+//  Credit to share-codemirror, this is taken as much as possible from that.
+//  - https://github.com/share/share-codemirror
+//
+//  Copyright (c) 2015 Visionist, Inc.
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 (function () {
   'use strict';
@@ -99,6 +120,9 @@
       // array of operations that will be submitted
       var ops = [];
 
+      // object to keep track of lines that were deleted
+      var deletedLines = {};
+
       // get an updated document
       var doc = ctx.get();
 
@@ -106,77 +130,96 @@
         // nothing was removed.
       } else {
 
-        // delete.removed contains an array of removed lines as strings, so this adds
-        // all the lengths. Later change.removed.length - 1 is added for the \n-chars
-        // (-1 because the linebreak on the last line won't get deleted)
-        var delLen = 0;
-        for (var rm = 0; rm < change.removed.length; rm++) {
-          delLen += change.removed[rm].length;
-        }
-        delLen += change.removed.length - 1;
-
-        // this is the changed text
-        //change.removed.join('\n')
-
-        for (i = change.to.line; i > change.from.line; i--) {
-          ops.push({p:['lines', i], ld: doc.lines[i]});
-        }
-
+        // change in text (deletion)
         ops.push({p:textPath, sd: change.removed.join('\n')});
 
-        // submit all of these with the insertions later
-        //ctx.remove(textPath, delLen, function(error, appliedOp) {
-          //console.info('delete callback', error, appliedOp);
-        //});
+        // change in lines (deleted lines)
+        for (i = change.to.line; i > change.from.line; i--) {
+          ops.push({p:['lines', i], ld: doc.lines[i]});
+          deletedLines[i] = true;
+        }
       }
 
       if (change.text) {
 
-        // insert op
+        // change in text (insertion)
         ops.push({p:textPath, si: change.text.join('\n')});
 
-        // update timestamps
-        for (i = change.from.line; i <= change.to.line; i++) {
-          if (doc.lines[i]) {
+        // new lines and pasting
+        if ((change.from.line === change.to.line && change.text.length > 1) || change.origin === 'paste') {
 
-            var newTimestamp = timestamps.newDate();
+          // figure out if there should also be an included line insertion
+          // // if the change was just to add a new line character, do a replace
+          // // on that line and then do an insert for the next
+          if (change.text.join('\n') === '\n') {
+            ops.push({p:['lines', change.from.line+1], li: {
+              client: timestamps.client,
+              timestamp: timestamps.newDate()
+            }});
+          } else {
+            if (change.origin !== 'paste') {
+              console.warn('not sure what to do in this case', change);
+            } else {
 
-            if (newTimestamp !== doc.lines[i].timestamp ||
-                timestamps.client !== doc.lines[i].client) {
+              if (newTimestamp !== doc.lines[change.from.line].timestamp ||
+                  timestamps.client !== doc.lines[change.from.line].client) {
 
                 // replace (delete and insert) the line with updated values
-                ops.push({p:['lines', i], ld: doc.lines[i], li: {
+                ops.push({p:['lines', change.from.line], ld: doc.lines[change.from.line], li: {
                   client: timestamps.client,
                   timestamp: timestamps.newDate()
                 }});
-            }
+              }
 
-            // figure out if there should also be an included line insertion
-            // // if the change was just to add a new line character, do a replace
-            // // on that line and then do an insert for the next
-            if (change.text.join('\n') === '\n') {
-              ops.push({p:['lines', i+1], li: {
+              for (i = 1; i < change.text.length; i++) {
+                ops.push({p:['lines', change.from.line+1], li: {
+                  client: timestamps.client,
+                  timestamp: timestamps.newDate()
+                }});
+              }
+            }
+          }
+        } else {
+          // change in lines (replace + insertion)
+          for (var changeTextIndex = 0; changeTextIndex < change.text.length; changeTextIndex++) {
+            var lineChange = change.text[changeTextIndex];
+            var lineIndex = change.from.line + changeTextIndex;
+
+            if (doc.lines[lineIndex]) {
+
+              // if this line was just deleted, we don't want to submit any
+              // updates for it ... we have already updated the text appropriately,
+              // updating this now will update the wrong line.
+              if (deletedLines[lineIndex]) {
+                continue;
+              }
+
+              var newTimestamp = timestamps.newDate();
+
+              // the line metadata has changed (new author or new date)
+              if (newTimestamp !== doc.lines[lineIndex].timestamp ||
+                  timestamps.client !== doc.lines[lineIndex].client) {
+
+                // replace (delete and insert) the line with updated values
+                ops.push({p:['lines', lineIndex], ld: doc.lines[lineIndex], li: {
+                  client: timestamps.client,
+                  timestamp: newTimestamp
+                }});
+              }
+
+
+            } else {
+              // the line doesn't currently exist, so insert a new line
+              ops.push({p:['lines', lineIndex], li: {
                 client: timestamps.client,
                 timestamp: timestamps.newDate()
               }});
             }
-
-          } else {
-            // insert a new line
-            ops.push({p:['lines', i], li: {
-              client: timestamps.client,
-              timestamp: timestamps.newDate()
-            }});
           }
         }
-
-        // use this os that we can submit an array of ops that includes
-        // both the changes to the text and to the line information
-        //ctx.submitOp(ops);
-
-        //ctx.insert(textPath, change.text.join('\n'));
       }
 
+      // submit the complete list of changes
       ctx.submitOp(ops);
 
       // call the function again on the next change, if there is one
