@@ -204,6 +204,9 @@ function Chat (data) {
       console.log('lineAuthors', authors);
       // TODO handle this
     });
+    instance.socket.on('authorLeft', function(data) {
+      console.log('authorLeft', data);
+    });
 
     /*
      *  Detects scrolling inside the chat pane --
