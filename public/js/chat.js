@@ -190,9 +190,20 @@ function Chat (data) {
     /*
      *  Subscript to room and set up socket listeners.
      */
-    instance.socket.emit ('subscribe', instance.room);
+    instance.socket.emit ('subscribe', {
+      roomId: instance.room,
+      authorId: instance.client
+    });
     instance.socket.on ('message', instance.addMessage);
     instance.socket.on ('typing' , instance.addTyping );
+    instance.socket.on ('authorJoined', function(author) {
+      console.log('authorJoined!', author);
+      // TODO handle this
+    });
+    instance.socket.on ('lineAuthors', function(authors) {
+      console.log('lineAuthors', authors);
+      // TODO handle this
+    });
 
     /*
      *  Detects scrolling inside the chat pane --
