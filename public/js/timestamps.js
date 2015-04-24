@@ -40,6 +40,20 @@ function Timestamps (data) {
     return moment (timestamp).format (this.format);
   };
 
+  this.addAuthorColorCoding = function (author) {
+    if (!(author.id in this.colors)) {
+      this.colors[author.id] = author.color;
+    }
+  };
+
+  this.processAuthorColorCoding = function (authors) {
+    for (var i = 0; i < authors.length; i++) {
+      if (!(authors[i].id in this.colors)) {
+        this.colors[authors[i].id] = authors[i].color;
+      }
+    }
+  };
+
   /*
    *  Draws the timestamps into its given container.
    */

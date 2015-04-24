@@ -28,7 +28,6 @@ function Chat (data) {
   this.timeout         = {};
   this.allMessages     = false;
   this.fetchInProgress = false;
-  this.colors          = {};
 
   /*
    *  NOTICE: this instance object is used throughout the following code --
@@ -70,15 +69,15 @@ function Chat (data) {
     $("#typing-" + message.authorId).remove ();
     var classes = "chat-message";
 
-    if (message.authorId == instance.client) {
+    if (message.authorId == instance.client.id) {
       classes += " bubble-mine animated bounceIn";
-      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.colors[message.authorId]);
+      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.client.color);
     } else {
       if (!prepend) {
         instance.sendNotification (message);
       }
       classes += " bubble-other animated bounceIn";
-      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.colors[message.authorId]);
+      chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
   	}
 
     /*
@@ -174,17 +173,9 @@ function Chat (data) {
   this.sendTyping = function () {
     instance.socket.emit ('typing', {
       roomId   : instance.room,
-      authorId : instance.client,
+      authorId : instance.client.id,
       value    : instance.typing,
     });
-  };
-
-  this.processAuthorColorCoding = function (authors) {
-    for (var i = 0; i < authors.length; i++) {
-      if (!(authors[i].id in instance.colors)) {
-        instance.colors[authors[i].id] = authors[i].color;
-      }
-    }
   };
 
   /*
@@ -196,7 +187,7 @@ function Chat (data) {
      */
     instance.socket.emit ('subscribe', {
       roomId: instance.room,
-      authorId: instance.client
+      authorId: instance.client.id
     });
     instance.socket.on ('message', instance.addMessage);
     instance.socket.on ('typing' , instance.addTyping );
@@ -237,7 +228,7 @@ function Chat (data) {
         if (message !== "") {
           message = {
             roomId  : instance.room,
-            authorId: instance.client,
+            authorId: instance.client.id,
             message : message,
             timestamp: new Date ()
           };
@@ -275,12 +266,5 @@ function Chat (data) {
      *  Requests permission to display desktop notifications.
      */
     Notification.requestPermission ();
-
-    /*
-     *  Load latest messages if any.
-     */
-    setTimeout (function () {
-      instance.getMoreMessages ();
-    }, 50);
   };
 }

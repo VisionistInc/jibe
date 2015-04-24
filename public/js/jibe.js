@@ -152,7 +152,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  Set up chat components.
        */
       var chat_components = {
-        'client' : client,
+        'client' : {id: client, color: null},
         'room'   : room,
         'socket' : null
       };
@@ -165,22 +165,29 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       chat.listen ();
 
       /*
+       *  When first subscribing, this gives us our author information --
+       *  -- loads latest chat messages, if any.
+       */
+      chat.socket.on ('author', function(author) {
+        chat.client.color = author.color;
+        timestamps.addAuthorColorCoding (author);
+        chat.getMoreMessages ();
+      });
+
+      /*
        *  Whenever a new client joins, they are added to the local active users array --
        *  -- users currently in the room.
        */
       chat.socket.on ('authorJoined', function (author) {
-        if (!(author.id in chat.colors)) {
-          chat.colors[author.id] = author.color;
-        }
-        timestamps.colors = chat.colors;
+        timestamps.addAuthorColorCoding (author);
+        //TODO add to presence array
       });
 
       /*
        *  Retrieves every conected client in the room.
        */
       chat.socket.on ('lineAuthors', function (authors) {
-        chat.processAuthorColorCoding (authors);
-        timestamps.colors = chat.colors;
+        timestamps.processAuthorColorCoding (authors);
       });
 
       /*
@@ -188,8 +195,14 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  -- closed the window, tab, etc.
        */
       chat.socket.on ('authorLeft', function (author) {
-        delete chat.colors[author.id];
-        timestamps.colors = chat.colors;
+        //TODO remove from presence array
+      });
+
+      // TODO display these authors at the top of the room
+      chat.socket.on ('presentAuthors', function(authors) {
+        console.info('these authors are currently in the room', authors);
+
+        //TODO populate the presence array
       });
 
       /*
