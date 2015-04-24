@@ -67,6 +67,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       mode         : 'markdown',
       tabMode      : 'indent',
       lineWrapping : true,
+      placeholder  : "Begin typing here..."
     });
   }
 
