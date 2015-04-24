@@ -89,10 +89,18 @@ function Timestamps (data) {
   this.activateTooltips = function () {
     $('.timestamp')
       .mouseenter (function () {
-        console.info ($(this).data ('author'));
+        $(this).attr ('data-toggle', 'tooltip')
+               .attr ('data-placement', 'top')
+               .attr ('title', $(this).data ('author'));
+
+       $('[data-toggle="tooltip"]').tooltip ({
+         container: 'body'
+       });
       })
       .mouseleave (function () {
-        // console.info ("Not hovering!");
+        $(this).removeAttr ('data-toggle')
+               .removeAttr ('data-placement')
+               .removeAttr ('title');
       });
   };
 }

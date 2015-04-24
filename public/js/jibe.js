@@ -101,6 +101,34 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
   }
 
   /*
+   *  Adds the user to the active users container --
+   *  -- indicates all users who are currently in the room.
+   */
+  function setActiveUser (user) {
+    var button = $('<button>')
+                    .addClass ('btn btn-default')
+                    .attr ('data-toggle', 'tooltip')
+                    .attr ('data-placement', 'top')
+                    .attr ('title', user.id)
+                    .attr ('id', 'active-user-' + user.id)
+                    .html ('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>')
+                    .css  ('color', user.color);
+
+    $('#active-users-indicator').append (button);
+    $('[data-toggle="tooltip"]').tooltip ({
+      container: 'body'
+    });
+  }
+
+  /*
+   *  Removes the user to the active users container --
+   *  -- happens on disconect.
+   */
+  function removeActiveUser (user) {
+    $('#active-user-' + user.id).remove ();
+  }
+
+  /*
    *  Really not the best way to do things as it includes Markdown formatting along with words --
    *  -- updates the word count located on the editor.
    */
@@ -115,10 +143,6 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
         word_count.html (editor_value.match(/\S+/g).length + ' words');
       }
     }
-  }
-
-  function generateDiff (prior, after, callback) {
-    return jsondiff.diff (prior, after);
   }
 
   /*
@@ -181,7 +205,7 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        */
       chat.socket.on ('authorJoined', function (author) {
         timestamps.addAuthorColorCoding (author);
-        //TODO add to presence array
+        setActiveUser (author);
       });
 
       /*
@@ -196,14 +220,13 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  -- closed the window, tab, etc.
        */
       chat.socket.on ('authorLeft', function (author) {
-        //TODO remove from presence array
+        removeActiveUser (author);
       });
 
-      // TODO display these authors at the top of the room
-      chat.socket.on ('presentAuthors', function(authors) {
-        console.info('these authors are currently in the room', authors);
-
-        //TODO populate the presence array
+      chat.socket.on ('presentAuthors', function (authors) {
+        for (var i = 0; i < authors.length; i++) {
+          setActiveUser (authors[i]);
+        }
       });
 
       /*
