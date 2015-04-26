@@ -23,6 +23,7 @@ var express         = require('express');
 var sassMiddleware  = require('node-sass-middleware');
 var path            = require('path');
 var chatRoutes      = require('./lib/routes/chat.js');
+var opsRoutes       = require('./lib/routes/ops');
 var chatHandler     = require('./lib/sockets/chat.js');
 var browserChannelMiddleware = require('./lib/middleware/browserchannel.js');
 var router = express.Router();
@@ -47,6 +48,9 @@ var router = express.Router();
 exports.router = function(io) {
   // chat routes
   router.use('/chat', chatRoutes);
+
+  // ops routes
+  router.use('/ops', opsRoutes);
 
   router.use(
     sassMiddleware({

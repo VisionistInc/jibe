@@ -19,7 +19,7 @@
 //  limitations under the License.
 //
 
-var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Chat) {
+var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFormat, Chat) {
 
   /*
    *  Returns location string based on URL hash; else default to The Dark Side.
@@ -68,6 +68,18 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       tabMode      : 'indent',
       lineWrapping : true,
       placeholder  : "Begin typing here..."
+    });
+  }
+
+  /*
+   *  Secondary CodeMirror instance for document replay.
+   */
+  function setCodeMirrorReplay () {
+    return CodeMirror.fromTextArea (document.getElementById ('entry-markdown-replay'), {
+      mode         : 'markdown',
+      tabMode      : 'indent',
+      lineWrapping : true,
+      readOnly     : true
     });
   }
 
@@ -164,6 +176,9 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
       var converter  = new Showdown.converter ();
       var timestamps = setTimestamps (editor, client);
       var textformat = setTextFormat (editor);
+
+      var replay;  // set up after everything else is initialized
+      var replay_editor = setCodeMirrorReplay();
 
       /*
        *  Used to create the diff sent to server.
@@ -270,9 +285,65 @@ var Jibe = (function (BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Ch
        *  Updates the Preview panel.
        */
       updatePreview (editor, converter);
+
+      /*
+       *  Initialize replay capabilities.
+       */
+      replay = new Replay ({
+        chat       : chat,
+        client     : client,
+        codemirror : replay_editor,
+        delay      : 100,
+        room       : room,
+        timestamps : timestamps
+      });
+
+      // Run when the playback completes.
+      replay.onComplete(function() {
+        $('#replay-button').removeClass('active');
+        $('#replay-button .glyphicon')
+            .removeClass('glyphicon-stop')
+            .addClass('glyphicon-play-circle');
+        $('#entry-markdown').next('.CodeMirror').show();
+        $('#entry-markdown-replay').next('.CodeMirror').hide();
+      });
+
+      /*
+       *  When the replay button is clicked, start replaying the
+       *  operations that have been performed on the document.
+       *
+       *  When it is clicked again, stop replaying, and return to
+       *  the latest version of the document.
+       */
+      $('#replay-button').click(function(event) {
+        if ($(this).hasClass('active')) {
+          // go back to normal pad
+          replay.stop();
+          $('#entry-markdown').next('.CodeMirror').show();
+          $('#entry-markdown-replay').next('.CodeMirror').hide();
+
+          // TODO
+          // - this breaks timestamps
+          // - should we have a replay timestamps div?
+          // - or set delay to 0 and go until caught up?
+          // - - may not work on longer documents...
+        } else {
+          $('#entry-markdown').next('.CodeMirror').hide();
+          $('#entry-markdown-replay').next('.CodeMirror').show();
+          replay.replay();
+        }
+
+        // toggle the active class on/off on the replay button
+        $(this).toggleClass('active');
+
+        // toggle the button icon
+        $(this).find('span.glyphicon')
+                .toggleClass('glyphicon-stop')
+                .toggleClass('glyphicon-play-circle');
+      });
     }
   };
-})(BCSocket, CodeMirror, Showdown, Timestamps, TextFormat, Chat);
+})(BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFormat, Chat);
 
 
 /*
