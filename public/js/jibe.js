@@ -178,7 +178,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
       var textformat = setTextFormat (editor);
 
       var replay;  // set up after everything else is initialized
-      var replay_editor = setCodeMirrorReplay();
+      var replay_editor = setCodeMirrorReplay ();
 
       /*
        *  Used to create the diff sent to server.
@@ -248,9 +248,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
        *  Text formatting within editor --
        *  -- bold, italic, monospace.
        */
-      $('#format-bold'  ).click (function () { textformat.bold      (); });
-			$('#format-code'  ).click (function () { textformat.monospace (); });
-			$('#format-italic').click (function () { textformat.italic    (); });
+      $('#format-bold'  ).click (function () { $(this).blur (); textformat.bold      (); });
+			$('#format-code'  ).click (function () { $(this).blur (); textformat.monospace (); });
+			$('#format-italic').click (function () { $(this).blur (); textformat.italic    (); });
 
       /*
        *  Subscribes to BrowserChannel connection and attaches the CodeMirror editor --
@@ -298,12 +298,25 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
         timestamps : timestamps
       });
 
-      // Run when the playback completes.
+      $('#toggle-slider').click (function () {
+        $(this).blur ();
+        if ($('#replay-controls-container').is (':visible')) {
+          $('#replay-controls-container').hide ("fast");
+        } else {
+          replay.setUp (function () {
+            $('#replay-controls-container').show ("fast");
+          });
+        }
+      });
+
+      /*
+       *  Run when the playback completes.
+       */
       replay.onComplete(function() {
         $('#replay-button').removeClass('active');
         $('#replay-button .glyphicon')
-            .removeClass('glyphicon-stop')
-            .addClass('glyphicon-play-circle');
+            .removeClass('glyphicon-pause')
+            .addClass('glyphicon-play');
         $('#entry-markdown').next('.CodeMirror').show();
         $('#entry-markdown-replay').next('.CodeMirror').hide();
       });
@@ -315,7 +328,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
        *  When it is clicked again, stop replaying, and return to
        *  the latest version of the document.
        */
-      $('#replay-button').click(function(event) {
+      $('#start-replay-button').click(function(event) {
+        $(this).blur ();
         if ($(this).hasClass('active')) {
           // go back to normal pad
           replay.stop();
@@ -338,8 +352,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
 
         // toggle the button icon
         $(this).find('span.glyphicon')
-                .toggleClass('glyphicon-stop')
-                .toggleClass('glyphicon-play-circle');
+                .toggleClass('glyphicon-pause')
+                .toggleClass('glyphicon-play');
       });
     }
   };

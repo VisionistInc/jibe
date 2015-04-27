@@ -28,9 +28,32 @@ function Replay (params) {
   this.room         = params.room;
   this.share        = params.share;
   this.timestamps   = params.timestamps;
+  this.operations   = [];
+  this.time_slider  = null;
+  this.current_v    = 1;
 
   var instance = this;
   var stop = false;
+
+  this.setUp = function (callback) {
+    $.get ('/ops/' + this.room, function (operations) {
+      if (operations[0] && operations[0].create) {
+        instance.operations = operations;
+        instance.fireSliderEventHandlers ();
+        callback ();
+      }
+    });
+  };
+
+  this.fireSliderEventHandlers = function () {
+    instance.time_slider = $('#replay-slider').slider ({
+      min: 0,
+      max: instance.operations.length,
+      formatter: function (value) {
+        return 'Version: ' + value;
+      }
+    });
+  }
 
   // TODO
   // - is the second textarea and codemirror instance necessary?
@@ -40,19 +63,21 @@ function Replay (params) {
   // - - merge chat history in with operations log
   // - - instance.chat.addMessage
   // - ability to start at / jump to any point in history
-  this.replay = function() {
-    $.get('/ops/' + this.room, function(operations) {
-      var snapshot = {};
-      if (operations[0] && operations[0].create) {
-        snapshot = operations[0].create.data;
-
-        // recursively play through the rest of the operations
-        instance.delayReplay(snapshot, operations, 1);
-      }
-    });
+  this.replay = function () {
+    /*
+     *  Recursively play through the rest of the operations.
+     */
+    var snapshop = null;
+    if (instance.current_v !== 1) {
+      snapshot = this.buildSnapshotForVersion(this.current_v);
+    } else {
+      snapshot = this.operations[0].create.data;
+    }
+    this.delayReplay (snapshot, this.operations, this.current_v);
   };
 
-  this.delayReplay = function(snapshot, operations, version) {
+  this.delayReplay = function (snapshot, operations, version) {
+    instance.time_slider.slider ('setValue', version);
     if (version >= operations.length) {
       console.log('done');
       stop = false;
@@ -63,7 +88,7 @@ function Replay (params) {
 
       return;
     } else if (stop) {
-      console.log('stopped');
+      instance.current_v = version;
       stop = false;
       return;
     }
@@ -86,4 +111,12 @@ function Replay (params) {
   this.stop = function() {
     stop = true;
   };
+
+  this.buildSnapshotForVersion = function(version) {
+    var snapshot = this.operations[0].create.data;
+    for (var i = 0; i < version; i++) {
+      snapshot = ottypes.json0.apply(snapshot, this.operations[version].op);
+    }
+    return snapshot;
+  }
 }
