@@ -103,4 +103,25 @@ describe('jibe (Room model)', function() {
       });
     });
   });
+
+  describe('.presentAuthors', function() {
+    it('fails validation if authors are not unique', function(done) {
+      room = new Room({
+        id: sampleData.id,
+        presentAuthors: sampleData.presentAuthors
+      });
+
+      room.save().then(function(result) {
+        room.presentAuthors.push(sampleData.presentAuthors[0]);
+
+        room.save().then(function(result) {
+          expect().fail('expected validation error');
+        }).error(function(error) {
+          console.log(error.message);
+          expect(error.message).to.eql('Duplicate value [author1] found in Room.presentAuthors');
+          done();
+        });
+      });
+    });
+  });
 });
