@@ -92,7 +92,7 @@ function Timestamps (data) {
         $(this).attr ('data-toggle', 'tooltip')
                .attr ('data-placement', 'top')
                .attr ('title', $(this).data ('author'));
-
+               
        $('[data-toggle="tooltip"]').tooltip ({
          container: 'body'
        });

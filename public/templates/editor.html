@@ -23,32 +23,53 @@
 
         <!-- Tabs -->
         <div id="tabs-container" class="col-md-9 col-sm-8 col-xs-12">
+
+            <!-- Playback controls for timeslider -->
+            <div id="replay-controls-container">
+              <div class="row">
+                <!-- Playback buttons -->
+                <div id="replay-buttons-container">
+                  <div class="btn-group" role="group" aria-label="...">
+                    <button id="start-replay-button" type="button" class="btn btn-lg btn-default">
+                      <span class="glyphicon glyphicon-play" aria-hidden="true" style="margin-top: 2px;"></span>
+                    </button>
+                  </div>
+                </div>
+                <!-- Slider -->
+                <div id="replay-slider-container">
+                  <input id="replay-slider" data-slider-id='replaySlider' type="text"/>
+                </div>
+              </div>
+              <hr>
+            </div>
+
+            <!-- Jibe editor content -->
             <div role="tabpanel">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
-                    <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                  <li role="presentation" class="active"><a href="#markdown" aria-controls="markdown" role="tab" data-toggle="tab">Markdown</a></li>
+                  <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
                 </ul>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="markdown">
                         <!-- Toolbar -->
                         <div class="editortoolbar row">
-                            <div class="btn-group" role="group" aria-label="...">
-                                <button id="format-bold" type="button" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-bold" aria-hidden="true"></span>
-                                </button>
-                                <button id="format-italic" type="button" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-italic" aria-hidden="true"></span>
-                                </button>
-                                <button id="format-code" type="button" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-barcode" aria-hidden="true"></span>
-                                </button>
-                                <button id="replay-button" type="button" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>
-                                </button>
-                            </div>
-
-                            <div id="active-users-indicator" class="btn-group pull-right" role="group" aria-label="..." style="margin-right: 18px;">
-                            </div>
+                          <div class="btn-group" role="group" aria-label="...">
+                            <button id="format-bold" type="button" class="btn btn-default">
+                                <span class="glyphicon glyphicon-bold" aria-hidden="true"></span>
+                            </button>
+                            <button id="format-italic" type="button" class="btn btn-default">
+                                <span class="glyphicon glyphicon-italic" aria-hidden="true"></span>
+                            </button>
+                            <button id="format-code" type="button" class="btn btn-default">
+                                <span class="glyphicon glyphicon-barcode" aria-hidden="true"></span>
+                            </button>
+                            <button id="toggle-slider" type="button" class="btn btn-default">
+                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                            </button>
+                          </div>
+                          <!-- Indicates which users are  -->
+                          <div id="active-users-indicator" class="btn-group pull-right" role="group" aria-label="..." style="margin-right: 18px;">
+                          </div>
                         </div>
                         <hr>
                         <!-- Markdown Editor -->
@@ -77,7 +98,7 @@
                     </div>
                     <div role="tabpanel" class="tab-pane" id="preview">
                         <!-- Markdown Preview -->
-                        <section class="entry-preview active col-md-12">
+                        <section class="entry-preview col-md-12">
                             <section class="entry-preview-content">
                                 <div class="rendered-markdown"></div>
                             </section>
