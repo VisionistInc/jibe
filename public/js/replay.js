@@ -63,7 +63,7 @@ function Replay (params) {
 
     $('#start-replay-button').removeClass ('active');
     $('#start-replay-button').find('span.glyphicon').removeClass ('glyphicon-pause').addClass ('glyphicon-play');
-  }
+  };
 
   /*
    *  Instantiates the slider within the controls container.
@@ -91,10 +91,10 @@ function Replay (params) {
           /*
            *  Build the snapshot up to the desired version.
            */
-          for (var i = instance.current_v; i < version; i++) {
+          for (var j = instance.current_v; j < version; j++) {
 
-            if (instance.operations[i].op) {
-              instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[i].op);
+            if (instance.operations[j].op) {
+              instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
             }
           }
         }
@@ -105,7 +105,7 @@ function Replay (params) {
         return 'Version: ' + version;
       }
     });
-  }
+  };
 
   /*
    *  Starts document replay.
