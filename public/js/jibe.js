@@ -351,13 +351,23 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
  *  ... you're welcome :-)
  */
 (function ($, Jibe) {
-  $.fn.jibe = function () {
+
+  var DEFAULTS = {
+    template: "templates/editor.html",
+  };
+
+  $.fn.jibe = function (opts) {
     var jibe_container = this; // e.g. #jibe-container
+
+    this.opts = $.extend({}, DEFAULTS, opts);
     /*
      *	Downloads required HTML for firing Jibe into the coolest jibe you'll ever jibe.
      */
+    //  $(this).load(this.opts.template, function(){
+    //    Jibe.agree();
+    //  });
     $.ajax ({
-    	url: "templates/editor.html",
+    	url: this.opts.template,
     	type: "GET",
     	success: function (data) {
         // Replaces container div with Jibe HTML
@@ -365,7 +375,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
         // Jibe!
         Jibe.agree ();
       },
-      async: false
+      async: false // TODO async templates please
     });
   };
 }(jQuery, Jibe));
