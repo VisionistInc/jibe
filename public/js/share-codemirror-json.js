@@ -243,7 +243,10 @@
         }
 
         // just draw whatever the server tells us to
-        timestamps.draw(otDoc.lines);
+        timestamps.lines = otDoc.lines;
+        if (!($('#replay-controls-container').is (':visible'))) {
+          timestamps.draw (timestamps.lines);
+        }
       }, 0);
     }
 

@@ -24,6 +24,7 @@ function Timestamps (data) {
   this.container  = data.container;
   this.codemirror = data.codemirror;
   this.format     = typeof data.format !== 'undefined' ? data.format : 'YYYY-MM-DD';
+  this.lines      = [];
   this.colors     = [];
 
   /*
@@ -68,7 +69,7 @@ function Timestamps (data) {
       var line = this.codemirror.getLineHandle (i);
       var date = this.getMoment (lines[i].timestamp);
 
-      if (line.text !== '') {
+      if (line.text.replace(/\s+/g, '') !== '') {
         content += '<div class="timestamp" style="height: ' + line.height + 'px; border-right: 2.75px solid ' + this.colors[lines[i].client] + '" data-line="' + i + '" data-author="' + lines[i].client + '">';
         if (date !== compare_date) {
           content += '<p>' + date + '</p>';
@@ -79,10 +80,9 @@ function Timestamps (data) {
         content += '<div class="blank-div" style="height: ' + line.height + 'px;"></div>';
         compare_date = '';
       }
-
-      $(this.container).html (content);
     }
 
+    $(this.container).html (content);
     this.activateTooltips ();
   };
 
@@ -92,7 +92,7 @@ function Timestamps (data) {
         $(this).attr ('data-toggle', 'tooltip')
                .attr ('data-placement', 'top')
                .attr ('title', $(this).data ('author'));
-               
+
        $('[data-toggle="tooltip"]').tooltip ({
          container: 'body'
        });
