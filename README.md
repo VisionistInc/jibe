@@ -1,6 +1,7 @@
 # jibe
 
-![Jibe: be in accord; agree.](https://raw.githubusercontent.com/VisionistInc/jibe/master/public/img/jibe_logo_blue_on_white.png)
+![Jibe: be in accord; agree.](https://raw.githubusercontent.com/VisionistInc/jibe/master/public/img/jibe_logo_blue_on_white_short.png)
+
 A modern, lightweight, collaborative editing environment.
 
 ## Installation
