@@ -192,9 +192,12 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
        *  Set up chat components.
        */
       var chat_components = {
-        'client' : {id: client, color: null},
         'room'   : room,
-        'socket' : null
+        'socket' : null,
+        'client' : {
+          id    : client,
+          color : null
+        }
       };
       chat_components.socket = setSocket ('io', chat_components.socket, '/chat', chat_components.room);
 
@@ -277,7 +280,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
       /*
        *  Whenever the codemirror editor gets an update, update the markdown preview.
        */
-      editor.on('change', function() {
+      editor.on('change', function () {
         updatePreview(editor, converter);
       });
 
@@ -295,65 +298,45 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
         codemirror : replay_editor,
         delay      : 100,
         room       : room,
-        timestamps : timestamps
+        timestamps : setTimestamps (replay_editor, 'mpgeraty')
       });
 
       $('#toggle-slider').click (function () {
         $(this).blur ();
+        replay.timestamps.colors = timestamps.colors;
+
         if ($('#replay-controls-container').is (':visible')) {
           $('#replay-controls-container').hide ("fast");
+          $('#entry-markdown-replay').next ('.CodeMirror').hide ();
+          $('#entry-markdown').next ('.CodeMirror').show ();
+          replay.reset ();
+          timestamps.draw (timestamps.lines);
         } else {
           replay.setUp (function () {
+            $('#entry-markdown').next ('.CodeMirror').hide ();
             $('#replay-controls-container').show ("fast");
+            $('#entry-markdown-replay').next ('.CodeMirror').show ();
           });
         }
       });
 
       /*
-       *  Run when the playback completes.
+       *  When the replay button is clicked, start replaying the operations that have been performed on the document --
+       *  -- when it is clicked again, stop replaying, and return to the latest version of the document.
        */
-      replay.onComplete(function() {
-        $('#replay-button').removeClass('active');
-        $('#replay-button .glyphicon')
-            .removeClass('glyphicon-pause')
-            .addClass('glyphicon-play');
-        $('#entry-markdown').next('.CodeMirror').show();
-        $('#entry-markdown-replay').next('.CodeMirror').hide();
-      });
-
-      /*
-       *  When the replay button is clicked, start replaying the
-       *  operations that have been performed on the document.
-       *
-       *  When it is clicked again, stop replaying, and return to
-       *  the latest version of the document.
-       */
-      $('#start-replay-button').click(function(event) {
+      $('#start-replay-button').click (function(event) {
         $(this).blur ();
         if ($(this).hasClass('active')) {
-          // go back to normal pad
-          replay.stop();
-          $('#entry-markdown').next('.CodeMirror').show();
-          $('#entry-markdown-replay').next('.CodeMirror').hide();
-
-          // TODO
-          // - this breaks timestamps
-          // - should we have a replay timestamps div?
-          // - or set delay to 0 and go until caught up?
-          // - - may not work on longer documents...
+          replay.stop ();
         } else {
-          $('#entry-markdown').next('.CodeMirror').hide();
-          $('#entry-markdown-replay').next('.CodeMirror').show();
           replay.replay();
         }
 
-        // toggle the active class on/off on the replay button
-        $(this).toggleClass('active');
-
-        // toggle the button icon
-        $(this).find('span.glyphicon')
-                .toggleClass('glyphicon-pause')
-                .toggleClass('glyphicon-play');
+        /*
+         *  Toggle the active class on/off on the replay button.
+         */
+        $(this).toggleClass ('active');
+        $(this).find ('span.glyphicon').toggleClass ('glyphicon-pause').toggleClass ('glyphicon-play');
       });
     }
   };

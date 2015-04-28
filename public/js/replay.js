@@ -24,99 +24,124 @@ function Replay (params) {
   this.client       = params.client;
   this.codemirror   = params.codemirror;
   this.delay        = params.delay;
-  this.doneCallback = params.callback;
   this.room         = params.room;
   this.share        = params.share;
   this.timestamps   = params.timestamps;
   this.operations   = [];
+  this.snapshot     = {};
   this.time_slider  = null;
-  this.current_v    = 1;
+  this.current_v    = null;
 
   var instance = this;
   var stop = false;
 
+  /*
+   *  Sets the everything to .
+   */
   this.setUp = function (callback) {
     $.get ('/ops/' + this.room, function (operations) {
       if (operations[0] && operations[0].create) {
+        instance.current_v  = 0;
         instance.operations = operations;
+        instance.snapshot   = operations[0].create.data;
+        instance.codemirror.setValue (instance.snapshot.text);
+
         instance.fireSliderEventHandlers ();
+        instance.timestamps.draw (instance.snapshot.lines);
+
         callback ();
       }
     });
   };
 
+
+  this.reset = function () {
+    instance.current_v = 0;
+    instance.snapshot  = instance.operations[0].create.data;
+    instance.time_slider.slider ('setValue', instance.current_v);
+    instance.codemirror.setValue (instance.snapshot.text);
+
+    $('#start-replay-button').removeClass ('active');
+    $('#start-replay-button').find('span.glyphicon').removeClass ('glyphicon-pause').addClass ('glyphicon-play');
+  }
+
+  /*
+   *  Instantiates the slider within the controls container.
+   */
   this.fireSliderEventHandlers = function () {
     instance.time_slider = $('#replay-slider').slider ({
       min: 0,
       max: instance.operations.length,
-      formatter: function (value) {
-        return 'Version: ' + value;
+      value: 0,
+      formatter: function (version) {
+        /*
+         *  This fires whenever the timeslider moves --
+         *  -- manually or programatically.
+         */
+        if (version < instance.current_v) {
+          /*
+           *  Unbuild the snapshot up to the desired version.
+           */
+          for (var i = instance.current_v - 1; i >= version; i--) {
+            if (instance.operations[i].op) {
+              instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
+            }
+          }
+        } else if (version > instance.current_v) {
+          /*
+           *  Build the snapshot up to the desired version.
+           */
+          for (var i = instance.current_v; i < version; i++) {
+
+            if (instance.operations[i].op) {
+              instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[i].op);
+            }
+          }
+        }
+
+        instance.codemirror.setValue (instance.snapshot.text);
+        instance.timestamps.draw (instance.snapshot.lines);
+        instance.current_v = version;
+        return 'Version: ' + version;
       }
     });
   }
 
-  // TODO
-  // - is the second textarea and codemirror instance necessary?
-  // - - hinges on whether or not sharejs extension can be switched off
-  // - add in chat messages to replay
-  // - - clear chat log
-  // - - merge chat history in with operations log
-  // - - instance.chat.addMessage
-  // - ability to start at / jump to any point in history
+  /*
+   *  Starts document replay.
+   */
   this.replay = function () {
-    /*
-     *  Recursively play through the rest of the operations.
-     */
-    var snapshop = null;
-    if (instance.current_v !== 1) {
-      snapshot = this.buildSnapshotForVersion(this.current_v);
+    if (instance.current_v >= instance.operations.length) {
+      instance.setUp (function () {
+        instance.replay ();
+      });
     } else {
-      snapshot = this.operations[0].create.data;
+      instance.slide ();
     }
-    this.delayReplay (snapshot, this.operations, this.current_v);
   };
 
-  this.delayReplay = function (snapshot, operations, version) {
-    instance.time_slider.slider ('setValue', version);
-    if (version >= operations.length) {
-      console.log('done');
+  /*
+   *  Recursively plays through the rest of the operations.
+   */
+  this.slide = function () {
+    if (instance.current_v >= instance.operations.length) {
+      $('#start-replay-button').toggleClass('active');
+      $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
       stop = false;
-
-      if (instance.doneCallback) {
-        instance.doneCallback();
-      }
-
       return;
     } else if (stop) {
-      instance.current_v = version;
       stop = false;
       return;
     }
 
-    if (operations[version].op) {
-      snapshot = ottypes.json0.apply(snapshot, operations[version].op);
-      instance.codemirror.setValue(snapshot.text);
-      instance.timestamps.draw(snapshot.lines);
-    }
+    instance.time_slider.slider ('setValue', instance.current_v + 1);
 
     setTimeout(function() {
-      instance.delayReplay(snapshot, operations, version+1);
+      instance.slide ();
     }, instance.delay);
-  };
-
-  this.onComplete = function(callback) {
-    this.doneCallback = callback;
   };
 
   this.stop = function() {
     stop = true;
   };
-
-  this.buildSnapshotForVersion = function(version) {
-    var snapshot = this.operations[0].create.data;
-    for (var i = 0; i < version; i++) {
-      snapshot = ottypes.json0.apply(snapshot, this.operations[version].op);
-    }
-    return snapshot;
-  }
 }
