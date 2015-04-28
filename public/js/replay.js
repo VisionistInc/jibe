@@ -39,7 +39,7 @@ function Replay (params) {
    *  Sets the everything to .
    */
   this.setUp = function (callback) {
-    $.get ('/ops/' + this.room, function (operations) {
+    $.get ('ops/' + this.room, function (operations) {
       if (operations[0] && operations[0].create) {
         instance.current_v  = 0;
         instance.operations = operations;
