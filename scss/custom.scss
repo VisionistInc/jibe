@@ -111,12 +111,12 @@ div#tabs-container {
   width: inherit;
 }
 
-div#chat-container > div[data-spy="affix"] {
+div#side-container > div[data-spy="affix"] {
   border-left: 1px solid #d0d0d0;
 }
 
-div#chat-container,
-div#chat-container .row {
+div#side-container,
+div#side-container .row {
   height: 100%;
 }
 
