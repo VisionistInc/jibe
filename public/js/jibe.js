@@ -168,7 +168,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
   }
 
   return {
-    agree : function (string) {
+    agree : function (options) {
       var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
       var room       = getLocation ();
       var editor_bc  = setSocket ('bc', null, 'jibe', room);
@@ -263,12 +263,23 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
       editor_bc.whenReady (function () {
         if (!editor_bc.type) {
           editor_bc.create ('json0');
+
+          var lines = options.defaultText.split('\n');
+          var now = new Date();
+          for(var i = 0; i < lines.length; i++) {
+            lines[i] = {
+              client: client,
+              timestamp: now
+            };
+          }
+
           editor_bc.submitOp({
             p: [], // root path
-            od: null,
+            od: null, // object delete
             oi: {
-              text: '',
-              lines: []
+              // insert text
+              text: options.defaultText.replace('{{room}}', room),
+              lines: lines
             }
           });
       	}
@@ -354,12 +365,13 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
 
   var DEFAULTS = {
     template: "templates/editor.html",
+    defaultText: "# Welcome to {{room}}\n\n\n"
   };
 
   $.fn.jibe = function (opts) {
     var jibe_container = this; // e.g. #jibe-container
 
-    this.opts = $.extend({}, DEFAULTS, opts);
+    var options = $.extend({}, DEFAULTS, opts);
     /*
      *	Downloads required HTML for firing Jibe into the coolest jibe you'll ever jibe.
      */
@@ -367,13 +379,13 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     //    Jibe.agree();
     //  });
     $.ajax ({
-    	url: this.opts.template,
+    	url: options.template,
     	type: "GET",
     	success: function (data) {
         // Replaces container div with Jibe HTML
         $(jibe_container).html (data);
         // Jibe!
-        Jibe.agree ();
+        Jibe.agree (options);
       },
       async: false // TODO async templates please
     });
