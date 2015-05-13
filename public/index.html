@@ -65,6 +65,10 @@ index.html
     <script src="js/timestamps.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/jibe.js"></script>
-    <script type="text/javascript"> $('#jibe-container').jibe (); </script>
+    <script type="text/javascript">
+      $('#jibe-container').jibe ({
+        defaultText: "# Welcome to {{room}}\n\n\n"
+      });
+    </script>
   </body>
 </html>

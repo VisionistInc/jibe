@@ -365,7 +365,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
 
   var DEFAULTS = {
     template: "templates/editor.html",
-    defaultText: "# Welcome to {{room}}\n\n\n"
+    defaultText: ""
   };
 
   $.fn.jibe = function (opts) {
