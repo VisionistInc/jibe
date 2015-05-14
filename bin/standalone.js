@@ -21,8 +21,16 @@
 var app = require('express')(),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
-    jibe = require('../app.js'),
-    log4js = require("log4js");
+    log4js = require("log4js"),
+    jibe = require('../app.js')({
+      config: {
+        "rethinkdb": {
+          "host": "127.0.0.1",
+          "port": 28015,
+          "db": "jibe"
+        }
+      }
+    });
 
 // logging
 log4js.replaceConsole();

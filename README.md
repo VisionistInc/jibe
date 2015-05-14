@@ -28,7 +28,7 @@ Now, browse to [RethinkDB's Tables tab](http://localhost:8080/#tables) and creat
         var app = require('express')(),
             server = require('http').createServer(app),
             io = require('socket.io').listen(server),
-            jibe = require('jibe');
+            jibe = require('jibe')();
 
         // initialize jibe
         app.use('/path/to/jibe', jibe.router(io));
@@ -41,6 +41,26 @@ Now, browse to [RethinkDB's Tables tab](http://localhost:8080/#tables) and creat
 * Visit [http://localhost:3000/path/to/jibe](http://localhost:3000/path/to/jibe)!
 
 ## Configuration
+
+### Server
+
+When jibe is `require`-ed, it is possible to pass in configuration options for connecting to RethinkDB.  For example, the snippet below will tell jibe to use the given configuration.
+
+```javascript
+jibe = require('jibe')({
+  config: {
+    "rethinkdb": {
+      "host": "127.0.0.1",
+      "port": 28015,
+      "db": "jibe"
+    }
+  }
+});
+```
+
+If no options are provided, jibe will use one of the configurations in `lib/config/env` based on the `process.env.NODE_ENV` environment variable.
+
+### Client
 
 Currently, the client-side constructor offers a few configuration options.  Defaults are provided for each option, so none are required.
 
