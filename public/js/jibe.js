@@ -62,12 +62,12 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
   /*
    *  Sets up the CodeMirror object (editor) for a specific room.
    */
-  function setCodeMirror () {
+  function setCodeMirror (placeholderText) {
     return CodeMirror.fromTextArea (document.getElementById ('entry-markdown'), {
       mode         : 'markdown',
       tabMode      : 'indent',
       lineWrapping : true,
-      placeholder  : "Begin typing here..."
+      placeholder  : placeholderText
     });
   }
 
@@ -172,7 +172,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
       var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
       var room       = getLocation ();
       var editor_bc  = setSocket ('bc', null, 'jibe', room);
-      var editor     = setCodeMirror ();
+      var editor     = setCodeMirror (options.placeholder);
       var converter  = new Showdown.converter ();
       var timestamps = setTimestamps (editor, client);
       var textformat = setTextFormat (editor);
@@ -364,8 +364,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
 (function ($, Jibe) {
 
   var DEFAULTS = {
+    defaultText: "",
+    placeholder: "Begin typing here...",
     template: "templates/editor.html",
-    defaultText: ""
   };
 
   $.fn.jibe = function (opts) {
