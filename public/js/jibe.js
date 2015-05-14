@@ -309,7 +309,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
         codemirror : replay_editor,
         delay      : 100,
         room       : room,
-        timestamps : setTimestamps (replay_editor, 'mpgeraty')
+        timestamps : setTimestamps (replay_editor, client)
       });
 
       $('#toggle-slider').click (function () {
