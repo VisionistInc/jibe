@@ -52,6 +52,15 @@ function Replay (params) {
         callback ();
       }
     });
+
+    // click handler for changing replay speed
+    $('#speed-buttons-container button').on('click', function(event) {
+      $activeButton = $(this);
+      $activeButton.blur();
+      instance.delay = Number($activeButton.data('delay'));
+      $('#speed-buttons-container button').removeClass('active');
+      $activeButton.toggleClass('active');
+    });
   };
 
 
