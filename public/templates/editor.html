@@ -37,7 +37,16 @@
                 </div>
                 <!-- Slider -->
                 <div id="replay-slider-container">
-                  <input id="replay-slider" data-slider-id='replaySlider' type="text"/>
+                  <div class="row" id="speed-buttons-container">
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                      <button type="button" class="btn btn-default btn-xs">Slower</button>
+                      <button type="button" class="btn btn-default btn-xs">Normal</button>
+                      <button type="button" class="btn btn-default btn-xs">Faster</button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <input id="replay-slider" data-slider-id='replaySlider' type="text"/>
+                  </div>
                 </div>
               </div>
               <hr>
@@ -71,6 +80,7 @@
                           <div id="active-users-indicator" class="btn-group pull-right" role="group" aria-label="..." style="margin-right: 18px;">
                           </div>
                         </div>
+
                         <hr>
                         <!-- Markdown Editor -->
                         <section class="entry-markdown col-md-12">
