@@ -39,3 +39,19 @@ Now, browse to [RethinkDB's Tables tab](http://localhost:8080/#tables) and creat
         });
 
 * Visit [http://localhost:3000/path/to/jibe](http://localhost:3000/path/to/jibe)!
+
+## Configuration
+
+Currently, the client-side constructor offers a few configuration options.  Defaults are provided for each option, so none are required.
+
+```javascript
+$('#jibe-container').jibe ({
+  defaultText: "# Welcome to {{room}}\n\n\n",
+  placeholder: "This is a configurable placeholder, type your text here...",
+  template: "templates/editor.html"
+});
+```
+
+* The `defaultText` option sets the initial text for a document that **does not exist** at the time it is requested by the client.  The name of the current room will replace all instances of the pattern `{{room}}`.
+* Overriding the `placeholder` option sets the text that is displayed when the document contains no text (just like the HTML input element's placeholder attribute).
+* The `template` option allows developers to use a different layout, rather than the default one that is provided in this repository.  There are some hardcoded ids that event handlers rely on, so it is easiest to start from the provided template and rearrange things from there.
