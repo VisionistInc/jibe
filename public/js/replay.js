@@ -35,6 +35,9 @@ function Replay (params) {
   var instance = this;
   var stop = false;
 
+  var flagTemplate = '<div class="flagged-versions" style="left: {{percentLeft}}%">' +
+    '<span class="glyphicon glyphicon-flag" aria-hidden="true"></span></div>';
+
   /*
    *  Sets the everything to .
    */
@@ -63,6 +66,18 @@ function Replay (params) {
     });
   };
 
+  /*
+   *  Add any flagged versions to the replay slider div
+   */
+  this.addFlags = function() {
+    for (var i = 0; i < instance.operations.length; i++) {
+      if (instance.operations[i].flagged) {
+        var percentLeft = (instance.operations[i].v / instance.operations.length * 100);
+        var element = flagTemplate.replace('{{percentLeft}}', percentLeft);
+        $('#replaySlider').append (element);
+      }
+    }
+  };
 
   this.reset = function () {
     instance.current_v = 0;

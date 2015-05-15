@@ -327,6 +327,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
             $('#entry-markdown').next ('.CodeMirror').hide ();
             $('#replay-controls-container').show ("fast");
             $('#entry-markdown-replay').next ('.CodeMirror').show ();
+            replay.addFlags();
           });
         }
       });
@@ -348,6 +349,18 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
          */
         $(this).toggleClass ('active');
         $(this).find ('span.glyphicon').toggleClass ('glyphicon-pause').toggleClass ('glyphicon-play');
+      });
+
+      /*
+       *  Flagged version functionality
+       */
+      $('#flag-version').click (function () {
+        $(this).blur();
+
+        // flag current version
+        $.post('/ops/' + room + '/flag', function(result) {
+          console.log('flagged version', result);
+        });
       });
     }
   };
