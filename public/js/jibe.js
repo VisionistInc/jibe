@@ -358,7 +358,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
         $(this).blur();
 
         // flag current version
-        $.post('/ops/' + room + '/flag', function(result) {
+        $.post('ops/' + room + '/flag', function(result) {
           console.log('flagged version', result);
         });
       });
