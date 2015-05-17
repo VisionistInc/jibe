@@ -167,203 +167,209 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     updateWordCount (editor);
   }
 
-  return {
-    agree : function (options) {
-      var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
-      var room       = getLocation ();
-      var editor_bc  = setSocket ('bc', null, 'jibe', room);
-      var editor     = setCodeMirror (options.placeholder);
-      var converter  = new Showdown.converter ();
-      var timestamps = setTimestamps (editor, client);
-      var textformat = setTextFormat (editor);
+  // exposed as Jibe
+  var api = {};
 
-      var replay;  // set up after everything else is initialized
-      var replay_editor = setCodeMirrorReplay ();
+  /*
+   *  Set up everything - chat socket, CodeMirror, ShareJS, etc.
+   */
+  api.initialize = function (options) {
+    var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
+    var room       = getLocation ();
+    var editor_bc  = setSocket ('bc', null, 'jibe', room);
+    var editor     = setCodeMirror (options.placeholder);
+    var converter  = new Showdown.converter ();
+    var timestamps = setTimestamps (editor, client);
+    var textformat = setTextFormat (editor);
 
-      /*
-       *  Used to create the diff sent to server.
-       */
-      var prior = [];
-      var after = [];
-      var diff  = null;
-      var send  = false;
+    var replay;  // set up after everything else is initialized
+    var replay_editor = setCodeMirrorReplay ();
 
-      /*
-       *  Set up chat components.
-       */
-      var chat_components = {
-        'room'   : room,
-        'socket' : null,
-        'client' : {
-          id    : client,
-          color : null
+    /*
+     *  Set up chat components.
+     */
+    var chat_components = {
+      'room'   : room,
+      'socket' : null,
+      'client' : {
+        id    : client,
+        color : null
+      }
+    };
+    chat_components.socket = setSocket ('io', chat_components.socket, '/chat', chat_components.room);
+
+    /*
+     *  Initialize chat.
+     */
+    var chat = setChat (chat_components);
+    chat.listen ();
+
+    /*
+     *  When first subscribing, this gives us our author information --
+     *  -- loads latest chat messages, if any.
+     */
+    chat.socket.on ('author', function(author) {
+      chat.client.color = author.color;
+      timestamps.addAuthorColorCoding (author);
+      chat.getMoreMessages ();
+    });
+
+    /*
+     *  Whenever a new client joins, they are added to the local active users array --
+     *  -- users currently in the room.
+     */
+    chat.socket.on ('authorJoined', function (author) {
+      timestamps.addAuthorColorCoding (author);
+      setActiveUser (author);
+    });
+
+    /*
+     *  Retrieves every conected client in the room.
+     */
+    chat.socket.on ('lineAuthors', function (authors) {
+      timestamps.processAuthorColorCoding (authors);
+    });
+
+    /*
+     *  Removes the client that just closed the connection --
+     *  -- closed the window, tab, etc.
+     */
+    chat.socket.on ('authorLeft', function (author) {
+      removeActiveUser (author);
+    });
+
+    chat.socket.on ('presentAuthors', function (authors) {
+      for (var i = 0; i < authors.length; i++) {
+        setActiveUser (authors[i]);
+      }
+    });
+
+    /*
+     *  Text formatting within editor --
+     *  -- bold, italic, monospace.
+     */
+    $('#format-bold'  ).click (function () { $(this).blur (); textformat.bold      (); });
+    $('#format-code'  ).click (function () { $(this).blur (); textformat.monospace (); });
+    $('#format-italic').click (function () { $(this).blur (); textformat.italic    (); });
+
+    /*
+     *  Subscribes to BrowserChannel connection and attaches the CodeMirror editor --
+     *  -- uses sharejs for all of the OT tasking.
+     */
+    editor_bc.subscribe ();
+    editor_bc.whenReady (function () {
+      if (!editor_bc.type) {
+        editor_bc.create ('json0');
+
+        var lines = options.defaultText.split('\n');
+        var now = new Date();
+        for(var i = 0; i < lines.length; i++) {
+          lines[i] = {
+            client: client,
+            timestamp: now
+          };
         }
-      };
-      chat_components.socket = setSocket ('io', chat_components.socket, '/chat', chat_components.room);
 
-      /*
-       *  Initialize chat.
-       */
-      var chat = setChat (chat_components);
-      chat.listen ();
-
-      /*
-       *  When first subscribing, this gives us our author information --
-       *  -- loads latest chat messages, if any.
-       */
-      chat.socket.on ('author', function(author) {
-        chat.client.color = author.color;
-        timestamps.addAuthorColorCoding (author);
-        chat.getMoreMessages ();
-      });
-
-      /*
-       *  Whenever a new client joins, they are added to the local active users array --
-       *  -- users currently in the room.
-       */
-      chat.socket.on ('authorJoined', function (author) {
-        timestamps.addAuthorColorCoding (author);
-        setActiveUser (author);
-      });
-
-      /*
-       *  Retrieves every conected client in the room.
-       */
-      chat.socket.on ('lineAuthors', function (authors) {
-        timestamps.processAuthorColorCoding (authors);
-      });
-
-      /*
-       *  Removes the client that just closed the connection --
-       *  -- closed the window, tab, etc.
-       */
-      chat.socket.on ('authorLeft', function (author) {
-        removeActiveUser (author);
-      });
-
-      chat.socket.on ('presentAuthors', function (authors) {
-        for (var i = 0; i < authors.length; i++) {
-          setActiveUser (authors[i]);
-        }
-      });
-
-      /*
-       *  Text formatting within editor --
-       *  -- bold, italic, monospace.
-       */
-      $('#format-bold'  ).click (function () { $(this).blur (); textformat.bold      (); });
-			$('#format-code'  ).click (function () { $(this).blur (); textformat.monospace (); });
-			$('#format-italic').click (function () { $(this).blur (); textformat.italic    (); });
-
-      /*
-       *  Subscribes to BrowserChannel connection and attaches the CodeMirror editor --
-       *  -- uses sharejs for all of the OT tasking.
-       */
-      editor_bc.subscribe ();
-      editor_bc.whenReady (function () {
-        if (!editor_bc.type) {
-          editor_bc.create ('json0');
-
-          var lines = options.defaultText.split('\n');
-          var now = new Date();
-          for(var i = 0; i < lines.length; i++) {
-            lines[i] = {
-              client: client,
-              timestamp: now
-            };
+        editor_bc.submitOp({
+          p: [], // root path
+          od: null, // object delete
+          oi: {
+            // insert text
+            text: options.defaultText.replace('{{room}}', room),
+            lines: lines
           }
-
-          editor_bc.submitOp({
-            p: [], // root path
-            od: null, // object delete
-            oi: {
-              // insert text
-              text: options.defaultText.replace('{{room}}', room),
-              lines: lines
-            }
-          });
-      	}
-        if (editor_bc.type && editor_bc.type.name === 'json0') {
-          editor_bc.attachCodeMirror (editor, null, timestamps);
-        }
-      });
-
-      /*
-       *  Whenever the codemirror editor gets an update, update the markdown preview.
-       */
-      editor.on('change', function () {
-        updatePreview(editor, converter);
-      });
-
-      /*
-       *  Updates the Preview panel.
-       */
-      updatePreview (editor, converter);
-
-      /*
-       *  Initialize replay capabilities.
-       */
-      replay = new Replay ({
-        chat       : chat,
-        client     : client,
-        codemirror : replay_editor,
-        delay      : 100,
-        room       : room,
-        timestamps : setTimestamps (replay_editor, client)
-      });
-
-      $('#toggle-slider').click (function () {
-        $(this).blur ();
-        replay.timestamps.colors = timestamps.colors;
-
-        if ($('#replay-controls-container').is (':visible')) {
-          $('#replay-controls-container').hide ("fast");
-          $('#entry-markdown-replay').next ('.CodeMirror').hide ();
-          $('#entry-markdown').next ('.CodeMirror').show ();
-          replay.reset ();
-          timestamps.draw (timestamps.lines);
-        } else {
-          replay.setUp (function () {
-            $('#entry-markdown').next ('.CodeMirror').hide ();
-            $('#replay-controls-container').show ("fast");
-            $('#entry-markdown-replay').next ('.CodeMirror').show ();
-            replay.addFlags();
-          });
-        }
-      });
-
-      /*
-       *  When the replay button is clicked, start replaying the operations that have been performed on the document --
-       *  -- when it is clicked again, stop replaying, and return to the latest version of the document.
-       */
-      $('#start-replay-button').click (function(event) {
-        $(this).blur ();
-        if ($(this).hasClass('active')) {
-          replay.stop ();
-        } else {
-          replay.replay();
-        }
-
-        /*
-         *  Toggle the active class on/off on the replay button.
-         */
-        $(this).toggleClass ('active');
-        $(this).find ('span.glyphicon').toggleClass ('glyphicon-pause').toggleClass ('glyphicon-play');
-      });
-
-      /*
-       *  Flagged version functionality
-       */
-      $('#flag-version').click (function () {
-        $(this).blur();
-
-        // flag current version
-        $.post('ops/' + room + '/flag', function(result) {
-          console.log('flagged version', result);
         });
+      }
+      if (editor_bc.type && editor_bc.type.name === 'json0') {
+        editor_bc.attachCodeMirror (editor, null, timestamps);
+      }
+    });
+
+    /*
+     *  Whenever the codemirror editor gets an update, update the markdown preview.
+     */
+    editor.on('change', function () {
+      updatePreview(editor, converter);
+    });
+
+    /*
+     *  Updates the Preview panel.
+     */
+    updatePreview (editor, converter);
+
+    /*
+     *  Initialize replay capabilities.
+     */
+    replay = new Replay ({
+      chat       : chat,
+      client     : client,
+      codemirror : replay_editor,
+      delay      : 100,
+      room       : room,
+      timestamps : setTimestamps (replay_editor, client)
+    });
+
+    $('#toggle-slider').click (function () {
+      $(this).blur ();
+      replay.timestamps.colors = timestamps.colors;
+
+      if ($('#replay-controls-container').is (':visible')) {
+        $('#replay-controls-container').hide ("fast");
+        $('#entry-markdown-replay').next ('.CodeMirror').hide ();
+        $('#entry-markdown').next ('.CodeMirror').show ();
+        replay.reset ();
+        timestamps.draw (timestamps.lines);
+      } else {
+        replay.setUp (function () {
+          $('#entry-markdown').next ('.CodeMirror').hide ();
+          $('#replay-controls-container').show ("fast");
+          $('#entry-markdown-replay').next ('.CodeMirror').show ();
+          replay.addFlags();
+        });
+      }
+    });
+
+    /*
+     *  When the replay button is clicked, start replaying the operations that have been performed on the document --
+     *  -- when it is clicked again, stop replaying, and return to the latest version of the document.
+     */
+    $('#start-replay-button').click (function(event) {
+      $(this).blur ();
+      if ($(this).hasClass('active')) {
+        replay.stop ();
+      } else {
+        replay.replay();
+      }
+
+      /*
+       *  Toggle the active class on/off on the replay button.
+       */
+      $(this).toggleClass ('active');
+      $(this).find ('span.glyphicon').toggleClass ('glyphicon-pause').toggleClass ('glyphicon-play');
+    });
+
+    /*
+     *  Flagged version functionality
+     */
+    $('#flag-version').click (function () {
+      $(this).blur();
+
+      // flag current version
+      $.post('ops/' + room + '/flag', function(result) {
+        console.log('flagged version', result);
       });
-    }
+    });
   };
+
+  api.getText = function () {
+    console.error('not yet implemented');
+  };
+
+  api.setText = function () {
+    console.error('not yet implemented');
+  };
+
+  return api;
 })(BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFormat, Chat);
 
 
@@ -399,7 +405,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
         // Replaces container div with Jibe HTML
         $(jibe_container).html (data);
         // Jibe!
-        Jibe.agree (options);
+        Jibe.initialize (options);
       },
       async: false // TODO async templates please
     });
