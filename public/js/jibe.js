@@ -367,6 +367,52 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
       // flag current version
       api.flagVersion ();
     });
+
+    /*
+     *  Keyword replacement
+     */
+
+    // regex for matching @keywords to replace
+    var keywordRegex = /@([^\s:]+)[ ]?:[ ]?([^\s]+)\s/;
+    var keywordRegexEOL = /@([^\s:]+)[ ]?:[ ]?([^\s]+)$/;
+
+    // on space or enter, check the current line for @keywords replacements
+    editor.on('keyup', function (cmInstance, event) {
+      if (event.keyCode === 13 || event.keyCode === 32) {
+        var cursor = editor.getCursor (),
+            lineNumber = cursor.line,
+            lineContent,
+            match;
+
+        if (event.keyCode === 13) { // enter
+          lineContent = editor.getLine(--lineNumber);
+          match = keywordRegexEOL.exec(lineContent);
+        } else { // space
+          lineContent = editor.getLine(lineNumber);
+          match = keywordRegex.exec(lineContent);
+        }
+
+        // if there was a match and a replacement has been registered, replace
+        if (match) {
+          var replacement = keywordReplacementMap[match[1]];
+
+          // if a replacement exists for the given @key
+          if (replacement) {
+            // callback for replacement functions
+            var replacementCallback = function(replacementText) {
+              editor.replaceRange(replacementText,
+                {line: lineNumber, ch: match.index}, cursor);
+            };
+
+            if (typeof replacement === 'function') {
+              replacement(match[2], replacementCallback);
+            } else {
+              replacementCallback(replacement);
+            }
+          }
+        }
+      }
+    });
   };
 
   /*
@@ -398,6 +444,23 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
   api.insertTextAtCursor = function (text) {
     var cursorPos = editor.doc.getCursor();
     return editor.doc.replaceRange(text, cursorPos, cursorPos);
+  };
+
+  // map to store all registered replacements
+  var keywordReplacementMap = {};
+
+  /*
+   *  Register a keyword replacement.
+   *
+   *  Any time a user enters '@<keyword>:<key>' and then presses either the
+   *  spacebar or the enter key, that text will be replaced using the
+   *  provided replacement value.  If a function is provided as the replacement,
+   *  it should have the signature 'function (value, callback) {...}', and the
+   *  replacement text should be passed to the callback.  This allows for
+   *  asynchronous lookups to be used in the replacement function.
+   */
+  api.registerKeywordReplacement = function (keyword, replacement) {
+    keywordReplacementMap[keyword] = replacement;
   };
 
   /*
