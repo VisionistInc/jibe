@@ -87,6 +87,9 @@ function Replay (params) {
 
     $('#start-replay-button').removeClass ('active');
     $('#start-replay-button').find('span.glyphicon').removeClass ('glyphicon-pause').addClass ('glyphicon-play');
+
+    // clear flags, since they will need to be redrawn next time
+    $('#replaySlider .flagged-versions').remove();
   };
 
   /*
