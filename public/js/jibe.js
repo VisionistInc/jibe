@@ -170,20 +170,30 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
   // exposed as Jibe
   var api = {};
 
+  // variables not attached to api can be considered private
+  var client    = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
+  var room      = getLocation ();
+  var converter = new Showdown.converter ();
+
+  // variables initialized with options in api.initialize()
+  var chat,
+      editor_bc,     // browser channel socket for CodeMirror / ShareJS
+      editor,        // CodeMirror editor instance
+      timestamps,
+      textformat,
+      replay,
+      replay_editor; // read-only CodeMirror instance for replay
+
   /*
    *  Set up everything - chat socket, CodeMirror, ShareJS, etc.
    */
   api.initialize = function (options) {
-    var client     = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
-    var room       = getLocation ();
-    var editor_bc  = setSocket ('bc', null, 'jibe', room);
-    var editor     = setCodeMirror (options.placeholder);
-    var converter  = new Showdown.converter ();
-    var timestamps = setTimestamps (editor, client);
-    var textformat = setTextFormat (editor);
+    editor_bc  = setSocket ('bc', null, 'jibe', room);
+    editor     = setCodeMirror (options.placeholder);
+    timestamps = setTimestamps (editor, client);
+    textformat = setTextFormat (editor);
 
-    var replay;  // set up after everything else is initialized
-    var replay_editor = setCodeMirrorReplay ();
+    replay_editor = setCodeMirrorReplay ();
 
     /*
      *  Set up chat components.
@@ -201,7 +211,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     /*
      *  Initialize chat.
      */
-    var chat = setChat (chat_components);
+    chat = setChat (chat_components);
     chat.listen ();
 
     /*
@@ -361,14 +371,53 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     });
   };
 
+  /*
+   *  Retrieve the value for the placeholder option.
+   */
+  api.getPlaceholder = function () {
+    return editor.getOption('placeholder');
+  };
+
+  /*
+   *  Retrieve the current contents of the document.
+   */
   api.getText = function () {
-    console.error('not yet implemented');
+    return editor.doc.getValue();
   };
 
-  api.setText = function () {
-    console.error('not yet implemented');
+  /*
+   *  Insert the given text at the current cursor position.
+   */
+  api.insertTextAtCursor = function (text) {
+    var cursorPos = editor.doc.getCursor();
+    return editor.doc.replaceRange(text, cursorPos, cursorPos);
   };
 
+  /*
+   *  Replace the contents of the document between from and to with the given
+   *  replacementText.  From and to are objects - {line: <lineNum>, ch: charNum}.
+   *
+   *  See https://codemirror.net/doc/manual.html#api_content
+   */
+  api.replaceText = function (replacementText, from, to) {
+    return editor.doc.replaceRange(replacementText, from, to);
+  };
+
+  /*
+   *  Override the value for the placeholder option.
+   */
+  api.setPlaceholder = function (newPlaceholder) {
+    return editor.setOption('placeholder', newPlaceholder);
+  };
+
+  /*
+   *  Set the current document contents to the given string.
+   */
+  api.setText = function (newContents) {
+    editor.doc.setValue(newContents);
+  };
+
+  // exposed as Jibe
   return api;
 })(BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFormat, Chat);
 
