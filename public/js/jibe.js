@@ -173,7 +173,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
   // variables not attached to api can be considered private
   var client    = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
   var room      = getLocation ();
-  var converter = new Showdown.converter ();
+  var converter = new Showdown.converter ({ extensions: ['noscript'] });
 
   // variables initialized with options in api.initialize()
   var chat,
