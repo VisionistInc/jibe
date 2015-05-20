@@ -1,11 +1,17 @@
 (function() {
+
+  if (typeof module !== 'undefined') {
+    filterXSS = require('xss');
+  }
+
+  // Filter out potential XSS attacks before rendering HTML
   var noscript = function (converter) {
     return [
-      // Turn HTML <script> tags into harmless code blocks
       {
         type: "lang",
-        regex: "<[\/]*script[^>]*>",
-        replace: "```"
+        filter: function(text) {
+          return filterXSS(text);
+        }
       }
     ];
   };
