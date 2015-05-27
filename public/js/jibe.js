@@ -59,28 +59,27 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     }
   }
 
+  // Default options to use for CodeMirror instances
+  var codeMirrorDefaultOptions = {
+    mode         : 'markdown',
+    tabMode      : 'indent',
+    lineWrapping : true
+  };
+
   /*
    *  Sets up the CodeMirror object (editor) for a specific room.
    */
-  function setCodeMirror (placeholderText) {
-    return CodeMirror.fromTextArea (document.getElementById ('entry-markdown'), {
-      mode         : 'markdown',
-      tabMode      : 'indent',
-      lineWrapping : true,
-      placeholder  : placeholderText
-    });
+  function setCodeMirror (options) {
+    var opts = $.extend({}, codeMirrorDefaultOptions, options);
+    return CodeMirror.fromTextArea (document.getElementById ('entry-markdown'), opts);
   }
 
   /*
    *  Secondary CodeMirror instance for document replay.
    */
   function setCodeMirrorReplay () {
-    return CodeMirror.fromTextArea (document.getElementById ('entry-markdown-replay'), {
-      mode         : 'markdown',
-      tabMode      : 'indent',
-      lineWrapping : true,
-      readOnly     : true
-    });
+    var opts = $.extend({}, codeMirrorDefaultOptions, { readOnly : true });
+    return CodeMirror.fromTextArea (document.getElementById ('entry-markdown-replay'), opts);
   }
 
   /*
@@ -189,7 +188,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
    */
   api.initialize = function (options) {
     editor_bc  = setSocket ('bc', null, 'jibe', room);
-    editor     = setCodeMirror (options.placeholder);
+    editor     = setCodeMirror (options);
     timestamps = setTimestamps (editor, client);
     textformat = setTextFormat (editor);
 
@@ -367,52 +366,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
       // flag current version
       api.flagVersion ();
     });
-
-    /*
-     *  Keyword replacement
-     */
-
-    // regex for matching @keywords to replace
-    var keywordRegex = /@([^\s:]+)[ ]?:[ ]?([^\s]+)\s/;
-    var keywordRegexEOL = /@([^\s:]+)[ ]?:[ ]?([^\s]+)$/;
-
-    // on space or enter, check the current line for @keywords replacements
-    editor.on('keyup', function (cmInstance, event) {
-      if (event.keyCode === 13 || event.keyCode === 32) {
-        var cursor = editor.getCursor (),
-            lineNumber = cursor.line,
-            lineContent,
-            match;
-
-        if (event.keyCode === 13) { // enter
-          lineContent = editor.getLine(--lineNumber);
-          match = keywordRegexEOL.exec(lineContent);
-        } else { // space
-          lineContent = editor.getLine(lineNumber);
-          match = keywordRegex.exec(lineContent);
-        }
-
-        // if there was a match and a replacement has been registered, replace
-        if (match) {
-          var replacement = keywordReplacementMap[match[1]];
-
-          // if a replacement exists for the given @key
-          if (replacement) {
-            // callback for replacement functions
-            var replacementCallback = function(replacementText) {
-              editor.replaceRange(replacementText,
-                {line: lineNumber, ch: match.index}, cursor);
-            };
-
-            if (typeof replacement === 'function') {
-              replacement(match[2], replacementCallback);
-            } else {
-              replacementCallback(replacement);
-            }
-          }
-        }
-      }
-    });
   };
 
   /*
@@ -446,9 +399,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     return editor.doc.replaceRange(text, cursorPos, cursorPos);
   };
 
-  // map to store all registered replacements
-  var keywordReplacementMap = {};
-
   /*
    *  Register a keyword replacement.
    *
@@ -460,7 +410,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
    *  asynchronous lookups to be used in the replacement function.
    */
   api.registerKeywordReplacement = function (keyword, replacement) {
-    keywordReplacementMap[keyword] = replacement;
+    editor.registerKeywordReplacement(keyword, replacement);
   };
 
   /*
@@ -505,6 +455,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
     defaultText: "",
     placeholder: "Begin typing here...",
     template: "templates/editor.html",
+    keywordReplace: true
   };
 
   $.fn.jibe = function (opts) {
