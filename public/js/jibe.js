@@ -19,7 +19,7 @@
 //  limitations under the License.
 //
 
-var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFormat, Chat) {
+var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFormat, Chat) {
 
   /*
    *  Returns location string based on URL hash; else default to The Dark Side.
@@ -172,7 +172,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
   // variables not attached to api can be considered private
   var client    = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
   var room      = getLocation ();
-  var converter = new Showdown.converter ({ extensions: ['xssFilter'] });
+  var converter = new showdown.Converter ({ extensions: ['xssfilter'] });
 
   // variables initialized with options in api.initialize()
   var chat,
@@ -439,7 +439,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFo
 
   // exposed as Jibe
   return api;
-})(BCSocket, CodeMirror, Replay, Showdown, Timestamps, TextFormat, Chat);
+})(BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFormat, Chat);
 
 
 /*
