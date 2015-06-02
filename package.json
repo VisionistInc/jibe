@@ -35,8 +35,6 @@
     "livedb": "~0.5.9",
     "livedb-rethinkdb": "0.0.5",
     "moment": "~2.10.2",
-    "node-sass": "^2.1.1",
-    "node-sass-middleware": "^0.5.0",
     "pleasejs": "~0.4.2",
     "share": "0.7.27",
     "showdown": "~1.0.2",

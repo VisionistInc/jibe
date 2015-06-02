@@ -32,7 +32,6 @@ module.exports = function(options) {
 
   // now that config has been initialized, require the other dependencies
   var express         = require('express');
-  var sassMiddleware  = require('node-sass-middleware');
   var path            = require('path');
   var chatRoutes      = require('./lib/routes/chat.js');
   var opsRoutes       = require('./lib/routes/ops');
@@ -65,15 +64,6 @@ module.exports = function(options) {
 
       // ops routes
       router.use('/ops', opsRoutes);
-
-      router.use(
-        sassMiddleware({
-          src: __dirname + '/scss',
-          dest: __dirname + '/public/styles',
-          prefix: '/styles',
-          debug: true,
-        })
-      );
 
       if(io) {
         io.of('/chat').on('connection', chatHandler);
