@@ -119,7 +119,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     var button = $('<button>')
                     .addClass ('btn btn-default')
                     .attr ('data-toggle', 'tooltip')
-                    .attr ('data-placement', 'top')
+                    .attr ('data-placement', 'bottom')
                     .attr ('title', user.id)
                     .attr ('id', 'active-user-' + user.id)
                     .html ('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>')
@@ -318,6 +318,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       timestamps : setTimestamps (replay_editor, client)
     });
 
+    /*
+     *  Hides and shows the Timeslider.
+     */
     $('#toggle-slider').click (function () {
       $(this).blur ();
       replay.timestamps.colors = timestamps.colors;
@@ -328,15 +331,45 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         $('#entry-markdown').next ('.CodeMirror').show ();
         replay.reset ();
         timestamps.draw (timestamps.lines);
+
+        $('div#editor-preview-container').removeClass ('replaying');
+        $('#editor-preview-toggle').bootstrapToggle ('enable');
       } else {
         replay.setUp (function () {
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
           $('#entry-markdown-replay').next ('.CodeMirror').show ();
           replay.addFlags();
+
+          $('div#editor-preview-container').addClass ('replaying');
+          $('#editor-preview-toggle').bootstrapToggle ('disable');
         });
       }
     });
+
+    /*
+     *  Initialize Markdown/Preview toggle switch --
+     *  -- requires Bootstrap Toggle module.
+     */
+    $('#editor-preview-toggle').bootstrapToggle ({
+      on  : 'Preview',
+      off : 'Editing'
+    });
+
+    /*
+     *  Detects change on Bootstrap toggle.
+     */
+    $('#editor-preview-toggle').change(function() {
+      if ($(this).prop('checked')) {
+        $('#markdown').hide ();
+        $('#preview').show ();
+        $('#jibe-controls-container button').prop("disabled", true);
+      } else {
+        $('#preview').hide ();
+        $('#markdown').show ();
+        $('#jibe-controls-container button').prop("disabled", false);
+      }
+    })
 
     /*
      *  When the replay button is clicked, start replaying the operations that have been performed on the document --
