@@ -291,6 +291,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
       if (editor_bc.type && editor_bc.type.name === 'json0') {
         editor_bc.attachCodeMirror (editor, null, timestamps);
+        editor.refresh();
       }
     });
 
