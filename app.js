@@ -35,6 +35,7 @@ module.exports = function(options) {
   var path            = require('path');
   var chatRoutes      = require('./lib/routes/chat.js');
   var opsRoutes       = require('./lib/routes/ops');
+  var logRoutes       = require('./lib/routes/logTool.js')
   var chatHandler     = require('./lib/sockets/chat.js');
   var browserChannelMiddleware = require('./lib/middleware/browserchannel.js');
   var router = express.Router();
@@ -64,6 +65,9 @@ module.exports = function(options) {
 
       // ops routes
       router.use('/ops', opsRoutes);
+
+      // Log tool routes
+      router.use('/log', logRoutes);
 
       if(io) {
         io.of('/chat').on('connection', chatHandler);
