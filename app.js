@@ -35,9 +35,9 @@ module.exports = function(options) {
   var path            = require('path');
   var chatRoutes      = require('./lib/routes/chat.js');
   var opsRoutes       = require('./lib/routes/ops');
-  var logRoutes       = require('./lib/routes/logTool.js');
   var chatHandler     = require('./lib/sockets/chat.js');
-  var browserChannelMiddleware = require('./lib/middleware/browserchannel.js');
+  var browserChannel  = require('./lib/middleware/browserchannel.js');
+  var shareRoutes     = browserChannel.rest;
   var router = express.Router();
 
   return {
@@ -66,8 +66,8 @@ module.exports = function(options) {
       // ops routes
       router.use('/ops', opsRoutes);
 
-      // Log tool routes
-      router.use('/log', logRoutes);
+      // ShareJS built-in REST routes
+      router.use('/docs', shareRoutes);
 
       if(io) {
         io.of('/chat').on('connection', chatHandler);
@@ -80,6 +80,6 @@ module.exports = function(options) {
     },
 
     // app.use(jibe.browserChannelMiddleware)
-    browserChannelMiddleware: browserChannelMiddleware
+    browserChannelMiddleware: browserChannel.middleware
   };
 };
