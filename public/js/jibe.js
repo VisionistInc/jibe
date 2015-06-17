@@ -410,7 +410,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     });
 
     // Table of Contents stuff
-
+    /* Toggles table of contents panel
+    */
     $('#toggle-toc').click(function(){
       if( $('#toc-container').is(":visible")){
         $('#toc-container').hide('slow',function(){
@@ -426,44 +427,18 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
     });
 
-    /*$('#toc-root').on('click','.level',function(){
-      if ($(this).siblings().is(":visible")){
-      $(this).siblings().hide('slow');
-      }
-      else{
-      $(this).siblings().show('slow');
-      }
-    });
-    */
 
+    /*
+    * Jump to line functionality for table of contents
+    */
     $('#toc-root').on('click','.level',function(event){
         var id = event.target.id;
-        var line_num = parseInt(id.substring(4,id.length));
+        var line_num = parseInt(id.substring(4,id.length)); // Since line num is stored in id, just parses out line number
         editor.focus();
         editor.setCursor({line:line_num,ch:0});
     });
 
-/*
-    $('.level1').click(function(){
-      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level2">Level2</a></li></ul>');
-    });
-    $('#toc-root').on('click','.level2',function(){
-      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level3">Level3</a></li></ul>');
 
-    });
-    $('#toc-root').on('click','.level3',function(){
-      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level4">Level4</a></li></ul>');
-
-    });
-    $('#toc-root').on('click','.level4',function(){
-      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level5">Level5</a></li></ul>');
-
-    });
-    $('#toc-root').on('click','.level5',function(){
-      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level6">Level6</a></li></ul>');
-
-    });
-*/
 
 
   };

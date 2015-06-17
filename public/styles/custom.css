@@ -108,7 +108,7 @@ div#toc{
   border-radius: 0px;
   padding-left: 33px;
   border-bottom-width:0px;
-  overflow-y:scroll;
+  overflow-y:auto;
   overflow-x:hidden;
   padding-bottom:0px;
 
@@ -182,9 +182,6 @@ ul.lvl{
   padding: 0px;
 }
 
-.clear{
-  clear:both;
-}
 /*  Everything Timeslider
  */
 #replay-controls-container {
