@@ -160,11 +160,11 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *  Updates the Jibe preview tab --
    *  -- works in real time (updates while other type).
    */
+   var toc = new TOC();
   function updatePreview (editor, converter) {
     var preview = $('.rendered-markdown');
     //May want to update TOC here too
-    toc = new TOC(editor);
-    toc.generateHeaders();
+    toc.generateHeaders(editor);
     preview.html (converter.makeHtml (editor.getValue ()));
     updateWordCount (editor);
   }
@@ -256,7 +256,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
     });
 
-    /* Initialize table of contents*/
 
     /*
      *  Text formatting within editor --
@@ -369,13 +368,12 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     $('#editor-preview-toggle').change(function() {
       if ($(this).prop('checked')) {
         $('#markdown').hide ();
-        //$('#toc-container').hide();
+
         $('#preview').show ();
         $('#jibe-controls-container button').prop("disabled", true);
       } else {
         $('#preview').hide ();
         $('#markdown').show ();
-        //$('#toc-container').show();
         $('#jibe-controls-container button').prop("disabled", false);
       }
     });
@@ -415,8 +413,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     $('#toggle-toc').click(function(){
       if( $('#toc-container').is(":visible")){
         $('#toc-container').hide('slow',function(){
-          $('#editor-preview-container').removeClass("col-md-9").promise().done(function(){});
-          $('#editor-preview-container').addClass("col-md-12)");
+          $('#editor-preview-container').removeClass("col-md-9");
         });
 
       }
@@ -432,8 +429,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     * Jump to line functionality for table of contents
     */
     $('#toc-root').on('click','.level',function(event){
-        var id = event.target.id;
-        var line_num = parseInt(id.substring(4,id.length)); // Since line num is stored in id, just parses out line number
+        var line_num = parseInt(event.target.dataset.linenum);
         editor.focus();
         editor.setCursor({line:line_num,ch:0});
     });
@@ -511,23 +507,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
   api.setText = function (newContents) {
     editor.doc.setValue(newContents);
   };
-
-  /* ---- START CLAYTON ----*/
-  /*You lied to me. */
-
-
-
-
-
-
-
-
-
-
-
-
-/*  ---- END CLAYTON ---- */
-
 
   // exposed as Jibe
   return api;
