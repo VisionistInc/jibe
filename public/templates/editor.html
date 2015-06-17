@@ -63,7 +63,7 @@
           </div>
           &nbsp;&nbsp;
           <button id="toggle-slider" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Replay">
-              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+              <span id = "play-button" class="glyphicon glyphicon-play" aria-hidden="true"></span>
           </button>
           &nbsp;&nbsp;
           <button id="flag-version" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Flag Version">
@@ -71,20 +71,30 @@
           </button>
           &nbsp;&nbsp;
           <input type="checkbox" id="editor-preview-toggle">
+          &nbsp;&nbsp;
+          <button id="toggle-toc" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Table of Contents">
+              <span id = "toc-button" class="glyphicon glyphicon-list" aria-hidden="true"></span>
+          </button>
+          &nbsp;&nbsp;
           <div id="active-users-indicator" class="btn-group pull-right" role="group" aria-label="...">
           </div>
         </div>
 
       </div>
 
-      <div id="editor-preview-container" class="editing">
+      <div id="editor-preview-container" class="editing col-md-9">
+
 
         <!-- Markdown -->
+
         <div id="markdown">
+
           <section class="entry-markdown col-md-12">
+
             <header class="floatingheader">
               <small class="pull-right"><span class="entry-word-count js-entry-word-count">0 words</span></small>
             </header>
+
             <div class="row" id="codemirror-container">
               <!-- Timestamps Container -->
               <div class="col-md-2 hidden-xs hidden-sm">
@@ -102,7 +112,6 @@
             </div>
           </section>
         </div>
-
         <!-- Preview -->
         <div id="preview">
           <section class="entry-preview col-md-12">
@@ -112,8 +121,26 @@
           </section>
         </div>
 
-      </div>
-    </div>
+        <!-- Table of Contents -->
+
+</div>
+<div class = "entry-markdown col-md-3" id = "toc-container">
+  <div class = "well" id = "toc">
+  <div id = "toc-box">
+    <div class = "list-group">
+      <ul style = "list-style-type:none" id = "toc-root" class = "lvl">
+      </ul>
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 
     <!-- Chat -->
     <div id="side-container" class="col-md-3 col-sm-4 hidden-xs">
@@ -125,6 +152,8 @@
         </div>
       </div>
     </div>
+
+
 
   </div>
 </div>

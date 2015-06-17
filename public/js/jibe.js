@@ -162,6 +162,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    */
   function updatePreview (editor, converter) {
     var preview = $('.rendered-markdown');
+    //May want to update TOC here too
+    toc = new TOC(editor);
+    toc.generateHeaders();
     preview.html (converter.makeHtml (editor.getValue ()));
     updateWordCount (editor);
   }
@@ -253,6 +256,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
     });
 
+    /* Initialize table of contents*/
+
     /*
      *  Text formatting within editor --
      *  -- bold, italic, monospace.
@@ -326,16 +331,18 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       replay.timestamps.colors = timestamps.colors;
 
       if ($('#replay-controls-container').is (':visible')) {
+        replay.stop ();
+        $('#play-button').removeClass('glyphicon glyphicon-stop').addClass('glyphicon glyphicon-play');
         $('#replay-controls-container').hide ("fast");
         $('#entry-markdown-replay').next ('.CodeMirror').hide ();
         $('#entry-markdown').next ('.CodeMirror').show ();
         replay.reset ();
         timestamps.draw (timestamps.lines);
-
         $('div#editor-preview-container').removeClass ('replaying');
         $('#editor-preview-toggle').bootstrapToggle ('enable');
       } else {
         replay.setUp (function () {
+          $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
           $('#entry-markdown-replay').next ('.CodeMirror').show ();
@@ -362,14 +369,16 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     $('#editor-preview-toggle').change(function() {
       if ($(this).prop('checked')) {
         $('#markdown').hide ();
+        //$('#toc-container').hide();
         $('#preview').show ();
         $('#jibe-controls-container button').prop("disabled", true);
       } else {
         $('#preview').hide ();
         $('#markdown').show ();
+        //$('#toc-container').show();
         $('#jibe-controls-container button').prop("disabled", false);
       }
-    })
+    });
 
     /*
      *  When the replay button is clicked, start replaying the operations that have been performed on the document --
@@ -399,6 +408,64 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       // flag current version
       api.flagVersion ();
     });
+
+    // Table of Contents stuff
+
+    $('#toggle-toc').click(function(){
+      if( $('#toc-container').is(":visible")){
+        $('#toc-container').hide('slow',function(){
+          $('#editor-preview-container').removeClass("col-md-9").promise().done(function(){});
+          $('#editor-preview-container').addClass("col-md-12)");
+        });
+
+      }
+      else{
+        $('#toc-container').show("slow");
+        $('#editor-preview-container').removeClass("col-md-12");
+        $('#editor-preview-container').addClass("col-md-9");
+      }
+    });
+
+    /*$('#toc-root').on('click','.level',function(){
+      if ($(this).siblings().is(":visible")){
+      $(this).siblings().hide('slow');
+      }
+      else{
+      $(this).siblings().show('slow');
+      }
+    });
+    */
+
+    $('#toc-root').on('click','.level',function(event){
+        var id = event.target.id;
+        var line_num = parseInt(id.substring(4,id.length));
+        editor.focus();
+        editor.setCursor({line:line_num,ch:0});
+    });
+
+/*
+    $('.level1').click(function(){
+      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level2">Level2</a></li></ul>');
+    });
+    $('#toc-root').on('click','.level2',function(){
+      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level3">Level3</a></li></ul>');
+
+    });
+    $('#toc-root').on('click','.level3',function(){
+      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level4">Level4</a></li></ul>');
+
+    });
+    $('#toc-root').on('click','.level4',function(){
+      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level5">Level5</a></li></ul>');
+
+    });
+    $('#toc-root').on('click','.level5',function(){
+      $(this).parent().append('<ul style = "list-style-type:none" class = "lvl"><li><a  class = "list-group-item level level6">Level6</a></li></ul>');
+
+    });
+*/
+
+
   };
 
   /*
@@ -469,6 +536,23 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
   api.setText = function (newContents) {
     editor.doc.setValue(newContents);
   };
+
+  /* ---- START CLAYTON ----*/
+  /*You lied to me. */
+
+
+
+
+
+
+
+
+
+
+
+
+/*  ---- END CLAYTON ---- */
+
 
   // exposed as Jibe
   return api;

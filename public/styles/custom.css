@@ -56,6 +56,7 @@ div#editor-preview-container.replaying {
 
 div#editor-preview-container > div#markdown {
   margin-top: 22.5px;
+
 }
 
 div#editor-preview-container > div#preview {
@@ -76,6 +77,114 @@ div#editor-preview-container > div#preview {
   display: none !important;
 }
 
+/*Everything Table of contents
+*/
+h3#toc-header-text{
+  text-align:center;
+}
+div#toc-header{
+  margin-left: -15px;
+  margin-right: -15px;
+  border-radius: 0px;
+}
+div#toc-container {
+  border-left: 1px solid #d0d0d0;
+  z-index:1000;
+  margin-top:0px;
+  height:95%;
+  margin-left: 20px;
+  border-bottom-width:0px;
+  padding-bottom: 0px;
+  margin-bottom:0px;
+
+}
+div#toc{
+  background-color: #ffffff;
+  height: calc(100% - 10px);
+  margin-top:0px;
+  margin-left:-15px;
+  margin-right:-40px;
+  margin-bottom:-10px;
+  border-radius: 0px;
+  padding-left: 33px;
+  border-bottom-width:0px;
+  overflow-y:scroll;
+  overflow-x:hidden;
+  padding-bottom:0px;
+
+}
+div#toc-box{
+  height: 100%;
+  margin-top:-20px;
+}
+a.level1{
+  color: #000000;
+  margin-right:-20px;
+  margin-left: -35px;
+  font-size: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px;
+
+
+}
+a.level2{
+  color: #111111;
+  margin-right:-20px;
+  margin-left: -20px;
+  font-size: 25px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px;
+}
+a.level3{
+  color: #222222;
+  margin-right:-20px;
+  margin-left: -10px;
+  font-size: 22.5px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px;
+
+}
+a.level4{
+  color: #333333;
+  margin-right:-20px;
+  margin-left: 0px;
+  font-size: 20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px;
+
+}
+a.level5{
+  color: #444444;
+  margin-right:-20px;
+  margin-left: 10px;
+  font-size: 18px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px;
+
+}
+a.level6{
+  color: #555555;
+  margin-right:-20px;
+  margin-left: 20px;
+  font-size: 16px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px;
+
+}
+
+ul.lvl{
+  padding: 0px;
+}
+
+.clear{
+  clear:both;
+}
 /*  Everything Timeslider
  */
 #replay-controls-container {
@@ -113,7 +222,6 @@ div#editor-preview-container > div#preview {
   margin-left: -22.5px;
   margin-bottom: 2px;
 }
-
 /*  Everything Timestamps
  */
 #timestamps-container {
@@ -158,6 +266,9 @@ div#editor-preview-container > div#preview {
 div#side-container > div[data-spy="affix"] {
   border-left: 1px solid #d0d0d0;
 }
+div#toc-container > div[data-spy="affix"] {
+  border-left: 1px solid #d0d0d0;
+}
 
 div#side-container, div#side-container .row {
   height: 100%;
@@ -175,6 +286,7 @@ div#chat-bubbles {
 }
 
 div#chat-input {
+  background-color: #ffffff;
   border-top: 1px solid #d0d0d0;
   height: 65px;
   box-shadow: 0 -5px 5px -5px #d0d0d0;
