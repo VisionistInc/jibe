@@ -88,7 +88,7 @@ div#toc-header{
   border-radius: 0px;
 }
 div#toc-container {
-  border-left: 1px solid #d0d0d0;
+  /*border-left: 1px solid #d0d0d0;*/
   z-index:1000;
   margin-top:0px;
   height:95%;
@@ -101,7 +101,7 @@ div#toc-container {
 div#toc{
   background-color: #ffffff;
   height: calc(100% - 10px);
-  margin-top:0px;
+  margin-top:1.5px;
   margin-left:-15px;
   margin-right:-40px;
   margin-bottom:-10px;
@@ -117,65 +117,58 @@ div#toc-box{
   height: 100%;
   margin-top:-20px;
 }
+
+div.well {
+  border: none;
+}
+
+a.level{
+  border: none;
+  border-bottom: 1px solid #d0d0d0;
+  border-left: 1px solid #d0d0d0;
+
+  cursor: pointer;
+  cursor: hand;
+  margin-right:-20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px !important;
+}
+
 a.level1{
   color: #000000;
-  margin-right:-20px;
-  margin-left: -35px;
+  margin-left: -30px;
   font-size: 30px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 0px;
-
-
 }
+
 a.level2{
   color: #111111;
-  margin-right:-20px;
   margin-left: -20px;
   font-size: 25px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 0px;
 }
+
 a.level3{
   color: #222222;
-  margin-right:-20px;
   margin-left: -10px;
   font-size: 22.5px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 0px;
-
 }
+
 a.level4{
   color: #333333;
-  margin-right:-20px;
   margin-left: 0px;
   font-size: 20px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 0px;
-
 }
+
 a.level5{
   color: #444444;
-  margin-right:-20px;
   margin-left: 10px;
   font-size: 18px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 0px;
-
 }
+
 a.level6{
   color: #555555;
-  margin-right:-20px;
   margin-left: 20px;
   font-size: 16px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-radius: 0px;
-
 }
 
 ul.lvl{
