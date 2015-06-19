@@ -160,7 +160,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *  Updates the Jibe preview tab --
    *  -- works in real time (updates while other type).
    */
-   var toc = new TOC();
   function updatePreview (editor, converter) {
     var preview = $('.rendered-markdown');
     //May want to update TOC here too
@@ -184,7 +183,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       timestamps,
       textformat,
       replay,
-      replay_editor; // read-only CodeMirror instance for replay
+      replay_editor,  // read-only CodeMirror instance for replay
+      toc;
 
   /*
    *  Set up everything - chat socket, CodeMirror, ShareJS, etc.
@@ -194,7 +194,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     editor     = setCodeMirror (options);
     timestamps = setTimestamps (editor, client);
     textformat = setTextFormat (editor);
-
+    toc = new TOC();
     replay_editor = setCodeMirrorReplay ();
 
     /*
@@ -419,7 +419,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
       else{
         $('#toc-container').show("slow");
-        $('#editor-preview-container').removeClass("col-md-12");
         $('#editor-preview-container').addClass("col-md-9");
       }
     });
