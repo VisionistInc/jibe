@@ -66,7 +66,6 @@ function Timestamps (data) {
     var content = '';
     var timestamps = [];
     var compare_date  = '';
-
     for (var i = 0; i < lines.length; i++) {
       var timestamp = $('<div>');
 

@@ -130,15 +130,23 @@
         // nothing was removed.
       } else {
 
+
+        // change in lines (deleted lines)
+        if(change.to.line !== change.from.line){
+          for (i = change.to.line; i > change.from.line; i--) {
+
+            if(doc.lines[i] !== undefined){
+              ops.push({p:['lines', i], ld: doc.lines[i]});
+              deletedLines[i] = true;
+            }
+          }
+      }
+
         // change in text (deletion)
         ops.push({p:textPath, sd: change.removed.join('\n')});
 
-        // change in lines (deleted lines)
-        for (i = change.to.line; i > change.from.line; i--) {
-          ops.push({p:['lines', i], ld: doc.lines[i]});
-          deletedLines[i] = true;
-        }
-      }
+
+    }
 
       if (change.text) {
 
@@ -190,9 +198,6 @@
               // if this line was just deleted, we don't want to submit any
               // updates for it ... we have already updated the text appropriately,
               // updating this now will update the wrong line.
-              if (deletedLines[lineIndex]) {
-                continue;
-              }
 
               var newTimestamp = new Date ();
 
@@ -201,6 +206,7 @@
                   timestamps.client !== doc.lines[lineIndex].client) {
 
                 // replace (delete and insert) the line with updated values
+
                 ops.push({p:['lines', lineIndex], ld: doc.lines[lineIndex], li: {
                   client: timestamps.client,
                   timestamp: newTimestamp
@@ -220,6 +226,7 @@
       }
 
       // submit the complete list of changes
+      //console.log(ops);
       ctx.submitOp(ops);
 
       // call the function again on the next change, if there is one

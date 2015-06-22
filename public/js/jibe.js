@@ -164,8 +164,16 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     var preview = $('.rendered-markdown');
     //May want to update TOC here too
     toc.generateHeaders(editor);
-    preview.html (converter.makeHtml (editor.getValue ()));
+    preview.html (converter.makeHtml (addSpaces(editor.getValue ())));
     updateWordCount (editor);
+  }
+  function addSpaces(text){
+    var lines = text.split("\n");
+    var len = lines.length;
+    for (i = 0; i < len; i++ ){
+      lines[i] += "  "; // for some reason, you need two spaces after a line to merit a line break
+    }
+    return lines.join("\n");
   }
 
   // exposed as Jibe
@@ -333,6 +341,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       if ($('#replay-controls-container').is (':visible')) {
         replay.stop ();
         $('#play-button').removeClass('glyphicon glyphicon-stop').addClass('glyphicon glyphicon-play');
+
         $('#replay-controls-container').hide ("fast");
         $('#entry-markdown-replay').next ('.CodeMirror').hide ();
         $('#entry-markdown').next ('.CodeMirror').show ();
@@ -343,13 +352,16 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       } else {
         replay.setUp (function () {
           $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
+
+          $('#editor-preview-toggle').bootstrapToggle ('disable');
+
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
           $('#entry-markdown-replay').next ('.CodeMirror').show ();
           replay.addFlags();
 
           $('div#editor-preview-container').addClass ('replaying');
-          $('#editor-preview-toggle').bootstrapToggle ('disable');
+
         });
       }
     });

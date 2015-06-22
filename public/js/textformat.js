@@ -86,7 +86,8 @@ function TextFormat (data) {
 
       // Test if the format is already applied:
   		if (regex.test (selection)) {
-  			return regex.exec (selection).slice (1, 4).join ("");
+        console.log(regex.exec(selection));
+  			return regex.exec (selection).slice (1, 4).join ("");//["_fdsa_", "", "fdsa", "", index: 0, input: "_fdsa_"] takes and concatenates entries 1,2,3
   		} else {
   			return (characters + selection + characters);
   		}
@@ -104,7 +105,7 @@ function TextFormat (data) {
   		if (/\n/.test (selection)) {
   			var regex = new RegExp ("([\\s\\S]*)" + escapeRegExp (mlCharacters) + "\\n([\\s\\S]*)\\n" + escapeRegExp (mlCharacters) + "([\\s\\S]*)");
   			if (regex.test (selection)) {
-  				return regex.exec (selection).slice (1, 4).join ("");
+  				return regex.exec (selection).slice (1, 4).join (""); //["_fdsa_", "", "fdsa", "", index: 0, input: "_fdsa_"] takes and concatenates entries 1,2,3
   			} else {
   				return mlCharacters + "\n" + selection + "\n" + mlCharacters;
   			}
