@@ -162,6 +162,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    */
   function updatePreview (editor, converter) {
     var preview = $('.rendered-markdown');
+    //May want to update TOC here too
+    toc.generateHeaders(editor);
     preview.html (converter.makeHtml (editor.getValue ()));
     updateWordCount (editor);
   }
@@ -181,7 +183,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       timestamps,
       textformat,
       replay,
-      replay_editor; // read-only CodeMirror instance for replay
+      replay_editor,  // read-only CodeMirror instance for replay
+      toc;
 
   /*
    *  Set up everything - chat socket, CodeMirror, ShareJS, etc.
@@ -191,7 +194,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     editor     = setCodeMirror (options);
     timestamps = setTimestamps (editor, client);
     textformat = setTextFormat (editor);
-
+    toc = new TOC();
     replay_editor = setCodeMirrorReplay ();
 
     /*
@@ -252,6 +255,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         setActiveUser (authors[i]);
       }
     });
+
 
     /*
      *  Text formatting within editor --
@@ -327,16 +331,18 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       replay.timestamps.colors = timestamps.colors;
 
       if ($('#replay-controls-container').is (':visible')) {
+        replay.stop ();
+        $('#play-button').removeClass('glyphicon glyphicon-stop').addClass('glyphicon glyphicon-play');
         $('#replay-controls-container').hide ("fast");
         $('#entry-markdown-replay').next ('.CodeMirror').hide ();
         $('#entry-markdown').next ('.CodeMirror').show ();
         replay.reset ();
         timestamps.draw (timestamps.lines);
-
         $('div#editor-preview-container').removeClass ('replaying');
         $('#editor-preview-toggle').bootstrapToggle ('enable');
       } else {
         replay.setUp (function () {
+          $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
           $('#entry-markdown-replay').next ('.CodeMirror').show ();
@@ -363,6 +369,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     $('#editor-preview-toggle').change(function() {
       if ($(this).prop('checked')) {
         $('#markdown').hide ();
+
         $('#preview').show ();
         $('#jibe-controls-container button').prop("disabled", true);
       } else {
@@ -370,7 +377,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         $('#markdown').show ();
         $('#jibe-controls-container button').prop("disabled", false);
       }
-    })
+    });
 
     /*
      *  When the replay button is clicked, start replaying the operations that have been performed on the document --
@@ -400,6 +407,36 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       // flag current version
       api.flagVersion ();
     });
+
+    // Table of Contents stuff
+    /* Toggles table of contents panel
+    */
+    $('#toggle-toc').click(function(){
+      if( $('#toc-container').is(":visible")){
+        $('#toc-container').hide('slow',function(){
+          $('#editor-preview-container').removeClass("col-md-9");
+        });
+
+      }
+      else{
+        $('#toc-container').show("slow");
+        $('#editor-preview-container').addClass("col-md-9");
+      }
+    });
+
+
+    /*
+    * Jump to line functionality for table of contents
+    */
+    $('#toc-root').on('click','.level',function(event){
+        var line_num = parseInt(event.target.dataset.linenum);
+        editor.focus();
+        editor.setCursor({line:line_num,ch:0});
+    });
+
+
+
+
   };
 
   /*

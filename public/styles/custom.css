@@ -56,6 +56,7 @@ div#editor-preview-container.replaying {
 
 div#editor-preview-container > div#markdown {
   margin-top: 22.5px;
+
 }
 
 div#editor-preview-container > div#preview {
@@ -74,6 +75,104 @@ div#editor-preview-container > div#preview {
  */
 .CodeMirror-vscrollbar {
   display: none !important;
+}
+
+/*Everything Table of contents
+*/
+h3#toc-header-text{
+  text-align:center;
+}
+div#toc-header{
+  margin-left: -15px;
+  margin-right: -15px;
+  border-radius: 0px;
+}
+div#toc-container {
+  /*border-left: 1px solid #d0d0d0;*/
+  z-index:1000;
+  margin-top:0px;
+  height:95%;
+  margin-left: 20px;
+  border-bottom-width:0px;
+  padding-bottom: 0px;
+  margin-bottom:0px;
+
+}
+div#toc{
+  background-color: #ffffff;
+  height: calc(100% - 10px);
+  margin-top:1.5px;
+  margin-left:-15px;
+  margin-right:-40px;
+  margin-bottom:-10px;
+  border-radius: 0px;
+  padding-left: 33px;
+  border-bottom-width:0px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-bottom:0px;
+
+}
+div#toc-box{
+  height: 100%;
+  margin-top:-20px;
+}
+
+div.well {
+  border: none;
+}
+
+a.level{
+  border: none;
+  border-bottom: 1px solid #d0d0d0;
+  border-left: 1px solid #d0d0d0;
+
+  cursor: pointer;
+  cursor: hand;
+  margin-right:-20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-radius: 0px !important;
+}
+
+a.level1{
+  color: #000000;
+  margin-left: -30px;
+  font-size: 30px;
+}
+
+a.level2{
+  color: #111111;
+  margin-left: -20px;
+  font-size: 25px;
+}
+
+a.level3{
+  color: #222222;
+  margin-left: -10px;
+  font-size: 22.5px;
+}
+
+a.level4{
+  color: #333333;
+  margin-left: 0px;
+  font-size: 20px;
+}
+
+a.level5{
+  color: #444444;
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+a.level6{
+  color: #555555;
+  margin-left: 20px;
+  font-size: 16px;
+}
+
+ul.lvl{
+  padding: 0px;
 }
 
 /*  Everything Timeslider
@@ -113,7 +212,6 @@ div#editor-preview-container > div#preview {
   margin-left: -22.5px;
   margin-bottom: 2px;
 }
-
 /*  Everything Timestamps
  */
 #timestamps-container {
@@ -158,6 +256,9 @@ div#editor-preview-container > div#preview {
 div#side-container > div[data-spy="affix"] {
   border-left: 1px solid #d0d0d0;
 }
+div#toc-container > div[data-spy="affix"] {
+  border-left: 1px solid #d0d0d0;
+}
 
 div#side-container, div#side-container .row {
   height: 100%;
@@ -175,6 +276,7 @@ div#chat-bubbles {
 }
 
 div#chat-input {
+  background-color: #ffffff;
   border-top: 1px solid #d0d0d0;
   height: 65px;
   box-shadow: 0 -5px 5px -5px #d0d0d0;
