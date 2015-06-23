@@ -31,7 +31,13 @@ function Replay (params) {
   this.snapshot     = {};
   this.time_slider  = null;
   this.current_v    = null;
+  this.old_toc      = params.old_toc;
+  this.old_inst     = params.old_inst;
+  this.old_tstamps  = params.old_tstamps;
+  this.stopped      = false;
+  this.flagged      = [];
 
+  var at_flag = false;
   var instance = this;
   var stop = false;
 
@@ -70,8 +76,10 @@ function Replay (params) {
    *  Add any flagged versions to the replay slider div
    */
   this.addFlags = function() {
+    this.flagged = [];
     for (var i = 0; i < instance.operations.length; i++) {
       if (instance.operations[i].flagged) {
+        this.flagged.push(i);
         var percentLeft = (instance.operations[i].v / instance.operations.length * 100);
         var element = flagTemplate.replace('{{percentLeft}}', percentLeft);
         $('#replaySlider').append (element);
@@ -87,6 +95,7 @@ function Replay (params) {
 
     $('#start-replay-button').removeClass ('active');
     $('#start-replay-button').find('span.glyphicon').removeClass ('glyphicon-pause').addClass ('glyphicon-play');
+    this.stopped = true;
 
     // clear flags, since they will need to be redrawn next time
     $('#replaySlider .flagged-versions').remove();
@@ -128,6 +137,7 @@ function Replay (params) {
 
         instance.codemirror.setValue (instance.snapshot.text);
         instance.timestamps.draw (instance.snapshot.lines);
+        instance.old_toc.generateHeaders(instance.codemirror);
         instance.current_v = version;
         return 'Version: ' + version;
       }
@@ -138,6 +148,7 @@ function Replay (params) {
    *  Starts document replay.
    */
   this.replay = function () {
+    this.stopped = false;
     if (instance.current_v >= instance.operations.length) {
       instance.setUp (function () {
         instance.replay ();
@@ -151,16 +162,19 @@ function Replay (params) {
    *  Recursively plays through the rest of the operations.
    */
   this.slide = function () {
-    if (instance.current_v >= instance.operations.length) {
+    if (instance.current_v >= instance.operations.length || (instance.operations[instance.current_v].flagged && !at_flag)) {
+      at_flag = true;
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
+      this.stopped = true;
       stop = false;
       return;
     } else if (stop) {
+      at_flag = false;
       stop = false;
       return;
     }
-
+    at_flag = false;
     instance.time_slider.slider ('setValue', instance.current_v + 1);
 
     setTimeout(function() {
@@ -169,6 +183,8 @@ function Replay (params) {
   };
 
   this.stop = function() {
+    this.stopped = true;
     stop = true;
+    at_flag = true;
   };
 }

@@ -328,6 +328,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       codemirror : replay_editor,
       delay      : 100,
       room       : room,
+      old_inst   : editor,
+      old_tstamps: timestamps,
+      old_toc    : toc,
       timestamps : setTimestamps (replay_editor, client)
     });
 
@@ -339,22 +342,26 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       replay.timestamps.colors = timestamps.colors;
 
       if ($('#replay-controls-container').is (':visible')) {
-        replay.stop ();
+        if(!replay.stopped){
+         replay.stop ();
+        }
         $('#play-button').removeClass('glyphicon glyphicon-stop').addClass('glyphicon glyphicon-play');
 
         $('#replay-controls-container').hide ("fast");
+
         $('#entry-markdown-replay').next ('.CodeMirror').hide ();
         $('#entry-markdown').next ('.CodeMirror').show ();
-        replay.reset ();
-        timestamps.draw (timestamps.lines);
+
         $('div#editor-preview-container').removeClass ('replaying');
         $('#editor-preview-toggle').bootstrapToggle ('enable');
+        replay.reset();
+
       } else {
         replay.setUp (function () {
+          replay.reset ();
           $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
-
           $('#editor-preview-toggle').bootstrapToggle ('disable');
-
+          $('#start-replay-button').removeClass ('active');
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
           $('#entry-markdown-replay').next ('.CodeMirror').show ();
@@ -364,6 +371,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         });
       }
+      updatePreview(editor,converter);
     });
 
     /*
@@ -399,13 +407,16 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       $(this).blur ();
       if ($(this).hasClass('active')) {
         replay.stop ();
+        replay.stopped = true;
       } else {
         replay.replay();
+        replay.stopped = false;
       }
 
       /*
        *  Toggle the active class on/off on the replay button.
        */
+
       $(this).toggleClass ('active');
       $(this).find ('span.glyphicon').toggleClass ('glyphicon-pause').toggleClass ('glyphicon-play');
     });
@@ -436,7 +447,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
     });
 
-
     /*
     * Jump to line functionality for table of contents
     */
@@ -446,10 +456,20 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         editor.setCursor({line:line_num,ch:0});
     });
 
-
+    /*
+    * Jump to last line of editor when clicked, but only when not clicking within text
+    */
+    $('#editor-preview-container').click(function(){
+      if(!editor.hasFocus()){
+        editor.focus();
+        editor.execCommand("goDocEnd");
+      }
+    });
 
 
   };
+
+
 
   /*
    *  Flag the current version of the document.
@@ -487,7 +507,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *
    *  Any time a user enters '@<keyword>:<key>' and then presses either the
    *  spacebar or the enter key, that text will be replaced using the
-   *  provided replacement value.  If a function is provided as the replacement,
+   *  provided replacement value.  If a funsion is provided as the replacement,
    *  it should have the signature 'function (value, callback) {...}', and the
    *  replacement text should be passed to the callback.  This allows for
    *  asynchronous lookups to be used in the replacement function.
