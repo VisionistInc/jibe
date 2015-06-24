@@ -31,16 +31,25 @@ function Replay (params) {
   this.snapshot     = {};
   this.time_slider  = null;
   this.current_v    = null;
+
+  /*
+  * These are for the realtime adjustment of the table of contents.
+  * Also used to recreate editor view without needing a refresh by user
+  */
   this.old_toc      = params.old_toc;
   this.old_inst     = params.old_inst;
   this.old_tstamps  = params.old_tstamps;
+
+  //Used to tell the play/pause button when to start/stop
   this.stopped      = false;
+
+  //Used for flagging capabilities
   this.flagged      = [];
   this.current_flag = null;
   this.next_flag    = 0;
   this.prev_flag    = null;
+  this.at_flag = false;
 
-  var at_flag = false;
   var instance = this;
   var stop = false;
 
@@ -60,6 +69,11 @@ function Replay (params) {
 
         instance.fireSliderEventHandlers ();
         instance.timestamps.draw (instance.snapshot.lines);
+
+        // makes sure to reset the current/prev/next flag on startup
+        this.current_flag = null;
+        this.prev_flag = null;
+        this.next_flag = 0;
 
         callback ();
       }
@@ -95,6 +109,10 @@ function Replay (params) {
       $('#flag-right').prop("disabled",true);
     }
   };
+
+  /*
+  * Non-anonymous version of the slider listener. Just a copy-paste of it really..
+  */
   this.setVersion = function (version) {
     /*
      *  This fires whenever the timeslider moves --
@@ -140,9 +158,9 @@ function Replay (params) {
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
       this.stop();
     }
-
+    this.at_flag = true;
     this.setVersion(this.flagged[this.next_flag]);
-    at_flag = true;
+
   };
 
   /*
@@ -154,14 +172,19 @@ function Replay (params) {
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
       this.stop();
     }
-
+    this.at_flag = true;
     this.setVersion(this.flagged[this.prev_flag]);
-    at_flag = true;
+
 
 
 
   };
 
+  /*
+  * Gets the current/prev/next flag based on the position of the slider
+  * Iterates through all flags, each time the slider moves, so for a large
+  * number of flagged versions, it may have performance issues.
+  */
   this.setCurrentFlag = function(){
     var index = 0;
     if (this.current_v < this.flagged[0]){
@@ -205,16 +228,21 @@ function Replay (params) {
     this.checkFlagButtons();
   };
 
+  /*
+  * Checks to see if the left/right flag buttons should be disabled. If
+  * there are no more flags on either side, disable it.
+  */
   this.checkFlagButtons = function(){
-    if(this.prev_flag === null){
+    if(this.prev_flag !== null){
+      $('#flag-left').prop("disabled",false);
+    }else{
       $('#flag-left').prop("disabled",true);
     }
-    else if(this.next_flag === null){
-      $('#flag-right').prop("disabled",true);
+    if(this.next_flag !== null){
+      $('#flag-right').prop("disabled",false);
     }
     else{
-      $('#flag-left').prop("disabled",false);
-      $('#flag-right').prop("disabled",false);
+      $('#flag-right').prop("disabled",true);
     }
 
   };
@@ -225,7 +253,6 @@ function Replay (params) {
     instance.snapshot  = instance.operations[0].create.data;
     instance.time_slider.slider ('setValue', instance.current_v);
     instance.codemirror.setValue (instance.snapshot.text);
-
     $('#start-replay-button').removeClass ('active');
     $('#start-replay-button').find('span.glyphicon').removeClass ('glyphicon-pause').addClass ('glyphicon-play');
     this.stopped = true;
@@ -296,21 +323,20 @@ function Replay (params) {
    *  Recursively plays through the rest of the operations.
    */
   this.slide = function () {
-    if (instance.current_v >= instance.operations.length || (instance.operations[instance.current_v].flagged && !at_flag)) {
+    if (instance.current_v >= instance.operations.length || (instance.operations[instance.current_v].flagged && !this.at_flag)) {
       console.log(this.flagged);
-      at_flag = true;
+      this.at_flag = true;
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
-      this.current_flag =
+
       this.stopped = true;
       stop = false;
       return;
     } else if (stop) {
-      at_flag = false;
       stop = false;
       return;
     }
-    at_flag = false;
+    this.at_flag = false;
     instance.time_slider.slider ('setValue', instance.current_v + 1);
 
     setTimeout(function() {
@@ -321,6 +347,6 @@ function Replay (params) {
   this.stop = function() {
     this.stopped = true;
     stop = true;
-    at_flag = true;
+    //at_flag = true;
   };
 }
