@@ -76,6 +76,7 @@ function Replay (params) {
         this.next_flag = 0;
 
         callback ();
+        instance.setVersion(0);
       }
     });
 
@@ -98,7 +99,7 @@ function Replay (params) {
     $('#flag-left').prop("disabled",true);
     for (var i = 0; i < instance.operations.length; i++) {
       if (instance.operations[i].flagged) {
-        this.flagged.push(i);
+        this.flagged.push(i+1);
         var percentLeft = (instance.operations[i].v / instance.operations.length * 100);
         var element = flagTemplate.replace('{{percentLeft}}', percentLeft);
         $('#replaySlider').append (element);

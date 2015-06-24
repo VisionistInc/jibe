@@ -275,6 +275,7 @@
       window.sharejs.Doc.prototype.attachCodeMirror = function (cm, ctx, timestamps) {
         if (!ctx) ctx = this.createContext();
         shareCodeMirror(cm, ctx, timestamps);
+        return ctx;
       };
     }
   }

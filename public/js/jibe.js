@@ -190,6 +190,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       editor,        // CodeMirror editor instance
       timestamps,
       textformat,
+      sharejs_doc,
       replay,
       replay_editor,  // read-only CodeMirror instance for replay
       toc;
@@ -204,6 +205,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     textformat = setTextFormat (editor);
     toc = new TOC();
     replay_editor = setCodeMirrorReplay ();
+    sharejs_doc = null;
 
     /*
      *  Set up chat components.
@@ -303,7 +305,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         });
       }
       if (editor_bc.type && editor_bc.type.name === 'json0') {
-        editor_bc.attachCodeMirror (editor, null, timestamps);
+        sharejs_doc = editor_bc.attachCodeMirror (editor, null, timestamps);
         editor.refresh();
       }
     });
@@ -359,10 +361,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         $('#format-italic').prop("disabled",false);
         $('#format-code').prop("disabled",false);
         $('#flag-version').prop("disabled",false);
+        replay.reset();
         $('#flag-left').prop("disabled",true);
         $('#flag-right').prop("disabled",true);
-
-        replay.reset();
 
       } else {
         replay.setUp (function () {
@@ -386,6 +387,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         });
       }
+      timestamps.draw(sharejs_doc.get().lines);
       updatePreview(editor,converter);
     });
 
