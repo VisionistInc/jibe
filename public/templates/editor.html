@@ -50,7 +50,7 @@
 
         <!-- Jibe controls -->
         <div id="jibe-controls-container" class="row">
-          <div class="btn-group" role="group" aria-label="...">
+          <div class="btn-group" id = "format-btn-group" role="group" aria-label="...">
             <button id="format-bold" type="button" class="btn btn-default">
                 <span class="glyphicon glyphicon-bold" aria-hidden="true"></span>
             </button>
@@ -66,9 +66,17 @@
               <span id = "play-button" class="glyphicon glyphicon-play" aria-hidden="true"></span>
           </button>
           &nbsp;&nbsp;
-          <button id="flag-version" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Flag Version">
-              <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
-          </button>
+          <div class = "btn-group" id = "flag-btn-group" role = "group" aria-label="...">
+            <button id="flag-left" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Previous Flag">
+                <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+            </button>
+            <button id="flag-version" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Flag Version">
+                <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+            </button>
+            <button id="flag-right" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Next Flag">
+                <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+            </button>
+          </div>
           &nbsp;&nbsp;
           <input type="checkbox" id="editor-preview-toggle">
           &nbsp;&nbsp;

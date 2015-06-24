@@ -273,6 +273,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     $('#format-code'  ).click (function () { $(this).blur (); textformat.monospace (); });
     $('#format-italic').click (function () { $(this).blur (); textformat.italic    (); });
 
+
     /*
      *  Subscribes to BrowserChannel connection and attaches the CodeMirror editor --
      *  -- uses sharejs for all of the OT tasking.
@@ -354,6 +355,13 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         $('div#editor-preview-container').removeClass ('replaying');
         $('#editor-preview-toggle').bootstrapToggle ('enable');
+        $('#format-bold').prop("disabled",false);
+        $('#format-italic').prop("disabled",false);
+        $('#format-code').prop("disabled",false);
+        $('#flag-version').prop("disabled",false);
+        $('#flag-left').prop("disabled",true);
+        $('#flag-right').prop("disabled",true);
+
         replay.reset();
 
       } else {
@@ -361,6 +369,13 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
           replay.reset ();
           $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
           $('#editor-preview-toggle').bootstrapToggle ('disable');
+          $('#format-bold').prop("disabled",true);
+          $('#format-italic').prop("disabled",true);
+          $('#format-code').prop("disabled",true);
+          $('#flag-version').prop("disabled",true);
+          $('#flag-left').prop("disabled",false);
+          $('#flag-right').prop("disabled",false);
+
           $('#start-replay-button').removeClass ('active');
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
@@ -392,6 +407,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         $('#preview').show ();
         $('#jibe-controls-container button').prop("disabled", true);
+
       } else {
         $('#preview').hide ();
         $('#markdown').show ();
@@ -430,6 +446,23 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       // flag current version
       api.flagVersion ();
     });
+
+    /*
+    * Hide the left/right flag buttons on startup
+    */
+    $('#flag-left').prop("disabled",true);
+    $('#flag-right').prop("disabled",true);
+
+    /*
+    * Implement next-flag prev-flag functionality
+    */
+    $('#flag-left').click(function(){
+      replay.prevFlag();
+    });
+    $('#flag-right').click(function(){
+      replay.nextFlag();
+    });
+
 
     // Table of Contents stuff
     /* Toggles table of contents panel

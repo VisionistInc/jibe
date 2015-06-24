@@ -36,6 +36,9 @@ function Replay (params) {
   this.old_tstamps  = params.old_tstamps;
   this.stopped      = false;
   this.flagged      = [];
+  this.current_flag = null;
+  this.next_flag    = 0;
+  this.prev_flag    = null;
 
   var at_flag = false;
   var instance = this;
@@ -77,6 +80,8 @@ function Replay (params) {
    */
   this.addFlags = function() {
     this.flagged = [];
+    this.current_flag = null;
+    $('#flag-left').prop("disabled",true);
     for (var i = 0; i < instance.operations.length; i++) {
       if (instance.operations[i].flagged) {
         this.flagged.push(i);
@@ -85,7 +90,135 @@ function Replay (params) {
         $('#replaySlider').append (element);
       }
     }
+    if (this.flagged.length === 0){
+      $('#flag-left').prop("disabled",true);
+      $('#flag-right').prop("disabled",true);
+    }
   };
+  this.setVersion = function (version) {
+    /*
+     *  This fires whenever the timeslider moves --
+     *  -- manually or programatically.
+     */
+    if (version < instance.current_v) {
+      /*
+       *  Unbuild the snapshot up to the desired version.
+       */
+      for (var i = instance.current_v - 1; i >= version; i--) {
+        if (instance.operations[i].op) {
+          instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
+        }
+      }
+    } else if (version > instance.current_v) {
+      /*
+       *  Build the snapshot up to the desired version.
+       */
+      for (var j = instance.current_v; j < version; j++) {
+
+        if (instance.operations[j].op) {
+          instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
+        }
+      }
+    }
+
+    instance.codemirror.setValue (instance.snapshot.text);
+    instance.timestamps.draw (instance.snapshot.lines);
+    instance.old_toc.generateHeaders(instance.codemirror);
+    instance.current_v = version;
+    instance.time_slider.slider ('setValue', instance.current_v);
+    instance.setCurrentFlag();
+    return 'Version: ' + version;
+  };
+
+
+  /*
+  * Moves to next flag
+  */
+  this.nextFlag = function(){
+    if (!this.stopped){
+      $('#start-replay-button').toggleClass('active');
+      $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
+      this.stop();
+    }
+
+    this.setVersion(this.flagged[this.next_flag]);
+    at_flag = true;
+  };
+
+  /*
+  * Moves to previous flag
+  */
+  this.prevFlag = function(){
+    if(!this.stopped){
+      $('#start-replay-button').toggleClass('active');
+      $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
+      this.stop();
+    }
+
+    this.setVersion(this.flagged[this.prev_flag]);
+    at_flag = true;
+
+
+
+  };
+
+  this.setCurrentFlag = function(){
+    var index = 0;
+    if (this.current_v < this.flagged[0]){
+      this.current_flag = null;
+      this.prev_flag = null;
+      this.next_flag = 0;
+    }
+    else if(this.current_v === this.flagged[0]){
+      this.current_flag = 0;
+      this.prev_flag = null;
+      this.next_flag = 1;
+    }
+    else if(this.current_v > this.flagged[this.flagged.length-1]){
+      this.current_flag = this.flagged.length-1;
+      this.prev_flag = this.flagged.length-1;
+      this.next_flag = null;
+    }
+    else if(this.current_v === this.flagged[this.flagged.length-1]){
+      this.current_flag = this.flagged.length-1;
+      this.prev_flag = this.flagged.length-2;
+      this.next_flag = null;
+    }
+    else{
+      while(index < this.flagged.length-1){
+        if (this.current_v > this.flagged[index] && this.current_v < this.flagged[index+1]){
+          this.current_flag = index;
+          this.prev_flag = index;
+          this.next_flag = index+1;
+          break;
+        }
+        else if(this.current_v === this.flagged[index]){
+          this.current_flag = index;
+          this.prev_flag = index - 1;
+          this.next_flag = index + 1;
+          break;
+        }
+        index++;
+      }
+
+    }
+    this.checkFlagButtons();
+  };
+
+  this.checkFlagButtons = function(){
+    if(this.prev_flag === null){
+      $('#flag-left').prop("disabled",true);
+    }
+    else if(this.next_flag === null){
+      $('#flag-right').prop("disabled",true);
+    }
+    else{
+      $('#flag-left').prop("disabled",false);
+      $('#flag-right').prop("disabled",false);
+    }
+
+  };
+
 
   this.reset = function () {
     instance.current_v = 0;
@@ -139,6 +272,7 @@ function Replay (params) {
         instance.timestamps.draw (instance.snapshot.lines);
         instance.old_toc.generateHeaders(instance.codemirror);
         instance.current_v = version;
+        instance.setCurrentFlag();
         return 'Version: ' + version;
       }
     });
@@ -163,9 +297,11 @@ function Replay (params) {
    */
   this.slide = function () {
     if (instance.current_v >= instance.operations.length || (instance.operations[instance.current_v].flagged && !at_flag)) {
+      console.log(this.flagged);
       at_flag = true;
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
+      this.current_flag =
       this.stopped = true;
       stop = false;
       return;
