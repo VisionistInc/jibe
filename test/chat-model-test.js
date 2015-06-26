@@ -37,7 +37,7 @@ describe('jibe (Chat model)', function() {
 
   afterEach(function(done) {
     // clear chat table after each test
-    Chat.delete().then(function(result) {
+    Chat.delete().run(function(error, result) {
       done();
     });
   });
