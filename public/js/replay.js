@@ -112,7 +112,8 @@ function Replay (params) {
   };
 
   /*
-  * Non-anonymous version of the slider listener. Just a copy-paste of it really..
+  * Non-anonymous version of the slider listener. Can't pass this non-anon function to the formatter event handler, so changes to this function
+  * must also be made to the other one. Sorry.
   */
   this.setVersion = function (version) {
     /*
@@ -149,7 +150,6 @@ function Replay (params) {
     return 'Version: ' + version;
   };
 
-
   /*
   * Moves to next flag
   */
@@ -161,7 +161,6 @@ function Replay (params) {
     }
     this.at_flag = true;
     this.setVersion(this.flagged[this.next_flag]);
-
   };
 
   /*
@@ -175,10 +174,6 @@ function Replay (params) {
     }
     this.at_flag = true;
     this.setVersion(this.flagged[this.prev_flag]);
-
-
-
-
   };
 
   /*
@@ -234,16 +229,16 @@ function Replay (params) {
   * there are no more flags on either side, disable it.
   */
   this.checkFlagButtons = function(){
-    if(this.prev_flag !== null){
-      $('#flag-left').prop("disabled",false);
-    }else{
+    if(this.prev_flag == null){
       $('#flag-left').prop("disabled",true);
+    }else{
+      $('#flag-left').prop("disabled",false);
     }
-    if(this.next_flag !== null){
-      $('#flag-right').prop("disabled",false);
+    if(this.next_flag == null){
+      $('#flag-right').prop("disabled",true);
     }
     else{
-      $('#flag-right').prop("disabled",true);
+      $('#flag-right').prop("disabled",false);
     }
 
   };
@@ -330,8 +325,7 @@ function Replay (params) {
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
 
-      this.stopped = true;
-      stop = false;
+      this.stopped = true; // Replay should be stopped if the current version is greater than version length, or if it hits a flag
       return;
     } else if (stop) {
       stop = false;
@@ -348,6 +342,6 @@ function Replay (params) {
   this.stop = function() {
     this.stopped = true;
     stop = true;
-    //at_flag = true;
+
   };
 }

@@ -357,9 +357,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         $('div#editor-preview-container').removeClass ('replaying');
         $('#editor-preview-toggle').bootstrapToggle ('enable');
-        $('#format-bold').prop("disabled",false);
-        $('#format-italic').prop("disabled",false);
-        $('#format-code').prop("disabled",false);
+        $('.format').prop("disabled",false);
         $('#flag-version').prop("disabled",false);
         replay.reset();
         $('#flag-left').prop("disabled",true);
@@ -370,9 +368,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
           replay.reset ();
           $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
           $('#editor-preview-toggle').bootstrapToggle ('disable');
-          $('#format-bold').prop("disabled",true);
-          $('#format-italic').prop("disabled",true);
-          $('#format-code').prop("disabled",true);
+          $('.format').prop("disabled",true);
           $('#flag-version').prop("disabled",true);
           $('#flag-left').prop("disabled",false);
           $('#flag-right').prop("disabled",false);
@@ -542,7 +538,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *
    *  Any time a user enters '@<keyword>:<key>' and then presses either the
    *  spacebar or the enter key, that text will be replaced using the
-   *  provided replacement value.  If a funsion is provided as the replacement,
+   *  provided replacement value.  If a function is provided as the replacement,
    *  it should have the signature 'function (value, callback) {...}', and the
    *  replacement text should be passed to the callback.  This allows for
    *  asynchronous lookups to be used in the replacement function.
