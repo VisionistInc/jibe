@@ -33,7 +33,7 @@ describe('jibe (Author model)', function() {
 
   afterEach(function(done) {
     // clear chat table after each test
-    Author.delete().then(function(result) {
+    Author.delete().run(function(error, result) {
       done();
     });
   });
