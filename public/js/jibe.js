@@ -190,6 +190,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       editor,        // CodeMirror editor instance
       timestamps,
       textformat,
+      sharejs_doc,
       replay,
       replay_editor,  // read-only CodeMirror instance for replay
       toc;
@@ -204,6 +205,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     textformat = setTextFormat (editor);
     toc = new TOC();
     replay_editor = setCodeMirrorReplay ();
+    sharejs_doc = null;
 
     /*
      *  Set up chat components.
@@ -273,6 +275,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     $('#format-code'  ).click (function () { $(this).blur (); textformat.monospace (); });
     $('#format-italic').click (function () { $(this).blur (); textformat.italic    (); });
 
+
     /*
      *  Subscribes to BrowserChannel connection and attaches the CodeMirror editor --
      *  -- uses sharejs for all of the OT tasking.
@@ -302,7 +305,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         });
       }
       if (editor_bc.type && editor_bc.type.name === 'json0') {
-        editor_bc.attachCodeMirror (editor, null, timestamps);
+        sharejs_doc = editor_bc.attachCodeMirror (editor, null, timestamps);
         editor.refresh();
       }
     });
@@ -328,6 +331,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       codemirror : replay_editor,
       delay      : 100,
       room       : room,
+      old_inst   : editor,
+      old_tstamps: timestamps,
+      old_toc    : toc,
       timestamps : setTimestamps (replay_editor, client)
     });
 
@@ -339,22 +345,35 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       replay.timestamps.colors = timestamps.colors;
 
       if ($('#replay-controls-container').is (':visible')) {
-        replay.stop ();
+        if(!replay.stopped){
+         replay.stop ();
+        }
         $('#play-button').removeClass('glyphicon glyphicon-stop').addClass('glyphicon glyphicon-play');
 
         $('#replay-controls-container').hide ("fast");
+
         $('#entry-markdown-replay').next ('.CodeMirror').hide ();
         $('#entry-markdown').next ('.CodeMirror').show ();
-        replay.reset ();
-        timestamps.draw (timestamps.lines);
+
         $('div#editor-preview-container').removeClass ('replaying');
         $('#editor-preview-toggle').bootstrapToggle ('enable');
+        $('.format').prop("disabled",false);
+        $('#flag-version').prop("disabled",false);
+        replay.reset();
+        $('#flag-left').prop("disabled",true);
+        $('#flag-right').prop("disabled",true);
+
       } else {
         replay.setUp (function () {
+          replay.reset ();
           $('#play-button').removeClass('glyphicon glyphicon-play').addClass('glyphicon glyphicon-stop');
-
           $('#editor-preview-toggle').bootstrapToggle ('disable');
+          $('.format').prop("disabled",true);
+          $('#flag-version').prop("disabled",true);
+          $('#flag-left').prop("disabled",false);
+          $('#flag-right').prop("disabled",false);
 
+          $('#start-replay-button').removeClass ('active');
           $('#entry-markdown').next ('.CodeMirror').hide ();
           $('#replay-controls-container').show ("fast");
           $('#entry-markdown-replay').next ('.CodeMirror').show ();
@@ -364,6 +383,8 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         });
       }
+      timestamps.draw(sharejs_doc.get().lines);
+      updatePreview(editor,converter);
     });
 
     /*
@@ -384,6 +405,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
 
         $('#preview').show ();
         $('#jibe-controls-container button').prop("disabled", true);
+
       } else {
         $('#preview').hide ();
         $('#markdown').show ();
@@ -399,13 +421,16 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       $(this).blur ();
       if ($(this).hasClass('active')) {
         replay.stop ();
+        replay.stopped = true;
       } else {
         replay.replay();
+        replay.stopped = false;
       }
 
       /*
        *  Toggle the active class on/off on the replay button.
        */
+
       $(this).toggleClass ('active');
       $(this).find ('span.glyphicon').toggleClass ('glyphicon-pause').toggleClass ('glyphicon-play');
     });
@@ -419,6 +444,23 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       // flag current version
       api.flagVersion ();
     });
+
+    /*
+    * Hide the left/right flag buttons on startup
+    */
+    $('#flag-left').prop("disabled",true);
+    $('#flag-right').prop("disabled",true);
+
+    /*
+    * Implement next-flag prev-flag functionality
+    */
+    $('#flag-left').click(function(){
+      replay.prevFlag();
+    });
+    $('#flag-right').click(function(){
+      replay.nextFlag();
+    });
+
 
     // Table of Contents stuff
     /* Toggles table of contents panel
@@ -436,7 +478,6 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       }
     });
 
-
     /*
     * Jump to line functionality for table of contents
     */
@@ -446,10 +487,20 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
         editor.setCursor({line:line_num,ch:0});
     });
 
-
+    /*
+    * Jump to last line of editor when clicked, but only when not clicking within text
+    */
+    $('#editor-preview-container').click(function(){
+      if(!editor.hasFocus()){
+        editor.focus();
+        editor.execCommand("goDocEnd");
+      }
+    });
 
 
   };
+
+
 
   /*
    *  Flag the current version of the document.
