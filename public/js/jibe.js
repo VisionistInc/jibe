@@ -455,9 +455,11 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     * Implement next-flag prev-flag functionality
     */
     $('#flag-left').click(function(){
+      $(this).blur();
       replay.prevFlag();
     });
     $('#flag-right').click(function(){
+      $(this).blur();
       replay.nextFlag();
     });
 
