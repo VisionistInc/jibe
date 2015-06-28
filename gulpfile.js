@@ -23,7 +23,7 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('csslint', function() {
-  return gulp.src('public/styles/editor.css')
+  return gulp.src('public/styles/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter());
 });
