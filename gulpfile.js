@@ -18,8 +18,9 @@ var rename = require('gulp-rename');
 gulp.task('jshint', function() {
 	return gulp.src(['public/**/*.js', 'lib/**/*.js'])
 		.pipe(jshint())
-		.pipe(jshint.reporter('jshint-stylish'));
-		//.pipe(jshint.reporter('fail'));
+		.pipe(jshint.reporter('jshint-stylish'))
+		// fail (non-zero exit code) if there are any errors or warnings
+		.pipe(jshint.reporter('fail'));
 });
 
 gulp.task('csslint', function() {

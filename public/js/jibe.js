@@ -25,7 +25,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *  Returns location string based on URL hash; else default to The Dark Side.
    */
   function getLocation () {
-    return location.hash !== '' ? location.hash.substring (1) : 'The Dark Side';
+    return location.hash != '' ? location.hash.substring (1) : 'The Dark Side';
   }
 
   /*
