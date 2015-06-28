@@ -9,3 +9,6 @@ before_install:
   - sudo apt-get install rethinkdb
 before_script:
   - rethinkdb --daemon
+script:
+  - npm run-script lint
+  - npm test

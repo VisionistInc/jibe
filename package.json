@@ -55,6 +55,7 @@
     "mocha": "^2.2.4"
   },
   "scripts": {
+    "lint": "gulp jshint",
     "start": "node bin/standalone.js",
     "test": "NODE_ENV=test mocha"
   }
