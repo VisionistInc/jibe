@@ -33,7 +33,7 @@ describe('jibe (Room model)', function() {
 
   afterEach(function(done) {
     // clear room table after each test
-    Room.delete().then(function(result) {
+    Room.delete().run(function(error, result) {
       done();
     });
   });
@@ -138,7 +138,6 @@ describe('jibe (Room model)', function() {
         room.save().then(function(result) {
           expect().fail('expected validation error');
         }).error(function(error) {
-          console.log(error.message);
           expect(error.message).to.eql('Duplicate value [author1] found in Room.presentAuthors');
           done();
         });

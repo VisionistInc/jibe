@@ -4,6 +4,9 @@
 
 A modern, lightweight, collaborative editing environment.
 
+[![npm version](https://badge.fury.io/js/jibe.svg)](http://badge.fury.io/js/jibe)
+[![Build Status](https://travis-ci.org/VisionistInc/jibe.svg?branch=master)](https://travis-ci.org/VisionistInc/jibe)
+
 ## Installation
 * `npm install`
 * `npm start`

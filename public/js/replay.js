@@ -229,6 +229,7 @@ function Replay (params) {
   * there are no more flags on either side, disable it.
   */
   this.checkFlagButtons = function(){
+
     if(this.prev_flag == null || this.flagged.length === 0){
       $('#flag-left').prop("disabled",true);
     }else{
@@ -241,8 +242,9 @@ function Replay (params) {
       $('#flag-right').prop("disabled",false);
     }
 
+    $('#flag-left').prop('disabled', this.prev_flag === null);
+    $('#flag-right').prop('disabled', this.next_flag === null);
   };
-
 
   this.reset = function () {
     instance.current_v = 0;
