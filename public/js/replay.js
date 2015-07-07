@@ -124,7 +124,7 @@ function Replay (params) {
       /*
        *  Unbuild the snapshot up to the desired version.
        */
-      for (var i = instance.current_v - 1; i >= version; i--) {
+      for (var i = instance.current_v; i > version; i--) {
         if (instance.operations[i].op) {
           instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
         }
@@ -133,8 +133,7 @@ function Replay (params) {
       /*
        *  Build the snapshot up to the desired version.
        */
-      for (var j = instance.current_v; j < version; j++) {
-
+      for (var j = instance.current_v + 1; j <= version; j++) {
         if (instance.operations[j].op) {
           instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
         }
