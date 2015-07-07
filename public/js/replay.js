@@ -230,20 +230,17 @@ function Replay (params) {
   */
   this.checkFlagButtons = function(){
 
-    if(this.prev_flag == null || this.flagged.length === 0){
+    if(this.prev_flag === null || this.flagged.length === 0){
       $('#flag-left').prop("disabled",true);
     }else{
       $('#flag-left').prop("disabled",false);
     }
-    if(this.next_flag == null || this.flagged.length === 0){
+    if(this.next_flag === null || this.flagged.length === 0){
       $('#flag-right').prop("disabled",true);
     }
     else{
       $('#flag-right').prop("disabled",false);
     }
-
-    $('#flag-left').prop('disabled', this.prev_flag === null);
-    $('#flag-right').prop('disabled', this.next_flag === null);
   };
 
   this.reset = function () {
