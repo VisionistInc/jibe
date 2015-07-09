@@ -99,8 +99,11 @@ function Replay (params) {
     $('#flag-left').prop("disabled",true);
     for (var i = 0; i < instance.operations.length; i++) {
       if (instance.operations[i].flagged) {
-        this.flagged.push(i+1);
-        var percentLeft = (instance.operations[i].v / instance.operations.length * 100);
+        // add this operation to the list of flagged ops
+        this.flagged.push(i);
+
+        // add a flag to the appropriate place on the slider
+        var percentLeft = (instance.operations[i].v / (instance.operations.length-1) * 100);
         var element = flagTemplate.replace('{{percentLeft}}', percentLeft);
         $('#replaySlider').append (element);
       }
@@ -112,42 +115,10 @@ function Replay (params) {
   };
 
   /*
-  * Non-anonymous version of the slider listener. Can't pass this non-anon function to the formatter event handler, so changes to this function
-  * must also be made to the other one. Sorry.
+  * Move the slider to the specified version, invoking the slider handler.
   */
   this.setVersion = function (version) {
-    /*
-     *  This fires whenever the timeslider moves --
-     *  -- manually or programatically.
-     */
-    if (version < instance.current_v) {
-      /*
-       *  Unbuild the snapshot up to the desired version.
-       */
-      for (var i = instance.current_v - 1; i >= version; i--) {
-        if (instance.operations[i].op) {
-          instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
-        }
-      }
-    } else if (version > instance.current_v) {
-      /*
-       *  Build the snapshot up to the desired version.
-       */
-      for (var j = instance.current_v; j < version; j++) {
-
-        if (instance.operations[j].op) {
-          instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
-        }
-      }
-    }
-
-    instance.codemirror.setValue (instance.snapshot.text);
-    instance.timestamps.draw (instance.snapshot.lines);
-    instance.old_toc.generateHeaders(instance.codemirror);
-    instance.current_v = version;
-    instance.time_slider.slider ('setValue', instance.current_v);
-    instance.setCurrentFlag();
-    return 'Version: ' + version;
+    instance.time_slider.slider ('setValue', version);
   };
 
   /*
@@ -262,7 +233,7 @@ function Replay (params) {
   this.fireSliderEventHandlers = function () {
     instance.time_slider = $('#replay-slider').slider ({
       min: 0,
-      max: instance.operations.length,
+      max: instance.operations.length-1,
       value: 0,
       formatter: function (version) {
         /*
@@ -273,7 +244,7 @@ function Replay (params) {
           /*
            *  Unbuild the snapshot up to the desired version.
            */
-          for (var i = instance.current_v - 1; i >= version; i--) {
+          for (var i = instance.current_v; i > version; i--) {
             if (instance.operations[i].op) {
               instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
             }
@@ -282,8 +253,7 @@ function Replay (params) {
           /*
            *  Build the snapshot up to the desired version.
            */
-          for (var j = instance.current_v; j < version; j++) {
-
+          for (var j = instance.current_v + 1; j <= version; j++) {
             if (instance.operations[j].op) {
               instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
             }
@@ -305,7 +275,7 @@ function Replay (params) {
    */
   this.replay = function () {
     this.stopped = false;
-    if (instance.current_v >= instance.operations.length) {
+    if (instance.current_v >= instance.operations.length-1) {
       instance.setUp (function () {
         instance.replay ();
       });
@@ -318,13 +288,13 @@ function Replay (params) {
    *  Recursively plays through the rest of the operations.
    */
   this.slide = function () {
-    if (instance.current_v >= instance.operations.length || (instance.operations[instance.current_v].flagged && !this.at_flag)) {
-      console.log(this.flagged);
+    // Replay should be stopped if the current version is greater than version length, or if it hits a flag
+    if (instance.current_v >= instance.operations.length-1 || (instance.operations[instance.current_v].flagged && !this.at_flag)) {
       this.at_flag = true;
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
 
-      this.stopped = true; // Replay should be stopped if the current version is greater than version length, or if it hits a flag
+      this.stopped = true;
       return;
     } else if (stop) {
       stop = false;
