@@ -115,41 +115,10 @@ function Replay (params) {
   };
 
   /*
-  * Non-anonymous version of the slider listener. Can't pass this non-anon function to the formatter event handler, so changes to this function
-  * must also be made to the other one. Sorry.
+  * Move the slider to the specified version, invoking the slider handler.
   */
   this.setVersion = function (version) {
-    /*
-     *  This fires whenever the timeslider moves --
-     *  -- manually or programatically.
-     */
-    if (version < instance.current_v) {
-      /*
-       *  Unbuild the snapshot up to the desired version.
-       */
-      for (var i = instance.current_v; i > version; i--) {
-        if (instance.operations[i].op) {
-          instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
-        }
-      }
-    } else if (version > instance.current_v) {
-      /*
-       *  Build the snapshot up to the desired version.
-       */
-      for (var j = instance.current_v + 1; j <= version; j++) {
-        if (instance.operations[j].op) {
-          instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
-        }
-      }
-    }
-
-    instance.codemirror.setValue (instance.snapshot.text);
-    instance.timestamps.draw (instance.snapshot.lines);
-    instance.old_toc.generateHeaders(instance.codemirror);
-    instance.current_v = version;
-    instance.time_slider.slider ('setValue', instance.current_v);
-    instance.setCurrentFlag();
-    return 'Version: ' + version;
+    instance.time_slider.slider ('setValue', version);
   };
 
   /*
@@ -265,7 +234,7 @@ function Replay (params) {
           /*
            *  Unbuild the snapshot up to the desired version.
            */
-          for (var i = instance.current_v ; i > version; i--) {
+          for (var i = instance.current_v; i > version; i--) {
             if (instance.operations[i].op) {
               instance.snapshot = ottypes.json0.apply (instance.snapshot, ottypes.json0.invert(instance.operations[i].op));
             }
@@ -276,7 +245,6 @@ function Replay (params) {
            */
           for (var j = instance.current_v + 1; j <= version; j++) {
             if (instance.operations[j].op) {
-
               instance.snapshot = ottypes.json0.apply (instance.snapshot, instance.operations[j].op);
             }
           }
