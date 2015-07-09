@@ -99,8 +99,11 @@ function Replay (params) {
     $('#flag-left').prop("disabled",true);
     for (var i = 0; i < instance.operations.length; i++) {
       if (instance.operations[i].flagged) {
-        this.flagged.push(i+1);
-        var percentLeft = (instance.operations[i].v / instance.operations.length * 100);
+        // add this operation to the list of flagged ops
+        this.flagged.push(i);
+
+        // add a flag to the appropriate place on the slider
+        var percentLeft = (instance.operations[i].v / (instance.operations.length-1) * 100);
         var element = flagTemplate.replace('{{percentLeft}}', percentLeft);
         $('#replaySlider').append (element);
       }
@@ -307,12 +310,13 @@ function Replay (params) {
    *  Recursively plays through the rest of the operations.
    */
   this.slide = function () {
+    // Replay should be stopped if the current version is greater than version length, or if it hits a flag
     if (instance.current_v >= instance.operations.length-1 || (instance.operations[instance.current_v].flagged && !this.at_flag)) {
       this.at_flag = true;
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
 
-      this.stopped = true; // Replay should be stopped if the current version is greater than version length, or if it hits a flag
+      this.stopped = true;
       return;
     } else if (stop) {
       stop = false;
