@@ -294,7 +294,7 @@ function Replay (params) {
    */
   this.replay = function () {
     this.stopped = false;
-    if (instance.current_v >= instance.operations.length) {
+    if (instance.current_v >= instance.operations.length-1) {
       instance.setUp (function () {
         instance.replay ();
       });
