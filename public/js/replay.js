@@ -307,8 +307,7 @@ function Replay (params) {
    *  Recursively plays through the rest of the operations.
    */
   this.slide = function () {
-    if (instance.current_v >= instance.operations.length || (instance.operations[instance.current_v].flagged && !this.at_flag)) {
-      console.log(this.flagged);
+    if (instance.current_v >= instance.operations.length-1 || (instance.operations[instance.current_v].flagged && !this.at_flag)) {
       this.at_flag = true;
       $('#start-replay-button').toggleClass('active');
       $('#start-replay-button').find('span.glyphicon').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
