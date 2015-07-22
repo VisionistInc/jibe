@@ -508,9 +508,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *  Flag the current version of the document.
    */
   api.flagVersion = function () {
-    $.post('ops/' + room + '/flag', function(result) {
-      console.log('flagged version', result);
-    });
+    $.post('ops/' + room + '/flag', function(result) {});
   };
 
   /*

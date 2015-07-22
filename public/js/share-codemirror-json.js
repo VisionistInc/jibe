@@ -44,7 +44,6 @@
 
     var textListenerPath = ['text'];
     var textInsertHandler = function(startPos, insertedText) {
-      //console.log('text listener insert', startPos, insertedText);
 
       // suppress changes until this op has been incorporated
       suppress = true;
@@ -66,7 +65,6 @@
     );
 
     var textDeleteHandler = function(startPos, deletedText) {
-      //console.log('text listener delete', startPos, deletedText);
       suppress = true;
       var from = cm.posFromIndex(startPos);
       var to = cm.posFromIndex(startPos + deletedText.length);
@@ -130,7 +128,6 @@
         // nothing was removed.
       } else {
 
-
         // change in lines (deleted lines)
         if(change.to.line !== change.from.line){
           for (i = change.to.line; i > change.from.line; i--) {
@@ -140,13 +137,11 @@
               deletedLines[i] = true;
             }
           }
-      }
+        }
 
         // change in text (deletion)
         ops.push({p:textPath, sd: change.removed.join('\n')});
-
-
-    }
+      }
 
       if (change.text) {
 
@@ -212,8 +207,6 @@
                   timestamp: newTimestamp
                 }});
               }
-
-
             } else {
               // the line doesn't currently exist, so insert a new line
               ops.push({p:['lines', lineIndex], li: {
@@ -226,7 +219,6 @@
       }
 
       // submit the complete list of changes
-      //console.log(ops);
       ctx.submitOp(ops);
 
       // call the function again on the next change, if there is one

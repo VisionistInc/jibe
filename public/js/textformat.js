@@ -2,7 +2,7 @@
 //
 //  textformat.js
 //
-//  - Simulated class that takes care of text-related formatting on a CodeMirror editor
+//  - Text formatting in the CodeMirror editor
 //
 //  Copyright (c) 2015 Visionist, Inc.
 //
@@ -23,10 +23,10 @@ function TextFormat (data) {
   this.codemirror = data.codemirror;
 
   /*
-   *  Replaces current text to the formatted text.
+   *  Replaces current text with the formatted text.
    */
   this.replace = function (replacement) {
-  	this.codemirror.replaceSelection (replacement);
+    this.codemirror.replaceSelection (replacement);
   };
 
   /*
@@ -55,43 +55,42 @@ function TextFormat (data) {
    *  Handles the multi-line case, wrapping each individual line in said characters.
    */
   this.wrapper = function (characters) {
-  	if (this.codemirror.somethingSelected ()) {
-  		var selection = this.codemirror.getSelection ('\n');
+    if (this.codemirror.somethingSelected ()) {
+      var selection = this.codemirror.getSelection ('\n');
 
-  		// Wrap lines individually.
-  		if (/\n/.test (selection)) {
-  			return selection.split ("\n").map (this.wrapText (characters)).join ("\n");
-  		}	else {
+      // Wrap lines individually.
+      if (/\n/.test (selection)) {
+        return selection.split ("\n").map (this.wrapText (characters)).join ("\n");
+      }  else {
         // If there's no multiple lines, just deal with the one.
-  			return this.wrapText (characters)(selection);
-  		}
-  	} else {
-  		var index = this.codemirror.indexFromPos (this.codemirror.getCursor ());
+        return this.wrapText (characters)(selection);
+      }
+    } else {
+      var index = this.codemirror.indexFromPos (this.codemirror.getCursor ());
       this.codemirror.replaceSelection (characters + characters);
       this.codemirror.setCursor (this.codemirror.posFromIndex (index + 2));
-  	}
+    }
   };
 
   /*
    *  Returns a function that wraps the text in the characters specified.
    */
   this.wrapText = function (characters) {
-  	return function (selection) {
-  		if (/^\s*$/.test (selection)) {
-  			return selection;
-  		}
+    return function (selection) {
+      if (/^\s*$/.test (selection)) {
+        return selection;
+      }
 
-  		// Regex that picks apart the different pieces of the format.
-  		var regex = new RegExp ("(.*)" + escapeRegExp (characters) + "(.*)" + escapeRegExp (characters) + "(.*)");
+      // Regex that picks apart the different pieces of the format.
+      var regex = new RegExp ("(.*)" + escapeRegExp (characters) + "(.*)" + escapeRegExp (characters) + "(.*)");
 
       // Test if the format is already applied:
-  		if (regex.test (selection)) {
-        console.log(regex.exec(selection));
-  			return regex.exec (selection).slice (1, 4).join ("");//["_fdsa_", "", "fdsa", "", index: 0, input: "_fdsa_"] takes and concatenates entries 1,2,3
-  		} else {
-  			return (characters + selection + characters);
-  		}
-  	};
+      if (regex.test (selection)) {
+        return regex.exec (selection).slice (1, 4).join ("");//["_fdsa_", "", "fdsa", "", index: 0, input: "_fdsa_"] takes and concatenates entries 1,2,3
+      } else {
+        return (characters + selection + characters);
+      }
+    };
   };
 
   /*
@@ -100,19 +99,19 @@ function TextFormat (data) {
    * -- or just characters at the beginning and end of the line (if only one line is selected.)
    */
   this.mlWrapper = function (characters, mlCharacters) {
-  	if (this.codemirror.somethingSelected ()) {
-  		var selection = this.codemirror.getSelection ('\n');
-  		if (/\n/.test (selection)) {
-  			var regex = new RegExp ("([\\s\\S]*)" + escapeRegExp (mlCharacters) + "\\n([\\s\\S]*)\\n" + escapeRegExp (mlCharacters) + "([\\s\\S]*)");
-  			if (regex.test (selection)) {
-  				return regex.exec (selection).slice (1, 4).join (""); //["_fdsa_", "", "fdsa", "", index: 0, input: "_fdsa_"] takes and concatenates entries 1,2,3
-  			} else {
-  				return mlCharacters + "\n" + selection + "\n" + mlCharacters;
-  			}
-  		}	else {
-  			return this.wrapper (characters);
-  		}
-  	}
+    if (this.codemirror.somethingSelected ()) {
+      var selection = this.codemirror.getSelection ('\n');
+      if (/\n/.test (selection)) {
+        var regex = new RegExp ("([\\s\\S]*)" + escapeRegExp (mlCharacters) + "\\n([\\s\\S]*)\\n" + escapeRegExp (mlCharacters) + "([\\s\\S]*)");
+        if (regex.test (selection)) {
+          return regex.exec (selection).slice (1, 4).join (""); //["_fdsa_", "", "fdsa", "", index: 0, input: "_fdsa_"] takes and concatenates entries 1,2,3
+        } else {
+          return mlCharacters + "\n" + selection + "\n" + mlCharacters;
+        }
+      }  else {
+        return this.wrapper (characters);
+      }
+    }
   };
 
   /*
