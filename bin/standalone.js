@@ -18,7 +18,8 @@
 //  limitations under the License.
 //
 
-var app = require('express')(),
+var express = require('express'),
+    app = express(),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     log4js = require("log4js"),
@@ -38,6 +39,11 @@ log4js.replaceConsole();
 // initialize jibe
 app.use(jibe.router(io));
 app.use(jibe.browserChannelMiddleware);
+
+// serve login page for example application to set username
+app.get('/login(.html)?', function (req, res) {
+  res.sendFile('login.html', { root: __dirname + '/../' });
+});
 
 // start server TODO config for port
 var port = 3000;
