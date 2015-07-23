@@ -123,3 +123,5 @@ function TextFormat (data) {
     return str.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   }
 }
+
+module.exports = TextFormat;

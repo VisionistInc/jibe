@@ -268,3 +268,5 @@ function Chat (data) {
     Notification.requestPermission ();
   };
 }
+
+module.exports = Chat;

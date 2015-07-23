@@ -76,3 +76,5 @@ function TOC(){
       this.editorText = editor.getValue();
     };
   }
+
+module.exports = TOC;

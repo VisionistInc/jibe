@@ -110,3 +110,5 @@ function Timestamps (data) {
       });
   };
 }
+
+module.exports = Timestamps;

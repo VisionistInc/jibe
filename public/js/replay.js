@@ -314,3 +314,5 @@ function Replay (params) {
 
   };
 }
+
+module.exports = Replay;

@@ -19,6 +19,13 @@
 //  limitations under the License.
 //
 
+var Replay     = require ('./replay');
+var TextFormat = require ('./textformat');
+var Timestamps = require ('./timestamps');
+var TOC        = require ('./toc');
+var Chat       = require ('./chat');
+
+
 var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFormat, Chat) {
 
   /*
