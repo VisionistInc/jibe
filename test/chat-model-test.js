@@ -184,23 +184,25 @@ describe('jibe (Chat model)', function() {
         message: sampleData.message,
         color: sampleData.color
       });
-      chat2 = new Chat({
+      setTimeout(function(){
+        chat2 = new Chat({
         roomId: sampleData.roomId,
         authorId: sampleData.authorId,
         message: sampleData.message,
         color: sampleData.color
       });
 
-      expect(chat1.timestamp).to.not.eql(chat2.timestamp);
+        expect(chat1.timestamp).to.not.eql(chat2.timestamp);
 
-      chat1.save().then(function(result) {
-        chat2.save().then(function(result2){
-          expect(result2.timestamp).to.not.eql(result.timestamp);
-          done();
+        chat1.save().then(function(result) {
+          chat2.save().then(function(result2){
+            expect(result2.timestamp).to.not.eql(result.timestamp);
+            done();
+          });
+        }).error(function(error) {
+          expect().fail('error on save', result);
         });
-      }).error(function(error) {
-        expect().fail('error on save', result);
-      });
+      }, 1);
     });
   });
 });
