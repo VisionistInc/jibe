@@ -37,7 +37,7 @@
     "showdown": "~1.0.2",
     "showdown-xss-filter": "~0.1.0",
     "socket.io": "~1.3.5",
-    "thinky": "^2.0.2",
+    "thinky": ">=2.0.8",
     "underscore": "~1.8.3"
   },
   "devDependencies": {
