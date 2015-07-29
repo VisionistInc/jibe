@@ -69,16 +69,21 @@ function Chat (data) {
 
     $("#typing-" + message.authorId).remove ();
     var classes = "chat-message";
+    var userDiv;
 
     if (message.authorId == instance.client.id) {
       classes += " bubble-mine animated bounceIn";
+      // userClasses = "chat-user bubble-mine animated bounceIn"
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.client.color);
+      // userDiv = $('<div>').addClass(userClasses).text(message.authorId);
     } else {
       if (!prepend) {
         instance.sendNotification (message);
       }
       classes += " bubble-other animated bounceIn";
+      userClasses = "chat-user bubble-other animated bounceIn"
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
+      userDiv = $('<div>').addClass(userClasses).text(message.authorId);
   	}
 
     /*
@@ -92,9 +97,18 @@ function Chat (data) {
     var shouldScroll = Math.abs (chatpane.scrollHeight - ($(chatpane).scrollTop () + $(chatpane).height ()));
 
     if (prepend) {
+      if(typeof userDiv !== "undefined"){
+         $('#chat-pane').prepend(userDiv);
+       }
       $('#chat-pane').prepend (chatdiv);
+
     } else {
+
       $('#chat-pane').append (chatdiv);
+
+      if(typeof userDiv !== "undefined"){
+        $('#chat-pane').append(userDiv);
+       }
     }
 
     /*
@@ -307,7 +321,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *  Returns location string based on URL hash; else default to The Dark Side.
    */
   function getLocation () {
-    return location.hash !== '' ? location.hash.substring (1) : 'The Dark Side';
+    return location.hash !== '' ? location.hash.substring (1) : 'The Jibe Side';
   }
 
   /*
