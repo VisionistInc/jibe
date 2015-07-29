@@ -72,9 +72,7 @@ function Chat (data) {
 
     if (message.authorId == instance.client.id) {
       classes += " bubble-mine animated bounceIn";
-      // userClasses = "chat-user bubble-mine animated bounceIn"
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.client.color);
-      // userDiv = $('<div>').addClass(userClasses).text(message.authorId);
     } else {
       if (!prepend) {
         instance.sendNotification (message);
@@ -82,6 +80,7 @@ function Chat (data) {
       classes += " bubble-other animated bounceIn";
       userClasses = "chat-user bubble-other animated bounceIn"
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
+      // Set div for username display under chat message
       userDiv = $('<div>').addClass(userClasses).text(message.authorId);
   	}
 
@@ -96,6 +95,7 @@ function Chat (data) {
     var shouldScroll = Math.abs (chatpane.scrollHeight - ($(chatpane).scrollTop () + $(chatpane).height ()));
 
     if (prepend) {
+      // Make sure to display div only when there is a username
       if(typeof userDiv !== "undefined"){
          $('#chat-pane').prepend(userDiv);
        }
