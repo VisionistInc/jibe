@@ -78,7 +78,7 @@ function Chat (data) {
         instance.sendNotification (message);
       }
       classes += " bubble-other animated bounceIn";
-      userClasses = "chat-user bubble-other animated bounceIn"
+      userClasses = "chat-user bubble-other animated bounceIn";
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
       // Set div for username display under chat message
       userDiv = $('<div>').addClass(userClasses).text(message.authorId);
