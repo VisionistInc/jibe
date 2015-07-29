@@ -818,6 +818,13 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     var cursorPos = editor.doc.getCursor();
     return editor.doc.replaceRange(text, cursorPos, cursorPos);
   };
+  /*
+   * Get cursor position
+   */
+  api.getCursorPosition = function (text) {
+    var cursorPos = editor.doc.getCursor();
+    return cursorPos;
+  };
 
   /*
    *  Register a keyword replacement.
