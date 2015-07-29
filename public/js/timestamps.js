@@ -47,7 +47,7 @@ function Timestamps (data) {
       this.format = "MM-DD-HH";
     }
     else{
-      this.format = "HH-MM";
+      this.format = "HH:mm";
     }
 
 
