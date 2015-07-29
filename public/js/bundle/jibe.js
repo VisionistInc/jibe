@@ -1345,7 +1345,7 @@ function TextFormat (data) {
    *  (Escapes all the necessary special characters for regex)
    */
   function escapeRegExp (str) {
-    return str//.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    return str.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   }
 }
 
