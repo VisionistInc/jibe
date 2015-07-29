@@ -307,7 +307,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
    *  Returns location string based on URL hash; else default to The Dark Side.
    */
   function getLocation () {
-    return location.hash !== '' ? location.hash.substring (1) : 'The Dark Side';
+    return location.hash !== '' ? location.hash.substring (1) : 'The Jibe Side';
   }
 
   /*
@@ -448,6 +448,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     toc.generateHeaders(editor);
     preview.html (converter.makeHtml (addSpaces(editor.getValue ())));
     updateWordCount (editor);
+
   }
   function addSpaces(text){
     var lines = text.split("\n");
@@ -464,7 +465,10 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
   // variables not attached to api can be considered private
   var client    = getCookie ('username') || Math.floor ((Math.random () * 10000000)).toString ();
   var room      = getLocation ();
-  var converter = new showdown.Converter ({ extensions: ['xssfilter'] });
+  showdown.setOption('strikethrough', true);
+  showdown.setOption('tables', 'true');
+  var converter = new showdown.Converter ({ extensions: ['xssfilter']});
+
 
   // variables initialized with options in api.initialize()
   var chat,
@@ -1341,7 +1345,7 @@ function TextFormat (data) {
    *  (Escapes all the necessary special characters for regex)
    */
   function escapeRegExp (str) {
-    return str.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    return str//.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   }
 }
 
