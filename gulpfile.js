@@ -16,7 +16,7 @@ var rename = require('gulp-rename');
 
 // Lint Task
 gulp.task('jshint', function() {
-	return gulp.src(['public/**/*.js', 'lib/**/*.js'])
+	return gulp.src(['public/**/*.js', 'lib/**/*.js', '!public/js/bundle/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter('jshint-stylish'))
 		// fail (non-zero exit code) if there are any errors or warnings
