@@ -39,13 +39,17 @@ function Timestamps (data) {
    */
   this.getMoment = function (timestamp) {
     var now = Date.now();
-    
-    if(moment(now).date() !== moment(timestamp).date()){
-      this.format = "MM-DD-HH";
-    }
+
     if(moment(now).year() !== moment(timestamp).year()){
         this.format = "YYYY-MM-DD";
     }
+    else if(moment(now).date() !== moment(timestamp).date()){
+      this.format = "MM-DD-HH";
+    }
+    else{
+      this.format = "HH-MM";
+    }
+
 
     return moment (timestamp).format (this.format);
   };
