@@ -301,6 +301,15 @@ div.chat-message {
   word-break: break-all;
 }
 
+div.chat-user {
+  font-size: 15px;
+  color: black;
+  background-color: #ffffff;
+  word-break: break-all;
+  padding: 5px 5px 7.5px 10px;
+  margin-top: 0px;
+}
+
 .bubble-mine, .bubble-other {
   max-width: 70%;
   display: block;
