@@ -403,6 +403,7 @@ function Chat (data) {
 module.exports = Chat;
 
 },{"timeago":1}],3:[function(require,module,exports){
+(function (global){
 
 //
 //  jibe.js - Jibe: be in accord; agree.
@@ -942,6 +943,14 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
   };
 
   /*
+   * Get cursor position
+   */
+  api.getCursorPosition = function () {
+    var cursorPos = editor.doc.getCursor();
+    return cursorPos;
+  };
+
+  /*
    *  Insert the given text at the current cursor position.
    */
   api.insertTextAtCursor = function (text) {
@@ -1032,6 +1041,9 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
   };
 }(jQuery, Jibe));
 
+global.Jibe = Jibe;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./chat":2,"./replay":4,"./textformat":5,"./timestamps":6,"./toc":7}],4:[function(require,module,exports){
 
 //
@@ -1475,7 +1487,7 @@ function TextFormat (data) {
    *  (Escapes all the necessary special characters for regex)
    */
   function escapeRegExp (str) {
-    return str//.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    return str.replace (/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   }
 }
 
