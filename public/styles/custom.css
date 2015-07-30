@@ -302,11 +302,11 @@ div.chat-message {
 }
 
 div.chat-user {
-  font-size: 15px;
-  color: black;
+  font-size: 13px;
+  color: #bbbbbb;
   background-color: #ffffff;
   word-break: break-all;
-  padding: 5px 5px 7.5px 10px;
+  padding: 5px 5px 7.5px 5px;
   margin-top: 0px;
 }
 
