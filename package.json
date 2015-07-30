@@ -51,6 +51,7 @@
     "mocha": "^2.2.4"
   },
   "scripts": {
+    "bundle": "browserify public/js/jibe.js -o public/js/bundle/jibe.js",
     "lint": "gulp jshint",
     "start": "node bin/standalone.js",
     "test": "NODE_ENV=test mocha"
