@@ -98,7 +98,7 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
       client     : client,
       container  : '#timestamps-container',
       codemirror : editor,
-      format     : 'YYYY-MM-DD HH:mm'
+      format     : 'HH:mm'
     });
   }
 
