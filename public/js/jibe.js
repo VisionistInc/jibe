@@ -537,6 +537,14 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
   };
 
   /*
+   * Get cursor position
+   */
+  api.getCursorPosition = function () {
+    var cursorPos = editor.doc.getCursor();
+    return cursorPos;
+  };
+
+  /*
    *  Insert the given text at the current cursor position.
    */
   api.insertTextAtCursor = function (text) {
@@ -626,3 +634,5 @@ var Jibe = (function (BCSocket, CodeMirror, Replay, showdown, Timestamps, TextFo
     });
   };
 }(jQuery, Jibe));
+
+global.Jibe = Jibe;
