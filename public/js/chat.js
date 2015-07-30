@@ -19,6 +19,11 @@
 //  limitations under the License.
 //
 
+/*
+ * Help to generate timestamps to go along with usernames under chat text
+ */
+var timeago = require('timeago');
+
 function Chat (data) {
   this.client          = data.client;
   this.room            = data.room;
@@ -72,16 +77,19 @@ function Chat (data) {
 
     if (message.authorId == instance.client.id) {
       classes += " bubble-mine animated bounceIn";
+      userClasses = "chat-user bubble-mine animated bounceIn timeago";
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.client.color);
+      // Div for timestamp only
+      userDiv = $('<div>').addClass(userClasses).text(timeago(message.timestamp));
     } else {
       if (!prepend) {
         instance.sendNotification (message);
       }
       classes += " bubble-other animated bounceIn";
-      userClasses = "chat-user bubble-other animated bounceIn";
+      userClasses = "chat-user bubble-other animated bounceIn timeago";
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
-      // Set div for username display under chat message
-      userDiv = $('<div>').addClass(userClasses).text(message.authorId);
+      // Set div for username display under chat message and timestamp
+      userDiv = $('<div>').addClass(userClasses).text(message.authorId + " • " + timeago(message.timestamp));
   	}
 
     /*
@@ -95,19 +103,14 @@ function Chat (data) {
     var shouldScroll = Math.abs (chatpane.scrollHeight - ($(chatpane).scrollTop () + $(chatpane).height ()));
 
     if (prepend) {
-      // Make sure to display div only when there is a username
-      if(typeof userDiv !== "undefined"){
-         $('#chat-pane').prepend(userDiv);
-       }
+      $('#chat-pane').prepend(userDiv);
       $('#chat-pane').prepend (chatdiv);
 
     } else {
 
       $('#chat-pane').append (chatdiv);
-
-      if(typeof userDiv !== "undefined"){
-        $('#chat-pane').append(userDiv);
-       }
+      console.log(timeago(new Date()));
+      $('#chat-pane').append(userDiv);
     }
 
     /*
