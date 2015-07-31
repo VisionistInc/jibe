@@ -398,6 +398,18 @@ function Chat (data) {
      */
     Notification.requestPermission ();
   };
+
+$(document).ready(function(){
+  setInterval(function() { //every minute
+    $("#chat-pane").empty(); //empty the chat pane
+    $.get ("chat/" + instance.room + "/0", function (data) {
+      for (var ii = 0; ii < data.length; ii++) {
+        instance.addMessage (data[ii], true);
+      }
+    });
+  }, 30000);
+});
+
 }
 
 module.exports = Chat;
