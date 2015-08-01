@@ -160,7 +160,15 @@
               timestamp: new Date ()
             }});
           } else {
-            if (change.origin !== 'paste' && change.origin !== 'redo' && change.origin !== 'undo') {
+            /*
+             *  For the following values of change.origin, we know what we want to happen.
+             *  - null - this is a programmatic insertion
+             *  - paste, redo, undo - cm detected the indicated behavior
+             *
+             *  For others, they'll have to fall through and be handled accordingly.
+             *  Not having this conditional here leads to things breaking...
+             */
+            if (change.origin && change.origin !== 'paste' && change.origin !== 'redo' && change.origin !== 'undo') {
               console.warn('not sure what to do in this case', change);
             } else {
 
