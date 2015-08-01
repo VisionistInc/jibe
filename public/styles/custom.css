@@ -298,7 +298,7 @@ div.chat-message {
   font-size: 15px;
   color: white;
   padding: 5px 10px 7.5px 10px;
-  word-break: break-all;
+  word-break: keep-all;
 }
 
 div.chat-user {
