@@ -75,21 +75,25 @@ function Chat (data) {
     var classes = "chat-message";
     var userDiv;
 
+    var timeSpan = $('<span>').addClass('timeago').data('timestamp', message.timestamp).text(timeago(message.timestamp));
+
     if (message.authorId == instance.client.id) {
       classes += " bubble-mine animated bounceIn";
-      userClasses = "chat-user bubble-mine animated bounceIn timeago";
+      userClasses = "chat-user bubble-mine animated bounceIn";
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', instance.client.color);
+
       // Div for timestamp only
-      userDiv = $('<div>').addClass(userClasses).text(timeago(message.timestamp));
+      userDiv = $('<div>').addClass(userClasses).append(timeSpan);
     } else {
       if (!prepend) {
         instance.sendNotification (message);
       }
       classes += " bubble-other animated bounceIn";
-      userClasses = "chat-user bubble-other animated bounceIn timeago";
+      userClasses = "chat-user bubble-other animated bounceIn";
       chatdiv  = $('<div>').addClass (classes).text (message.message).css ('background-color', message.color);
+
       // Set div for username display under chat message and timestamp
-      userDiv = $('<div>').addClass(userClasses).text(message.authorId + " • " + timeago(message.timestamp));
+      userDiv = $('<div>').addClass(userClasses).text(message.authorId + " • ").append(timeSpan);
   	}
 
     /*
@@ -103,14 +107,11 @@ function Chat (data) {
     var shouldScroll = Math.abs (chatpane.scrollHeight - ($(chatpane).scrollTop () + $(chatpane).height ()));
 
     if (prepend) {
-      $('#chat-pane').prepend(userDiv);
+      $('#chat-pane').prepend (userDiv);
       $('#chat-pane').prepend (chatdiv);
-
     } else {
-
       $('#chat-pane').append (chatdiv);
-      console.log(timeago(new Date()));
-      $('#chat-pane').append(userDiv);
+      $('#chat-pane').append (userDiv);
     }
 
     /*
@@ -278,6 +279,15 @@ function Chat (data) {
       }
       clearTimeout (instance.timeout);
     });
+
+    /*
+     *  Every 60 seconds, repaint the timeago timestamps in the chat.
+     */
+    setInterval(function () {
+      $('#chat-pane .timeago').each(function(index, element) {
+        $(element).text(timeago($(element).data('timestamp')));
+      });
+    }, 60000);
 
     /*
      *  Requests permission to display desktop notifications.
