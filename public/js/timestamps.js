@@ -99,27 +99,22 @@ function Timestamps (data) {
     }
 
     $(this.container).html (content);
-    this.activateTooltips ();
+    this.addTooltips ();
   };
 
   /*
-   *  Draws the timestamps into its given container.
+   *  For each timestamp in the container, add a tooltip to display
+   *  the author of the corresponding line on hover.
    */
-  this.activateTooltips = function () {
-    $('.timestamp')
-      .mouseenter (function () {
-        $(this).attr ('data-toggle', 'tooltip')
-               .attr ('data-placement', 'top')
-               .attr ('title', $(this).data ('author'));
-
-       $('[data-toggle="tooltip"]').tooltip ({
-         container: 'body'
-       });
-      })
-      .mouseleave (function () {
-        $(this).removeAttr ('data-toggle')
-               .removeAttr ('data-placement')
-               .removeAttr ('title');
+  this.addTooltips = function () {
+    $(this.container).find('.timestamp')
+      // on hover, display the full time in a bootstrap tooltip
+      .data ('toggle', 'tooltip')
+      .data ('placement', 'top')
+      .each (function () {
+        $(this)
+          .prop ('title', $(this).data ('author'))
+          .tooltip ( { container: 'body' } );
       });
   };
 }
