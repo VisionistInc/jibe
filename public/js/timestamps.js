@@ -108,7 +108,7 @@ function Timestamps (data) {
    */
   this.addTooltips = function () {
     $(this.container).find('.timestamp')
-      // on hover, display the full time in a bootstrap tooltip
+      // on hover, display the author in a bootstrap tooltip
       .data ('toggle', 'tooltip')
       .data ('placement', 'top')
       .each (function () {
