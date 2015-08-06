@@ -75,7 +75,17 @@ function Chat (data) {
     var classes = "chat-message";
     var userDiv;
 
-    var timeSpan = $('<span>').addClass('timeago').data('timestamp', message.timestamp).text(timeago(message.timestamp));
+    // create a new span to display the time the message was sent
+    var timeSpan = $('<span>')
+      // display the relative 'timeago' the message was sent
+      .addClass('timeago')
+      .text (timeago (message.timestamp))
+      .data ('timestamp', message.timestamp)
+      // on hover, display the full time in a bootstrap tooltip
+      .data ('toggle', 'tooltip')
+      .data ('placement', 'top')
+      .prop ('title', moment (message.timestamp).format ('MMMM Do YYYY, h:mm:ss a'))
+      .tooltip ( { container: 'body' } );
 
     if (message.authorId == instance.client.id) {
       classes += " bubble-mine animated bounceIn";
