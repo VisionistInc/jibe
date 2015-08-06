@@ -84,7 +84,7 @@ function Chat (data) {
       // on hover, display the full time in a bootstrap tooltip
       .data ('toggle', 'tooltip')
       .data ('placement', 'top')
-      .prop ('title', moment (message.timestamp, moment.ISO_8601).format ('MMMM Do YYYY, h:mm:ss a'))
+      .prop ('title', moment (message.timestamp).format ('MMMM Do YYYY, h:mm:ss a'))
       .tooltip ( { container: 'body' } );
 
     if (message.authorId == instance.client.id) {
