@@ -80,3 +80,7 @@ $('#jibe-container').jibe ({
 * The `defaultText` option sets the initial text for a document that **does not exist** at the time it is requested by the client.  The name of the current room will replace all instances of the pattern `{{room}}`.
 * Overriding the `placeholder` option sets the text that is displayed when the document contains no text (just like the HTML input element's placeholder attribute).
 * The `template` option allows developers to use a different layout, rather than the default one that is provided in this repository.  There are some hardcoded ids that event handlers rely on, so it is easiest to start from the provided template and rearrange things from there.
+
+## Development
+
+Run `npm bundle` to run webpack to create the client-side bundle, or `npm watch` to have webpack continuously watch and rebundle the client-side scripts during development.

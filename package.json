@@ -48,12 +48,14 @@
     "gulp-jshint": "^1.10.0",
     "jshint-stylish": "^1.0.1",
     "log4js": "0.6.22",
-    "mocha": "^2.2.4"
+    "mocha": "^2.2.4",
+    "webpack": "^1.12.13"
   },
   "scripts": {
-    "bundle": "browserify public/js/jibe.js -o public/js/bundle/jibe.js",
+    "bundle": "./node_modules/.bin/webpack",
     "lint": "gulp jshint",
     "start": "node bin/standalone.js",
-    "test": "NODE_ENV=test mocha"
+    "test": "NODE_ENV=test mocha",
+    "watch": "./node_modules/.bin/webpack --progress --colors --watch"
   }
 }
